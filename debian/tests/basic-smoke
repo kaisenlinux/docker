@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -eux
+set -o pipefail
+
+DEBOOTSTRAP_SUITE=bullseye
+
+
+## exit helpers
+
+exit_traps=( 'true' )
+
+defer() {
+	exit_traps=( "$@" "${exit_traps[@]}" )
+}
+
+do_exit() {
+	for exit_trap in "${exit_traps[@]}"; do
+		eval "$exit_trap" || true
+	done
+}
+
+trap 'do_exit' EXIT
+
+
+## main
+
+systemctl start docker
+defer 'systemctl stop docker'
+defer 'journalctl -u docker | tail -n 100'
+
+docker version
+
+tmpdir="$(mktemp -d)"
+defer "rm -rf '$tmpdir'"
+
+debootstrap \
+	--variant=minbase \
+	$DEBOOTSTRAP_SUITE \
+	"$tmpdir" \
+	http://deb.debian.org/debian
+
+tar -cC "$tmpdir" . | docker import - debian
+defer 'docker rmi debian'
+
+docker run --name test debian true
+defer 'docker rm -f test'

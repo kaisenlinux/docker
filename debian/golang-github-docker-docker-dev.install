@@ -1,0 +1,44 @@
+## CLI:
+_build/src/github.com/docker/cli/cli/config              usr/share/gocode/src/github.com/docker/cli/cli/
+_build/src/github.com/docker/cli/opts                    usr/share/gocode/src/github.com/docker/cli/
+
+
+## Legacy / compatibility with older Docker:
+_build/src/github.com/docker/cli/cli/config/*      usr/share/gocode/src/github.com/docker/docker/cliconfig/
+#_build/src/github.com/docker/cli/cli/config/*      usr/share/gocode/src/github.com/docker/docker/cli/config/
+
+
+## Engine
+engine/dockerversion                                usr/share/gocode/src/github.com/docker/docker/
+engine/daemon                                       usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/api            usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/builder        usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/client         usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/cli            usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/container      usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/errdefs        usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/image          usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/oci            usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/opts           usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/pkg            usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/profiles       usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/reference      usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/registry       usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/rootless       usr/share/gocode/src/github.com/docker/docker/
+_build/src/github.com/docker/docker/runconfig      usr/share/gocode/src/github.com/docker/docker/
+
+
+## Libnetwork:
+_build/src/github.com/docker/libnetwork/datastore        usr/share/gocode/src/github.com/docker/libnetwork/
+_build/src/github.com/docker/libnetwork/discoverapi      usr/share/gocode/src/github.com/docker/libnetwork/
+_build/src/github.com/docker/libnetwork/ipamutils        usr/share/gocode/src/github.com/docker/libnetwork/
+_build/src/github.com/docker/libnetwork/ns               usr/share/gocode/src/github.com/docker/libnetwork/
+_build/src/github.com/docker/libnetwork/options          usr/share/gocode/src/github.com/docker/libnetwork/
+_build/src/github.com/docker/libnetwork/resolvconf       usr/share/gocode/src/github.com/docker/libnetwork/
+_build/src/github.com/docker/libnetwork/testutils        usr/share/gocode/src/github.com/docker/libnetwork/
+_build/src/github.com/docker/libnetwork/types            usr/share/gocode/src/github.com/docker/libnetwork/
+
+
+## Moby
+cli/vendor/github.com/moby/buildkit/                         usr/share/gocode/src/github.com/moby/
+libnetwork/vendor/github.com/moby/ipvs/                      usr/share/gocode/src/github.com/moby/

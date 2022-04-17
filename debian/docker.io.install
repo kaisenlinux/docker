@@ -1,0 +1,18 @@
+_build/bin/docker usr/bin/
+_build/src/github.com/docker/docker/bundles/dynbinary-daemon/dockerd usr/sbin/
+
+engine/contrib/check-config.sh                usr/share/docker.io/contrib/
+engine/contrib/dockerd-rootless.sh            usr/share/docker.io/contrib/
+engine/contrib/dockerd-rootless-setuptool.sh  usr/share/docker.io/contrib/
+engine/contrib/nuke-graph-directory.sh        usr/share/docker.io/contrib/
+
+cli/contrib/completion/bash/docker         usr/share/bash-completion/completions/
+cli/contrib/completion/zsh/_docker         usr/share/zsh/vendor-completions/
+cli/contrib/completion/fish/docker.fish    usr/share/fish/vendor_completions.d/
+
+## libnetwork:
+_build/bin/docker-proxy  usr/sbin/
+_build/bin/ovrouter      usr/sbin/
+_build/bin/dnet          usr/bin/
+
+debian/etc/daemon.json etc/docker/

@@ -1,0 +1,16 @@
+From: Arnaud Rebillout <elboulangero@gmail.com>
+Date: Fri, 08 Jan 2021 13:56:28 +0700
+Forwarded: no
+Bug: https://github.com/docker/cli/issues/2882
+Subject: Disable flaky test, failing now and then on different archs.
+
+--- a/cli/cli/command/container/rm_test.go
++++ b/cli/cli/command/container/rm_test.go
+@@ -14,6 +14,7 @@
+ )
+ 
+ func TestRemoveForce(t *testing.T) {
++	t.Skip("DM - Skip flaky test - Cf. docker/cli #2882")
+ 	var removed []string
+ 
+ 	cli := test.NewFakeCli(&fakeClient{
