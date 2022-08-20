@@ -4,11 +4,6 @@ Priority: optional
 Standards-Version: 4.6.0
 XSBC-Original-Maintainer: Debian Go Packaging Team <team+pkg-go@tracker.debian.org>
 Maintainer: Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>
-XSBC-Original-Uploaders: Arnaud Rebillout <arnaudr@kali.org>
-          ,Dmitry Smirnov <onlyjob@debian.org>
-          ,Tim Potter <tpot@hpe.com>
-          ,Tianon Gravi <tianon@debian.org>
-          ,Paul Tagliamonte <paultag@debian.org>
 Build-Conflicts: golang-github-docker-docker-dev
 Build-Depends: debhelper-compat (= 13) ,dh-apparmor ,dh-golang (>= 1.14~)
     ,bash-completion
@@ -63,6 +58,7 @@ Build-Depends: debhelper-compat (= 13) ,dh-apparmor ,dh-golang (>= 1.14~)
     ,golang-github-grpc-ecosystem-go-grpc-prometheus-dev
     ,golang-github-grpc-ecosystem-go-grpc-middleware-dev
     ,golang-github-grpc-ecosystem-grpc-opentracing-dev
+    ,golang-github-hashicorp-go-memdb-dev
     ,golang-github-hashicorp-memberlist-dev (>= 0.1.0~)
     ,golang-github-hashicorp-serf-dev
     ,golang-github-ishidawataru-sctp-dev
@@ -130,8 +126,8 @@ Build-Depends: debhelper-compat (= 13) ,dh-apparmor ,dh-golang (>= 1.14~)
 #   ,golang-k8s-sigs-structured-merge-diff-dev
     ,golang-k8s-sigs-yaml-dev
 Homepage: https://mobyproject.org
-Vcs-Browser: https://gitlab.com/kaisenlinux/packages/docker
-Vcs-Git: https://gitlab.com/kaisenlinux/packages/docker.git
+Vcs-Browser: https://gitlab.com/kaisenlinux/packages/docker.io
+Vcs-Git: https://gitlab.com/kaisenlinux/packages/docker.io.git
 Rules-Requires-Root: no
 XS-Go-Import-Path: github.com/docker/docker
 

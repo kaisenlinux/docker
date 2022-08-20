@@ -1,10 +1,21 @@
-docker.io (20.10.14+kaisen1-1) kaisen-packages; urgency=medium
+docker.io (20.10.17+kaisen1-1) kaisen-packages; urgency=medium
 
-  * Add debian/etc/daemon.json to define overlay2 as default
-    storage driver
-  * No start and enable by default systemd service
+  * Import new upstream release
 
- -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sun, 17 Apr 2022 01:09:44 +0100
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sat, 20 Aug 2022 04:13:29 +0100
+
+docker.io (20.10.17+dfsg1-1) unstable; urgency=medium
+
+  * Team upload.
+  
+  [ Reinhard Tartler ]
+  * unbreak FTBFS, avoid dependencies on consul
+  * add missing dependency
+
+  [ Arnaud Rebillout ]
+  * New upstream release [20.10.17]
+
+ -- Reinhard Tartler <siretart@tauware.de>  Mon, 15 Aug 2022 08:54:41 +0200
 
 docker.io (20.10.14+dfsg1-1) unstable; urgency=medium
 

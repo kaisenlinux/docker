@@ -29,3 +29,4 @@ test--skip-pkg-signal-flaky-tests.patch
 test--skip-pkg-system-chtimes-mips64.patch
 test--skip-TestGetRootUIDGID.patch
 test--skip-TestStateRunStop.patch
+avoid-consul.patch

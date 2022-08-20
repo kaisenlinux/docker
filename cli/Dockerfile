@@ -1,23 +1,12 @@
 # syntax=docker/dockerfile:1.3
 
 ARG BASE_VARIANT=alpine
-ARG GO_VERSION=1.16.15
-ARG XX_VERSION=1.0.0-rc.2
-
-FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-${BASE_VARIANT} AS gostable
-FROM --platform=$BUILDPLATFORM golang:1.17rc1-${BASE_VARIANT} AS golatest
-
-FROM gostable AS go-linux
-FROM gostable AS go-darwin
-FROM gostable AS go-windows-amd64
-FROM gostable AS go-windows-386
-FROM gostable AS go-windows-arm
-FROM golatest AS go-windows-arm64
-FROM go-windows-${TARGETARCH} AS go-windows
+ARG GO_VERSION=1.17.11
+ARG XX_VERSION=1.1.0
 
 FROM --platform=$BUILDPLATFORM tonistiigi/xx:${XX_VERSION} AS xx
 
-FROM go-${TARGETOS} AS build-base-alpine
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-${BASE_VARIANT} AS build-base-alpine
 COPY --from=xx / /
 RUN apk add --no-cache clang lld llvm file git
 WORKDIR /go/src/github.com/docker/cli
@@ -27,7 +16,7 @@ ARG TARGETPLATFORM
 # gcc is installed for libgcc only
 RUN xx-apk add --no-cache musl-dev gcc
 
-FROM go-${TARGETOS} AS build-base-buster
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-buster AS build-base-buster
 COPY --from=xx / /
 RUN apt-get update && apt-get install --no-install-recommends -y clang lld file
 WORKDIR /go/src/github.com/docker/cli
@@ -55,7 +44,7 @@ RUN --mount=ro --mount=type=cache,target=/root/.cache \
     TARGET=/out ./scripts/build/binary && \
     xx-verify $([ "$GO_LINKMODE" = "static" ] && echo "--static") /out/docker
 
-FROM build-base-${BASE_VARIANT} AS dev 
+FROM build-base-${BASE_VARIANT} AS dev
 COPY . .
 
 FROM scratch AS binary
