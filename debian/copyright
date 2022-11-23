@@ -75,6 +75,7 @@ Files-Excluded:
     vendor/github.com/golang/protobuf
     vendor/github.com/googleapis/gax-go
     vendor/github.com/googleapis/gnostic
+    vendor/github.com/google/btree
     vendor/github.com/google/certificate-transparency-go
     vendor/github.com/google/go-cmp
     vendor/github.com/google/gofuzz

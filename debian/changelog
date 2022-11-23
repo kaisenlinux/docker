@@ -1,3 +1,20 @@
+docker.io (20.10.19+kaisen1-1) kaisen-packages; urgency=medium
+
+  * Import new upstream release
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Wed, 23 Nov 2022 13:49:57 +0100
+
+docker.io (20.10.19+dfsg1-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream release [20.10.19]
+    - Fixes CVE-2022-36109 (Closes: #1019601)
+  * Drop test--cli-skip-TestRemoveForce.patch, race condition has been fixed
+    upstream.
+  * Adapt watch file to GitHub changes.
+
+ -- Felix Geyer <fgeyer@debian.org>  Sat, 15 Oct 2022 17:47:37 +0200
+
 docker.io (20.10.17+kaisen1-1) kaisen-packages; urgency=medium
 
   * Import new upstream release

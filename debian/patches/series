@@ -21,7 +21,6 @@ libnetwork_proto.patch
 libnetwork_proto_no_unrecognized_all.patch
 
 test--cli-skip-network-tests.patch
-test--cli-skip-TestRemoveForce.patch
 test--cli-skip-TestRunLabel.patch
 test--cli-skip-TestSignCommandLocalFlag.patch
 test--skip-daemon-oci-linux-pbuilder-tests.patch

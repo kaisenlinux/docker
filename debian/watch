@@ -7,5 +7,5 @@ repacksuffix=+dfsg1,\
 repack,compression=xz,\
 dversionmangle=auto,\
 uversionmangle=s{(\d)[\-]?((rc|beta)\d*)$}{$1~$2},\
-" https://github.com/moby/moby/releases \
+" https://github.com/moby/moby/tags \
   archive/refs/tags/v(\d\S*)\.tar\.gz debian ./debian/get-orig-source.sh

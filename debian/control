@@ -126,8 +126,8 @@ Build-Depends: debhelper-compat (= 13) ,dh-apparmor ,dh-golang (>= 1.14~)
 #   ,golang-k8s-sigs-structured-merge-diff-dev
     ,golang-k8s-sigs-yaml-dev
 Homepage: https://mobyproject.org
-Vcs-Browser: https://gitlab.com/kaisenlinux/packages/docker.io
-Vcs-Git: https://gitlab.com/kaisenlinux/packages/docker.io.git
+Vcs-Browser: https://gitlab.com/kaisenlinux/packages/docker
+Vcs-Git: https://gitlab.com/kaisenlinux/packages/docker.git
 Rules-Requires-Root: no
 XS-Go-Import-Path: github.com/docker/docker
 
