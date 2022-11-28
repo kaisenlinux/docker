@@ -13,6 +13,7 @@ Build-Depends: debhelper-compat (= 13) ,dh-apparmor ,dh-golang (>= 1.14~)
     ,gogoprotobuf, libprotobuf-dev
     ,golang-dbus-dev (>= 5.0.2~)
     ,golang-etcd-server-dev
+    ,golang-github-armon-circbuf-dev
     ,golang-github-armon-go-metrics-dev
     ,golang-github-aws-aws-sdk-go-dev
     ,golang-github-bsphere-le-go-dev
@@ -126,8 +127,8 @@ Build-Depends: debhelper-compat (= 13) ,dh-apparmor ,dh-golang (>= 1.14~)
 #   ,golang-k8s-sigs-structured-merge-diff-dev
     ,golang-k8s-sigs-yaml-dev
 Homepage: https://mobyproject.org
-Vcs-Browser: https://gitlab.com/kaisenlinux/packages/docker
-Vcs-Git: https://gitlab.com/kaisenlinux/packages/docker.git
+Vcs-Browser: https://gitlab.com/kaisenlinux/packages/docker.io
+Vcs-Git: https://gitlab.com/kaisenlinux/packages/docker.io.git
 Rules-Requires-Root: no
 XS-Go-Import-Path: github.com/docker/docker
 
@@ -183,6 +184,7 @@ Package: golang-github-docker-docker-dev
 Architecture: all
 Section: golang
 Depends: ${misc:Depends}
+    ,golang-github-armon-circbuf-dev
     ,golang-github-containerd-containerd-dev (>= 1.4.2~ds1-2~)
     ,golang-github-containerd-continuity-dev (>= 0.0~git20190426~)
     ,golang-github-docker-distribution-dev (>= 2.7.1~)

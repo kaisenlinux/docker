@@ -1,3 +1,20 @@
+docker.io (20.10.21+kaisen1-1) kaisen-packages; urgency=medium
+
+  * Import the new upstream release
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Tue, 29 Nov 2022 00:04:07 +0100
+
+docker.io (20.10.21+dfsg1-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream release [20.10.21]
+    - Fixes TestCheckoutGit failure (Closes: #1024506)
+    - Build-depend on golang-github-armon-circbuf-dev
+  * Remove ancient NEWS file.
+  * Update lintian overrides.
+
+ -- Felix Geyer <fgeyer@debian.org>  Fri, 25 Nov 2022 18:47:24 +0100
+
 docker.io (20.10.19+kaisen1-1) kaisen-packages; urgency=medium
 
   * Import new upstream release

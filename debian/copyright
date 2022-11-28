@@ -20,6 +20,7 @@ Files-Excluded:
     vendor/archive
     vendor/cloud.google.com
    ~vendor/code.cloudfoundry.org
+    vendor/github.com/armon/circbuf
     vendor/github.com/armon/go-metrics
  ~B~vendor/github.com/armon/go-radix
     vendor/github.com/aws/aws-sdk-go
