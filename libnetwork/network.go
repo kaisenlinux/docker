@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -980,13 +981,13 @@ func (n *network) Delete(options ...NetworkDeleteOption) error {
 }
 
 // This function gets called in 3 ways:
-//  * Delete() -- (false, false)
-//      remove if endpoint count == 0 or endpoint count == 1 and
-//      there is a load balancer IP
-//  * Delete(libnetwork.NetworkDeleteOptionRemoveLB) -- (false, true)
-//      remove load balancer and network if endpoint count == 1
-//  * controller.networkCleanup() -- (true, true)
-//      remove the network no matter what
+//   - Delete() -- (false, false)
+//     remove if endpoint count == 0 or endpoint count == 1 and
+//     there is a load balancer IP
+//   - Delete(libnetwork.NetworkDeleteOptionRemoveLB) -- (false, true)
+//     remove load balancer and network if endpoint count == 1
+//   - controller.networkCleanup() -- (true, true)
+//     remove the network no matter what
 func (n *network) delete(force bool, rmLBEndpoint bool) error {
 	n.Lock()
 	c := n.ctrlr
@@ -1062,13 +1063,6 @@ func (n *network) delete(force bool, rmLBEndpoint bool) error {
 		goto removeFromStore
 	}
 
-	if err = n.deleteNetwork(); err != nil {
-		if !force {
-			return err
-		}
-		logrus.Debugf("driver failed to delete stale network %s (%s): %v", n.Name(), n.ID(), err)
-	}
-
 	n.ipamRelease()
 	if err = c.updateToStore(n); err != nil {
 		logrus.Warnf("Failed to update store after ipam release for network %s (%s): %v", n.Name(), n.ID(), err)
@@ -1089,8 +1083,19 @@ func (n *network) delete(force bool, rmLBEndpoint bool) error {
 	c.cleanupServiceDiscovery(n.ID())
 
 	// Cleanup the load balancer. On Windows this call is required
-	// to remove remote loadbalancers in VFP.
-	c.cleanupServiceBindings(n.ID())
+	// to remove remote loadbalancers in VFP, and must be performed before
+	// dataplane network deletion.
+	if runtime.GOOS == "windows" {
+		c.cleanupServiceBindings(n.ID())
+	}
+
+	// Delete the network from the dataplane
+	if err = n.deleteNetwork(); err != nil {
+		if !force {
+			return err
+		}
+		logrus.Debugf("driver failed to delete stale network %s (%s): %v", n.Name(), n.ID(), err)
+	}
 
 removeFromStore:
 	// deleteFromStore performs an atomic delete operation and the

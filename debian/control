@@ -12,7 +12,7 @@ Build-Depends: debhelper-compat (= 13) ,dh-apparmor ,dh-golang (>= 1.14~)
     ,go-md2man (>= 1.0.3~)
     ,gogoprotobuf, libprotobuf-dev
     ,golang-dbus-dev (>= 5.0.2~)
-    ,golang-etcd-server-dev
+#    ,golang-etcd-server-dev
     ,golang-github-armon-circbuf-dev
     ,golang-github-armon-go-metrics-dev
     ,golang-github-aws-aws-sdk-go-dev

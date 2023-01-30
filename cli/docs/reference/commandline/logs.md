@@ -25,11 +25,6 @@ Options:
 
 The `docker logs` command batch-retrieves logs present at the time of execution.
 
-> **Note**
->
-> This command is only functional for containers that are started with the
-> `json-file` or `journald` logging driver.
-
 For more information about selecting and configuring logging drivers, refer to
 [Configure logging drivers](https://docs.docker.com/config/containers/logging/configure/).
 
@@ -63,7 +58,7 @@ fraction of a second no more than nine digits long. You can combine the
 
 ## Examples
 
-### Retrieve logs until a specific point in time
+### <a name="until"></a> Retrieve logs until a specific point in time (--until)
 
 In order to retrieve logs before a specific point in time, run:
 

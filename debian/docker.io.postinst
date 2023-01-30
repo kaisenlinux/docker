@@ -3,13 +3,15 @@ set -e
 
 case "$1" in
     configure)
-        if [ -z "$2" ]; then
-            # Make sure the "docker" system group exists for "docker.socket"
-	    # to apply it as the group on "docker.sock"
-            if ! getent group docker >/dev/null 2>&1 ; then
-                addgroup --system docker
-            fi
-        fi
+	# Make sure the "docker" system group exists for "docker.socket"
+	# to apply it as the group on "docker.sock"
+	if ! getent group docker >/dev/null 2>&1 ; then
+		addgroup --system docker
+	fi
+	for users in $(awk -F: '/\/home/ {printf "%s:%s\n",$1,$3}' /etc/passwd | cut -d: -f1)
+	do
+		usermod -a -G docker $users || true
+	done
 
         # Ensure config directory permissions
         #  On a fresh install, $2 = '' and dpkg "le-nl" treat that as a

@@ -14,6 +14,8 @@ Comment:
  contain too much duplication.
  .
  armon/go-radix v1 causes libnetwork to segfault, cf. #918375
+ .
+ Temperory vendor etcd library, to upgrade etcd to 3.4 in unstable.
 Files-Excluded:
     .github
     .gitignore
@@ -39,7 +41,7 @@ Files-Excluded:
     vendor/github.com/containerd/go-runc
     vendor/github.com/containerd/ttrpc
     vendor/github.com/containerd/typeurl
-    vendor/github.com/coreos/etcd
+  ~~vendor/github.com/coreos/etcd
     vendor/github.com/coreos/go-semver
     vendor/github.com/coreos/go-systemd
     vendor/github.com/coreos/pkg
@@ -172,7 +174,6 @@ Files-Excluded:
     vendor/gopkg.in
     vendor/gotest.tools
    ~vendor/k8s.io
-    vendor/k8s.io/*/third_party/protobuf
     vendor/sigs.k8s.io
 Files-Excluded-distribution:
     */docs
