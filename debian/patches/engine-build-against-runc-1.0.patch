@@ -3,9 +3,11 @@ replace uses of deprecated libcontainer/configs.Device
 Origin: backport, https://github.com/moby/moby/commit/d414c0c1e8c487170b1d2f5af4946771645c6564
 Last-Update: 2021-10-11
 
---- a/engine/oci/devices_linux.go
-+++ b/engine/oci/devices_linux.go
-@@ -6,13 +6,12 @@
+Index: docker/engine/oci/devices_linux.go
+===================================================================
+--- docker.orig/engine/oci/devices_linux.go
++++ docker/engine/oci/devices_linux.go
+@@ -6,13 +6,12 @@ import (
  	"path/filepath"
  	"strings"
  
@@ -20,7 +22,7 @@ Last-Update: 2021-10-11
  	return specs.LinuxDevice{
  		Type:     string(d.Type),
  		Path:     d.Path,
-@@ -24,7 +23,7 @@
+@@ -24,7 +23,7 @@ func Device(d *configs.Device) specs.Lin
  	}
  }
  

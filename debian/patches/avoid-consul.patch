@@ -1,6 +1,8 @@
---- a/libnetwork/store.go
-+++ b/libnetwork/store.go
-@@ -5,7 +5,6 @@
+Index: docker/libnetwork/store.go
+===================================================================
+--- docker.orig/libnetwork/store.go
++++ docker/libnetwork/store.go
+@@ -5,7 +5,6 @@ import (
  	"strings"
  
  	"github.com/docker/libkv/store/boltdb"
@@ -8,7 +10,7 @@
  	"github.com/docker/libkv/store/etcd"
  	"github.com/docker/libkv/store/zookeeper"
  	"github.com/docker/libnetwork/datastore"
-@@ -13,7 +12,6 @@
+@@ -13,7 +12,6 @@ import (
  )
  
  func registerKVStores() {
@@ -16,9 +18,11 @@
  	zookeeper.Register()
  	etcd.Register()
  	boltdb.Register()
---- a/engine/pkg/discovery/kv/kv.go
-+++ b/engine/pkg/discovery/kv/kv.go
-@@ -10,7 +10,6 @@
+Index: docker/engine/pkg/discovery/kv/kv.go
+===================================================================
+--- docker.orig/engine/pkg/discovery/kv/kv.go
++++ docker/engine/pkg/discovery/kv/kv.go
+@@ -10,7 +10,6 @@ import (
  	"github.com/docker/go-connections/tlsconfig"
  	"github.com/docker/libkv"
  	"github.com/docker/libkv/store"
@@ -26,7 +30,7 @@
  	"github.com/docker/libkv/store/etcd"
  	"github.com/docker/libkv/store/zookeeper"
  	"github.com/sirupsen/logrus"
-@@ -38,12 +37,10 @@
+@@ -38,12 +37,10 @@ func init() {
  func Init() {
  	// Register to libkv
  	zookeeper.Register()
@@ -39,9 +43,11 @@
  	discovery.Register("etcd", &Discovery{backend: store.ETCD})
  }
  
---- a/libnetwork/hostdiscovery/hostdiscovery.go
-+++ b/libnetwork/hostdiscovery/hostdiscovery.go
-@@ -10,7 +10,6 @@
+Index: docker/libnetwork/hostdiscovery/hostdiscovery.go
+===================================================================
+--- docker.orig/libnetwork/hostdiscovery/hostdiscovery.go
++++ docker/libnetwork/hostdiscovery/hostdiscovery.go
+@@ -10,7 +10,6 @@ import (
  	"github.com/docker/docker/pkg/discovery"
  	// Including KV
  	_ "github.com/docker/docker/pkg/discovery/kv"
@@ -49,7 +55,7 @@
  	"github.com/docker/libkv/store/etcd"
  	"github.com/docker/libkv/store/zookeeper"
  	"github.com/docker/libnetwork/types"
-@@ -24,7 +23,6 @@
+@@ -24,7 +23,6 @@ type hostDiscovery struct {
  }
  
  func init() {

@@ -25,7 +25,7 @@ Build-Depends: debhelper-compat (= 13) ,dh-apparmor ,dh-golang (>= 1.14~)
     ,golang-github-containerd-console-dev
     ,golang-github-containerd-containerd-dev (>= 1.4.2~ds1-2~)
     ,golang-github-containerd-continuity-dev (>= 0.0~git20190426~)
-    ,golang-github-containerd-fifo-dev
+    ,golang-github-containerd-fifo-dev (>= 1.1.0~)
     ,golang-github-containerd-go-runc-dev
     ,golang-github-containerd-typeurl-dev
     ,golang-github-coreos-bbolt-dev

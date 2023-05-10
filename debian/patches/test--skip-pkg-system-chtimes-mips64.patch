@@ -11,9 +11,11 @@ Subject: Skip pkg/system chtimes tests on mips64
 
 Bug: https://github.com/moby/moby/issues/41850
 
---- a/engine/pkg/system/chtimes_linux_test.go
-+++ b/engine/pkg/system/chtimes_linux_test.go
-@@ -3,6 +3,8 @@
+Index: docker/engine/pkg/system/chtimes_linux_test.go
+===================================================================
+--- docker.orig/engine/pkg/system/chtimes_linux_test.go
++++ docker/engine/pkg/system/chtimes_linux_test.go
+@@ -3,6 +3,8 @@ package system // import "github.com/doc
  import (
  	"os"
  	"syscall"
@@ -22,7 +24,7 @@ Bug: https://github.com/moby/moby/issues/41850
  	"testing"
  	"time"
  )
-@@ -74,6 +76,11 @@
+@@ -74,6 +76,11 @@ func TestChtimesLinux(t *testing.T) {
  	}
  
  	// Test both aTime and mTime set to Unix max time
@@ -34,10 +36,12 @@ Bug: https://github.com/moby/moby/issues/41850
  	Chtimes(file, unixMaxTime, unixMaxTime)
  
  	f, err = os.Stat(file)
---- a/engine/pkg/system/chtimes_test.go
-+++ b/engine/pkg/system/chtimes_test.go
-@@ -4,6 +4,8 @@
- 	"io/ioutil"
+Index: docker/engine/pkg/system/chtimes_test.go
+===================================================================
+--- docker.orig/engine/pkg/system/chtimes_test.go
++++ docker/engine/pkg/system/chtimes_test.go
+@@ -3,6 +3,8 @@ package system // import "github.com/doc
+ import (
  	"os"
  	"path/filepath"
 +	"runtime"
@@ -45,7 +49,7 @@ Bug: https://github.com/moby/moby/issues/41850
  	"testing"
  	"time"
  )
-@@ -81,6 +83,11 @@
+@@ -80,6 +82,11 @@ func TestChtimes(t *testing.T) {
  	}
  
  	// Test both aTime and mTime set to Unix max time

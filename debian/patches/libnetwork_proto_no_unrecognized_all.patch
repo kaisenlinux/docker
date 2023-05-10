@@ -9,9 +9,11 @@ Description: Since gogo/protobuf 1.2 unknown fields in proto3 are preserved.
  of gogo/protobuf: https://github.com/docker/libnetwork/pull/2242
 Author: Felix Geyer <fgeyer@debian.org>
 
---- a/libnetwork/agent.proto
-+++ b/libnetwork/agent.proto
-@@ -10,6 +10,7 @@
+Index: docker/libnetwork/agent.proto
+===================================================================
+--- docker.orig/libnetwork/agent.proto
++++ docker/libnetwork/agent.proto
+@@ -10,6 +10,7 @@ option (gogoproto.stringer_all) = true;
  option (gogoproto.gostring_all) = true;
  option (gogoproto.sizer_all) = true;
  option (gogoproto.goproto_stringer_all) = false;

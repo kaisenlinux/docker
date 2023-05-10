@@ -4,9 +4,11 @@ Description: Use EnvironmentFile with the systemd unit file.
 Bug-Debian: http://bugs.debian.org/746774
 Forwarded: no
 
---- a/engine/contrib/init/systemd/docker.service
-+++ b/engine/contrib/init/systemd/docker.service
-@@ -10,7 +10,8 @@
+Index: docker/engine/contrib/init/systemd/docker.service
+===================================================================
+--- docker.orig/engine/contrib/init/systemd/docker.service
++++ docker/engine/contrib/init/systemd/docker.service
+@@ -10,7 +10,8 @@ Type=notify
  # the default is not to use systemd for cgroups because the delegate issues still
  # exists and systemd currently does not support the cgroup feature set required
  # for containers run by docker

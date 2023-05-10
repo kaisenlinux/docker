@@ -6,9 +6,11 @@ Description: disabled unreliable test.
  state_test.go:102: ExitCode -1, expected 2, err "context deadline exceeded"
 ~~~~
 
---- a/engine/container/state_test.go
-+++ b/engine/container/state_test.go
-@@ -29,6 +29,7 @@
+Index: docker/engine/container/state_test.go
+===================================================================
+--- docker.orig/engine/container/state_test.go
++++ docker/engine/container/state_test.go
+@@ -29,6 +29,7 @@ func TestIsValidHealthString(t *testing.
  }
  
  func TestStateRunStop(t *testing.T) {

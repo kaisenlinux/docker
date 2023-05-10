@@ -3,7 +3,7 @@
 ARG CROSS="false"
 ARG SYSTEMD="false"
 # IMPORTANT: When updating this please note that stdlib archive/tar pkg is vendored
-ARG GO_VERSION=1.18.10
+ARG GO_VERSION=1.19.7
 ARG DEBIAN_FRONTEND=noninteractive
 ARG VPNKIT_VERSION=0.5.0
 ARG DOCKER_BUILDTAGS="apparmor seccomp"
@@ -267,6 +267,9 @@ RUN ln -sfv /go/src/github.com/docker/docker/.bashrc ~/.bashrc
 RUN echo "source /usr/share/bash-completion/bash_completion" >> /etc/bash.bashrc
 RUN ln -s /usr/local/completion/bash/docker /etc/bash_completion.d/docker
 RUN ldconfig
+# Set dev environment as safe git directory to prevent "dubious ownership" errors
+# when bind-mounting the source into the dev-container. See https://github.com/moby/moby/pull/44930
+RUN git config --global --add safe.directory $GOPATH/src/github.com/docker/docker
 # This should only install packages that are specifically needed for the dev environment and nothing else
 # Do you really need to add another package here? Can it be done in a different build stage?
 RUN --mount=type=cache,sharing=locked,id=moby-dev-aptlib,target=/var/lib/apt \

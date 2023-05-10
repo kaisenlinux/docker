@@ -4,8 +4,10 @@ Origin: upstream, cherry-picked parts of https://github.com/moby/moby/pull/42373
  and https://github.com/moby/moby/pull/42622
 Bug-Debian: https://bugs.debian.org/989490
 
---- docker.io-20.10.11+dfsg1.orig/engine/contrib/init/systemd/docker.service
-+++ docker.io-20.10.11+dfsg1/engine/contrib/init/systemd/docker.service
+Index: docker/engine/contrib/init/systemd/docker.service
+===================================================================
+--- docker.orig/engine/contrib/init/systemd/docker.service
++++ docker/engine/contrib/init/systemd/docker.service
 @@ -1,8 +1,8 @@
  [Unit]
  Description=Docker Application Container Engine

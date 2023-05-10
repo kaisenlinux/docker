@@ -1,8 +1,10 @@
 Origin: upstream, https://github.com/moby/moby/pull/43005
 
---- a/engine/profiles/seccomp/default.json
-+++ b/engine/profiles/seccomp/default.json
-@@ -678,11 +678,41 @@
+Index: docker/engine/profiles/seccomp/default.json
+===================================================================
+--- docker.orig/engine/profiles/seccomp/default.json
++++ docker/engine/profiles/seccomp/default.json
+@@ -686,11 +686,41 @@
  			"action": "SCMP_ACT_ERRNO",
  			"errnoRet": 38,
  			"args": [],
@@ -45,9 +47,11 @@ Origin: upstream, https://github.com/moby/moby/pull/43005
  				]
  			}
  		},
---- a/engine/profiles/seccomp/default_linux.go
-+++ b/engine/profiles/seccomp/default_linux.go
-@@ -40,9 +40,26 @@
+Index: docker/engine/profiles/seccomp/default_linux.go
+===================================================================
+--- docker.orig/engine/profiles/seccomp/default_linux.go
++++ docker/engine/profiles/seccomp/default_linux.go
+@@ -41,9 +41,26 @@ func arches() []Architecture {
  	}
  }
  
@@ -75,7 +79,7 @@ Origin: upstream, https://github.com/moby/moby/pull/43005
  	syscalls := []*Syscall{
  		{
  			Names: []string{
-@@ -596,6 +613,23 @@
+@@ -605,6 +622,23 @@ func DefaultProfile() *Seccomp {
  			Action:   specs.ActErrno,
  			ErrnoRet: &nosys,
  			Args:     []*specs.LinuxSeccompArg{},

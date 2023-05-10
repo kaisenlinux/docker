@@ -47,9 +47,11 @@ Buildd logs can be found at:
 	/<<PKGBUILDDIR>>/.gopath/src/github.com/docker/cli/cli/command/container/tty.go:103 +0xb1
 ~~~~
 
---- a/cli/cli/command/container/run_test.go
-+++ b/cli/cli/command/container/run_test.go
-@@ -15,6 +15,7 @@
+Index: docker/cli/cli/command/container/run_test.go
+===================================================================
+--- docker.orig/cli/cli/command/container/run_test.go
++++ docker/cli/cli/command/container/run_test.go
+@@ -15,6 +15,7 @@ import (
  )
  
  func TestRunLabel(t *testing.T) {

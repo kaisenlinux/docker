@@ -17,8 +17,10 @@ Please update this patch when upstream provides a fix.
 
 Signed-off-by: Arnaud Rebillout <arnaud.rebillout@collabora.com>
 
---- a/cli/cli/config/types/authconfig.go
-+++ b/cli/cli/config/types/authconfig.go
+Index: docker/cli/cli/config/types/authconfig.go
+===================================================================
+--- docker.orig/cli/cli/config/types/authconfig.go
++++ docker/cli/cli/config/types/authconfig.go
 @@ -1,22 +1,7 @@
  package types
  

@@ -3,8 +3,10 @@ Forwarded: not-needed
 Author: Dmitry Smirnov <onlyjob@debian.org>
 Description: fix generation of .pb.go files.
 
---- a/libnetwork/drivers/overlay/overlay.go
-+++ b/libnetwork/drivers/overlay/overlay.go
+Index: docker/libnetwork/drivers/overlay/overlay.go
+===================================================================
+--- docker.orig/libnetwork/drivers/overlay/overlay.go
++++ docker/libnetwork/drivers/overlay/overlay.go
 @@ -1,6 +1,6 @@
  package overlay
  
@@ -13,8 +15,10 @@ Description: fix generation of .pb.go files.
  
  import (
  	"context"
---- a/libnetwork/agent.go
-+++ b/libnetwork/agent.go
+Index: docker/libnetwork/agent.go
+===================================================================
+--- docker.orig/libnetwork/agent.go
++++ docker/libnetwork/agent.go
 @@ -1,6 +1,6 @@
  package libnetwork
  
@@ -23,8 +27,10 @@ Description: fix generation of .pb.go files.
  
  import (
  	"encoding/json"
---- a/libnetwork/networkdb/networkdb.go
-+++ b/libnetwork/networkdb/networkdb.go
+Index: docker/libnetwork/networkdb/networkdb.go
+===================================================================
+--- docker.orig/libnetwork/networkdb/networkdb.go
++++ docker/libnetwork/networkdb/networkdb.go
 @@ -1,6 +1,6 @@
  package networkdb
  

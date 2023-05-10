@@ -6,9 +6,11 @@ Origin: https://github.com/docker/docker/pull/21491
 
 Signed-off-by: Pierre Carrier <pierre@meteor.com>
 
---- a/engine/contrib/init/systemd/docker.service
-+++ b/engine/contrib/init/systemd/docker.service
-@@ -19,7 +19,7 @@
+Index: docker/engine/contrib/init/systemd/docker.service
+===================================================================
+--- docker.orig/engine/contrib/init/systemd/docker.service
++++ docker/engine/contrib/init/systemd/docker.service
+@@ -19,7 +19,7 @@ LimitNPROC=infinity
  LimitCORE=infinity
  # Uncomment TasksMax if your systemd version supports it.
  # Only systemd 226 and above support this version.

@@ -1,3 +1,21 @@
+docker.io (20.10.24+kaisen1-1) kaisen-packages; urgency=medium
+
+  * Import the new upstream release
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Wed, 10 May 2023 10:22:33 +0100
+
+docker.io (20.10.24+dfsg1-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream release [20.10.24]
+    + CVE-2023-28840: Encrypted overlay network may be unauthenticated
+    + CVE-2023-28841: Encrypted overlay network traffic may be unencrypted
+    + CVE-2023-28842: Encrypted overlay network with a single endpoint is
+      unauthenticated
+  * Bump golang-github-containerd-fifo-dev to 1.1.0. Fix potential panic.
+
+ -- Shengjing Zhu <zhsj@debian.org>  Wed, 05 Apr 2023 23:19:59 +0800
+
 docker.io (20.10.23+kaisen1-1) kaisen-packages; urgency=medium
 
   * Import the new upstream release

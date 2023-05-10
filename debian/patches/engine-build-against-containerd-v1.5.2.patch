@@ -10,9 +10,11 @@ Origin: upstream, https://github.com/moby/moby/commit/7c1c1235
  plugin/backend_linux.go | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/engine/plugin/backend_linux.go
-+++ b/engine/plugin/backend_linux.go
-@@ -421,7 +421,7 @@
+Index: docker/engine/plugin/backend_linux.go
+===================================================================
+--- docker.orig/engine/plugin/backend_linux.go
++++ docker/engine/plugin/backend_linux.go
+@@ -420,7 +420,7 @@ func (pm *Manager) Push(ctx context.Cont
  
  	// Make sure we can authenticate the request since the auth scope for plugin repos is different than a normal repo.
  	ctx = docker.WithScope(ctx, scope(ref, true))
@@ -21,7 +23,7 @@ Origin: upstream, https://github.com/moby/moby/commit/7c1c1235
  		return images.Handlers(progressHandler, h)
  	}); err != nil {
  		// Try fallback to http.
-@@ -433,7 +433,7 @@
+@@ -432,7 +432,7 @@ func (pm *Manager) Push(ctx context.Cont
  			pusher, _ := resolver.Pusher(ctx, ref.String())
  			if pusher != nil {
  				logrus.WithField("ref", ref).Debug("Re-attmpting push with http-fallback")
