@@ -1,14 +1,15 @@
 package cache // import "github.com/docker/docker/daemon/logger/loggerutils/cache"
 
 import (
+	"context"
 	"strconv"
 
+	"github.com/containerd/log"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/daemon/logger"
 	"github.com/docker/docker/daemon/logger/local"
 	units "github.com/docker/go-units"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -36,7 +37,7 @@ func WithLocalCache(l logger.Logger, info logger.Info) (logger.Logger, error) {
 		return nil, errors.Wrap(err, "error initializing local log cache driver")
 	}
 
-	if info.Config["mode"] == container.LogModeUnset || container.LogMode(info.Config["mode"]) == container.LogModeNonBlock {
+	if container.LogMode(info.Config["mode"]) == container.LogModeUnset || container.LogMode(info.Config["mode"]) == container.LogModeNonBlock {
 		var size int64 = -1
 		if s, exists := info.Config["max-buffer-size"]; exists {
 			size, err = units.RAMInBytes(s)
@@ -91,7 +92,7 @@ func (l *loggerWithCache) ReadLogs(config logger.ReadConfig) *logger.LogWatcher 
 func (l *loggerWithCache) Close() error {
 	err := l.l.Close()
 	if err := l.cache.Close(); err != nil {
-		logrus.WithError(err).Warn("error while shutting cache logger")
+		log.G(context.TODO()).WithError(err).Warn("error while shutting cache logger")
 	}
 	return err
 }

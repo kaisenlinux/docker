@@ -6,10 +6,11 @@ import (
 	"net"
 	"os"
 	"path/filepath"
-	"runtime"
 	"sync"
 	"time"
 
+	"github.com/containerd/log"
+	"github.com/docker/docker/api/types/events"
 	"github.com/docker/docker/errdefs"
 	"github.com/docker/docker/volume"
 	"github.com/docker/docker/volume/drivers"
@@ -17,13 +18,14 @@ import (
 	"github.com/docker/docker/volume/service/opts"
 	"github.com/moby/locker"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	bolt "go.etcd.io/bbolt"
 )
 
 const (
 	volumeDataDir = "volumes"
 )
+
+var _ volume.LiveRestorer = (*volumeWrapper)(nil)
 
 type volumeWrapper struct {
 	volume.Volume
@@ -68,8 +70,18 @@ func (v volumeWrapper) CachedPath() string {
 	return v.Volume.Path()
 }
 
+func (v volumeWrapper) LiveRestoreVolume(ctx context.Context, ref string) error {
+	if vv, ok := v.Volume.(volume.LiveRestorer); ok {
+		return vv.LiveRestoreVolume(ctx, ref)
+	}
+	return nil
+}
+
+// StoreOpt sets options for a VolumeStore
+type StoreOpt func(store *VolumeStore) error
+
 // NewStore creates a new volume store at the given path
-func NewStore(rootPath string, drivers *drivers.Store) (*VolumeStore, error) {
+func NewStore(rootPath string, drivers *drivers.Store, opts ...StoreOpt) (*VolumeStore, error) {
 	vs := &VolumeStore{
 		locks:   &locker.Locker{},
 		names:   make(map[string]volume.Volume),
@@ -79,17 +91,24 @@ func NewStore(rootPath string, drivers *drivers.Store) (*VolumeStore, error) {
 		drivers: drivers,
 	}
 
+	for _, o := range opts {
+		if err := o(vs); err != nil {
+			return nil, err
+		}
+	}
+
 	if rootPath != "" {
 		// initialize metadata store
 		volPath := filepath.Join(rootPath, volumeDataDir)
-		if err := os.MkdirAll(volPath, 0750); err != nil {
+		if err := os.MkdirAll(volPath, 0o750); err != nil {
 			return nil, err
 		}
 
 		var err error
-		vs.db, err = bolt.Open(filepath.Join(volPath, "metadata.db"), 0600, &bolt.Options{Timeout: 1 * time.Second})
+		dbPath := filepath.Join(volPath, "metadata.db")
+		vs.db, err = bolt.Open(dbPath, 0o600, &bolt.Options{Timeout: 1 * time.Second})
 		if err != nil {
-			return nil, errors.Wrap(err, "error while opening volume store metadata database")
+			return nil, errors.Wrapf(err, "error while opening volume store metadata database (%s)", dbPath)
 		}
 
 		// initialize volumes bucket
@@ -106,6 +125,14 @@ func NewStore(rootPath string, drivers *drivers.Store) (*VolumeStore, error) {
 	vs.restore()
 
 	return vs, nil
+}
+
+// WithEventLogger configures the VolumeStore with the given VolumeEventLogger
+func WithEventLogger(logger VolumeEventLogger) StoreOpt {
+	return func(store *VolumeStore) error {
+		store.eventLogger = logger
+		return nil
+	}
 }
 
 func (s *VolumeStore) getNamed(name string) (volume.Volume, bool) {
@@ -168,11 +195,11 @@ func (s *VolumeStore) purge(ctx context.Context, name string) error {
 	if exists {
 		driverName := v.DriverName()
 		if _, err := s.drivers.ReleaseDriver(driverName); err != nil {
-			logrus.WithError(err).WithField("driver", driverName).Error("Error releasing reference to volume driver")
+			log.G(ctx).WithError(err).WithField("driver", driverName).Error("Error releasing reference to volume driver")
 		}
 	}
 	if err := s.removeMeta(name); err != nil {
-		logrus.Errorf("Error removing volume metadata for volume %q: %v", name, err)
+		log.G(ctx).Errorf("Error removing volume metadata for volume %q: %v", name, err)
 	}
 	delete(s.names, name)
 	delete(s.refs, name)
@@ -198,7 +225,9 @@ type VolumeStore struct {
 	labels map[string]map[string]string
 	// options stores volume options for each volume
 	options map[string]map[string]string
-	db      *bolt.DB
+
+	db          *bolt.DB
+	eventLogger VolumeEventLogger
 }
 
 func filterByDriver(names []string) filterFunc {
@@ -318,7 +347,7 @@ func unique(ls *[]volume.Volume) {
 // If a driver returns a volume that has name which conflicts with another volume from a different driver,
 // the first volume is chosen and the conflicting volume is dropped.
 func (s *VolumeStore) Find(ctx context.Context, by By) (vols []volume.Volume, warnings []string, err error) {
-	logrus.WithField("ByType", fmt.Sprintf("%T", by)).WithField("ByValue", fmt.Sprintf("%+v", by)).Debug("VolumeStore.Find")
+	log.G(ctx).WithField("ByType", fmt.Sprintf("%T", by)).WithField("ByValue", fmt.Sprintf("%+v", by)).Debug("VolumeStore.Find")
 	switch f := by.(type) {
 	case nil, orCombinator, andCombinator, byDriver, ByReferenced, CustomFilter:
 		warnings, err = s.filter(ctx, &vols, by)
@@ -342,7 +371,7 @@ func (s *VolumeStore) Find(ctx context.Context, by By) (vols []volume.Volume, wa
 		// Note: it's not safe to populate the cache here because the volume may have been
 		// deleted before we acquire a lock on its name
 		if exists && storedV.DriverName() != v.DriverName() {
-			logrus.Warnf("Volume name %s already exists for driver %s, not including volume returned by %s", v.Name(), storedV.DriverName(), v.DriverName())
+			log.G(ctx).Warnf("Volume name %s already exists for driver %s, not including volume returned by %s", v.Name(), storedV.DriverName(), v.DriverName())
 			s.locks.Unlock(v.Name())
 			continue
 		}
@@ -464,7 +493,7 @@ func (s *VolumeStore) Create(ctx context.Context, name, driverName string, creat
 	default:
 	}
 
-	v, err := s.create(ctx, name, driverName, cfg.Options, cfg.Labels)
+	v, created, err := s.create(ctx, name, driverName, cfg.Options, cfg.Labels)
 	if err != nil {
 		if _, ok := err.(*OpErr); ok {
 			return nil, err
@@ -472,6 +501,9 @@ func (s *VolumeStore) Create(ctx context.Context, name, driverName string, creat
 		return nil, &OpErr{Err: err, Name: name, Op: "create"}
 	}
 
+	if created && s.eventLogger != nil {
+		s.eventLogger.LogVolumeEvent(v.Name(), events.ActionCreate, map[string]string{"driver": v.DriverName()})
+	}
 	s.setNamed(v, cfg.Reference)
 	return v, nil
 }
@@ -552,27 +584,26 @@ func volumeExists(ctx context.Context, store *drivers.Store, v volume.Volume) (b
 // for the given volume name, an error is returned after checking if the reference is stale.
 // If the reference is stale, it will be purged and this create can continue.
 // It is expected that callers of this function hold any necessary locks.
-func (s *VolumeStore) create(ctx context.Context, name, driverName string, opts, labels map[string]string) (volume.Volume, error) {
+func (s *VolumeStore) create(ctx context.Context, name, driverName string, opts, labels map[string]string) (volume.Volume, bool, error) {
 	// Validate the name in a platform-specific manner
 
 	// volume name validation is specific to the host os and not on container image
-	// windows/lcow should have an equivalent volumename validation logic so we create a parser for current host OS
-	parser := volumemounts.NewParser(runtime.GOOS)
+	parser := volumemounts.NewParser()
 	err := parser.ValidateVolumeName(name)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	v, err := s.checkConflict(ctx, name, driverName)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	if v != nil {
 		// there is an existing volume, if we already have this stored locally, return it.
 		// TODO: there could be some inconsistent details such as labels here
 		if vv, _ := s.getNamed(v.Name()); vv != nil {
-			return vv, nil
+			return vv, false, nil
 		}
 	}
 
@@ -580,7 +611,7 @@ func (s *VolumeStore) create(ctx context.Context, name, driverName string, opts,
 	if driverName == "" {
 		v, _ = s.getVolume(ctx, name, "")
 		if v != nil {
-			return v, nil
+			return v, false, nil
 		}
 	}
 
@@ -589,17 +620,17 @@ func (s *VolumeStore) create(ctx context.Context, name, driverName string, opts,
 	}
 	vd, err := s.drivers.CreateDriver(driverName)
 	if err != nil {
-		return nil, &OpErr{Op: "create", Name: name, Err: err}
+		return nil, false, &OpErr{Op: "create", Name: name, Err: err}
 	}
 
-	logrus.Debugf("Registering new volume reference: driver %q, name %q", vd.Name(), name)
+	log.G(ctx).Debugf("Registering new volume reference: driver %q, name %q", vd.Name(), name)
 	if v, _ = vd.Get(name); v == nil {
 		v, err = vd.Create(name, opts)
 		if err != nil {
 			if _, err := s.drivers.ReleaseDriver(driverName); err != nil {
-				logrus.WithError(err).WithField("driver", driverName).Error("Error releasing reference to volume driver")
+				log.G(ctx).WithError(err).WithField("driver", driverName).Error("Error releasing reference to volume driver")
 			}
-			return nil, err
+			return nil, false, err
 		}
 	}
 
@@ -617,9 +648,9 @@ func (s *VolumeStore) create(ctx context.Context, name, driverName string, opts,
 	}
 
 	if err := s.setMeta(name, metadata); err != nil {
-		return nil, err
+		return nil, true, err
 	}
-	return volumeWrapper{v, labels, vd.Scope(), opts}, nil
+	return volumeWrapper{v, labels, vd.Scope(), opts}, true, nil
 }
 
 // Get looks if a volume with the given name exists and returns it if so
@@ -701,7 +732,7 @@ func (s *VolumeStore) getVolume(ctx context.Context, name, driverName string) (v
 		return volumeWrapper{vol, meta.Labels, scope, meta.Options}, nil
 	}
 
-	logrus.Debugf("Probing all drivers for volume with name: %s", name)
+	log.G(ctx).Debugf("Probing all drivers for volume with name: %s", name)
 	drivers, err := s.drivers.GetAllDrivers()
 	if err != nil {
 		return nil, err
@@ -753,7 +784,7 @@ func lookupVolume(ctx context.Context, store *drivers.Store, driverName, volumeN
 
 		// At this point, the error could be anything from the driver, such as "no such volume"
 		// Let's not check an error here, and instead check if the driver returned a volume
-		logrus.WithError(err).WithField("driver", driverName).WithField("volume", volumeName).Debug("Error while looking up volume")
+		log.G(ctx).WithError(err).WithField("driver", driverName).WithField("volume", volumeName).Debug("Error while looking up volume")
 	}
 	return v, nil
 }
@@ -789,7 +820,7 @@ func (s *VolumeStore) Remove(ctx context.Context, v volume.Volume, rmOpts ...opt
 		return &OpErr{Err: err, Name: v.DriverName(), Op: "remove"}
 	}
 
-	logrus.Debugf("Removing volume reference: driver %s, name %s", v.DriverName(), name)
+	log.G(ctx).Debugf("Removing volume reference: driver %s, name %s", v.DriverName(), name)
 	vol := unwrapVolume(v)
 
 	err = vd.Remove(vol)
@@ -801,6 +832,9 @@ func (s *VolumeStore) Remove(ctx context.Context, v volume.Volume, rmOpts ...opt
 		if e := s.purge(ctx, name); e != nil && err == nil {
 			err = e
 		}
+	}
+	if err == nil && s.eventLogger != nil {
+		s.eventLogger.LogVolumeEvent(v.Name(), events.ActionDestroy, map[string]string{"driver": v.DriverName()})
 	}
 	return err
 }

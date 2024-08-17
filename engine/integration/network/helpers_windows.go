@@ -3,7 +3,6 @@ package network
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -11,9 +10,9 @@ import (
 )
 
 // IsNetworkAvailable provides a comparison to check if a docker network is available
-func IsNetworkAvailable(c client.NetworkAPIClient, name string) cmp.Comparison {
+func IsNetworkAvailable(ctx context.Context, c client.NetworkAPIClient, name string) cmp.Comparison {
 	return func() cmp.Result {
-		networks, err := c.NetworkList(context.Background(), types.NetworkListOptions{})
+		networks, err := c.NetworkList(ctx, types.NetworkListOptions{})
 		if err != nil {
 			return cmp.ResultFromError(err)
 		}
@@ -27,9 +26,9 @@ func IsNetworkAvailable(c client.NetworkAPIClient, name string) cmp.Comparison {
 }
 
 // IsNetworkNotAvailable provides a comparison to check if a docker network is not available
-func IsNetworkNotAvailable(c client.NetworkAPIClient, name string) cmp.Comparison {
+func IsNetworkNotAvailable(ctx context.Context, c client.NetworkAPIClient, name string) cmp.Comparison {
 	return func() cmp.Result {
-		networks, err := c.NetworkList(context.Background(), types.NetworkListOptions{})
+		networks, err := c.NetworkList(ctx, types.NetworkListOptions{})
 		if err != nil {
 			return cmp.ResultFromError(err)
 		}
@@ -40,10 +39,4 @@ func IsNetworkNotAvailable(c client.NetworkAPIClient, name string) cmp.Compariso
 		}
 		return cmp.ResultSuccess
 	}
-}
-
-// IsUserNamespace returns whether the user namespace remapping is enabled
-func IsUserNamespace() bool {
-	root := os.Getenv("DOCKER_REMAP_ROOT")
-	return root != ""
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/docker/cli/cli"
 	"github.com/docker/cli/cli/command"
+	"github.com/docker/cli/cli/command/completion"
 	"github.com/docker/cli/opts"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/network"
@@ -50,8 +51,9 @@ func newCreateCommand(dockerCli command.Cli) *cobra.Command {
 		Args:  cli.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options.name = args[0]
-			return runCreate(dockerCli, options)
+			return runCreate(cmd.Context(), dockerCli, options)
 		},
+		ValidArgsFunction: completion.NoComplete,
 	}
 
 	flags := cmd.Flags()
@@ -82,7 +84,7 @@ func newCreateCommand(dockerCli command.Cli) *cobra.Command {
 	return cmd
 }
 
-func runCreate(dockerCli command.Cli, options createOptions) error {
+func runCreate(ctx context.Context, dockerCli command.Cli, options createOptions) error {
 	client := dockerCli.Client()
 
 	ipamCfg, err := consolidateIpam(options.ipamSubnet, options.ipamIPRange, options.ipamGateway, options.ipamAux.GetAll())
@@ -90,8 +92,13 @@ func runCreate(dockerCli command.Cli, options createOptions) error {
 		return err
 	}
 
-	// Construct network create request body
-	nc := types.NetworkCreate{
+	var configFrom *network.ConfigReference
+	if options.configFrom != "" {
+		configFrom = &network.ConfigReference{
+			Network: options.configFrom,
+		}
+	}
+	resp, err := client.NetworkCreate(ctx, options.name, types.NetworkCreate{
 		Driver:  options.driver,
 		Options: options.driverOpts.GetAll(),
 		IPAM: &network.IPAM{
@@ -99,23 +106,15 @@ func runCreate(dockerCli command.Cli, options createOptions) error {
 			Config:  ipamCfg,
 			Options: options.ipamOpt.GetAll(),
 		},
-		CheckDuplicate: true,
-		Internal:       options.internal,
-		EnableIPv6:     options.ipv6,
-		Attachable:     options.attachable,
-		Ingress:        options.ingress,
-		Scope:          options.scope,
-		ConfigOnly:     options.configOnly,
-		Labels:         opts.ConvertKVStringsToMap(options.labels.GetAll()),
-	}
-
-	if from := options.configFrom; from != "" {
-		nc.ConfigFrom = &network.ConfigReference{
-			Network: from,
-		}
-	}
-
-	resp, err := client.NetworkCreate(context.Background(), options.name, nc)
+		Internal:   options.internal,
+		EnableIPv6: options.ipv6,
+		Attachable: options.attachable,
+		Ingress:    options.ingress,
+		Scope:      options.scope,
+		ConfigOnly: options.configOnly,
+		ConfigFrom: configFrom,
+		Labels:     opts.ConvertKVStringsToMap(options.labels.GetAll()),
+	})
 	if err != nil {
 		return err
 	}
@@ -227,9 +226,7 @@ func consolidateIpam(subnets, ranges, gateways []string, auxaddrs map[string]str
 }
 
 func subnetMatches(subnet, data string) (bool, error) {
-	var (
-		ip net.IP
-	)
+	var ip net.IP
 
 	_, s, err := net.ParseCIDR(subnet)
 	if err != nil {

@@ -1,90 +1,87 @@
----
-title: "service create"
-description: "The service create command description and usage"
-keywords: "service, create"
----
-
 # service create
 
-```Markdown
-Usage:  docker service create [OPTIONS] IMAGE [COMMAND] [ARG...]
-
+<!---MARKER_GEN_START-->
 Create a new service
 
-Options:
-      --cap-add list                       Add Linux capabilities
-      --cap-drop list                      Drop Linux capabilities
-      --config config                      Specify configurations to expose to the service
-      --constraint list                    Placement constraints
-      --container-label list               Container labels
-      --credential-spec credential-spec    Credential spec for managed service account (Windows only)
-  -d, --detach                             Exit immediately instead of waiting for the service to converge (default true)
-      --dns list                           Set custom DNS servers
-      --dns-option list                    Set DNS options
-      --dns-search list                    Set custom DNS search domains
-      --endpoint-mode string               Endpoint mode (vip or dnsrr) (default "vip")
-      --entrypoint command                 Overwrite the default ENTRYPOINT of the image
-  -e, --env list                           Set environment variables
-      --env-file list                      Read in a file of environment variables
-      --generic-resource list              User defined resources request
-      --group list                         Set one or more supplementary user groups for the container
-      --health-cmd string                  Command to run to check health
-      --health-interval duration           Time between running the check (ms|s|m|h)
-      --health-retries int                 Consecutive failures needed to report unhealthy
-      --health-start-period duration       Start period for the container to initialize before counting retries towards unstable (ms|s|m|h)
-      --health-timeout duration            Maximum time to allow one check to run (ms|s|m|h)
-      --help                               Print usage
-      --host list                          Set one or more custom host-to-IP mappings (host:ip)
-      --hostname string                    Container hostname
-      --init bool                          Use an init inside each service container to forward signals and reap processes
-      --isolation string                   Service container isolation mode
-  -l, --label list                         Service labels
-      --limit-cpu decimal                  Limit CPUs
-      --limit-memory bytes                 Limit Memory
-      --limit-pids int                     Limit maximum number of processes (default 0 = unlimited)
-      --log-driver string                  Logging driver for service
-      --log-opt list                       Logging driver options
-      --max-concurrent                     Number of job tasks to run at once (default equal to --replicas)
-      --mode string                        Service mode (replicated, global, replicated-job, or global-job) (default "replicated")
-      --mount mount                        Attach a filesystem mount to the service
-      --name string                        Service name
-      --network network                    Network attachments
-      --no-healthcheck                     Disable any container-specified HEALTHCHECK
-      --no-resolve-image                   Do not query the registry to resolve image digest and supported platforms
-      --placement-pref pref                Add a placement preference
-  -p, --publish port                       Publish a port as a node port
-  -q, --quiet                              Suppress progress output
-      --read-only                          Mount the container's root filesystem as read only
-      --replicas uint                      Number of tasks
-      --replicas-max-per-node uint         Maximum number of tasks per node (default 0 = unlimited)
-      --reserve-cpu decimal                Reserve CPUs
-      --reserve-memory bytes               Reserve Memory
-      --restart-condition string           Restart when condition is met ("none"|"on-failure"|"any") (default "any")
-      --restart-delay duration             Delay between restart attempts (ns|us|ms|s|m|h) (default 5s)
-      --restart-max-attempts uint          Maximum number of restarts before giving up
-      --restart-window duration            Window used to evaluate the restart policy (ns|us|ms|s|m|h)
-      --rollback-delay duration            Delay between task rollbacks (ns|us|ms|s|m|h) (default 0s)
-      --rollback-failure-action string     Action on rollback failure ("pause"|"continue") (default "pause")
-      --rollback-max-failure-ratio float   Failure rate to tolerate during a rollback (default 0)
-      --rollback-monitor duration          Duration after each task rollback to monitor for failure (ns|us|ms|s|m|h) (default 5s)
-      --rollback-order string              Rollback order ("start-first"|"stop-first") (default "stop-first")
-      --rollback-parallelism uint          Maximum number of tasks rolled back simultaneously (0 to roll back all at once) (default 1)
-      --secret secret                      Specify secrets to expose to the service
-      --stop-grace-period duration         Time to wait before force killing a container (ns|us|ms|s|m|h) (default 10s)
-      --stop-signal string                 Signal to stop the container
-      --sysctl list                        Sysctl options
-  -t, --tty                                Allocate a pseudo-TTY
-      --ulimit ulimit                      Ulimit options (default [])
-      --update-delay duration              Delay between updates (ns|us|ms|s|m|h) (default 0s)
-      --update-failure-action string       Action on update failure ("pause"|"continue"|"rollback") (default "pause")
-      --update-max-failure-ratio float     Failure rate to tolerate during an update (default 0)
-      --update-monitor duration            Duration after each task update to monitor for failure (ns|us|ms|s|m|h) (default 5s)
-      --update-order string                Update order ("start-first"|"stop-first") (default "stop-first")
-      --update-parallelism uint            Maximum number of tasks updated simultaneously (0 to update all at once) (default 1)
-  -u, --user string                        Username or UID (format: <name|uid>[:<group|gid>])
-      --with-registry-auth                 Send registry authentication details to swarm agents
-  -w, --workdir string                     Working directory inside the container
-```
+### Options
+
+| Name                                                | Type              | Default      | Description                                                                                         |
+|:----------------------------------------------------|:------------------|:-------------|:----------------------------------------------------------------------------------------------------|
+| `--cap-add`                                         | `list`            |              | Add Linux capabilities                                                                              |
+| `--cap-drop`                                        | `list`            |              | Drop Linux capabilities                                                                             |
+| [`--config`](#config)                               | `config`          |              | Specify configurations to expose to the service                                                     |
+| [`--constraint`](#constraint)                       | `list`            |              | Placement constraints                                                                               |
+| `--container-label`                                 | `list`            |              | Container labels                                                                                    |
+| `--credential-spec`                                 | `credential-spec` |              | Credential spec for managed service account (Windows only)                                          |
+| `-d`, `--detach`                                    |                   |              | Exit immediately instead of waiting for the service to converge                                     |
+| `--dns`                                             | `list`            |              | Set custom DNS servers                                                                              |
+| `--dns-option`                                      | `list`            |              | Set DNS options                                                                                     |
+| `--dns-search`                                      | `list`            |              | Set custom DNS search domains                                                                       |
+| `--endpoint-mode`                                   | `string`          | `vip`        | Endpoint mode (vip or dnsrr)                                                                        |
+| `--entrypoint`                                      | `command`         |              | Overwrite the default ENTRYPOINT of the image                                                       |
+| [`-e`](#env), [`--env`](#env)                       | `list`            |              | Set environment variables                                                                           |
+| `--env-file`                                        | `list`            |              | Read in a file of environment variables                                                             |
+| `--generic-resource`                                | `list`            |              | User defined resources                                                                              |
+| `--group`                                           | `list`            |              | Set one or more supplementary user groups for the container                                         |
+| `--health-cmd`                                      | `string`          |              | Command to run to check health                                                                      |
+| `--health-interval`                                 | `duration`        |              | Time between running the check (ms\|s\|m\|h)                                                        |
+| `--health-retries`                                  | `int`             | `0`          | Consecutive failures needed to report unhealthy                                                     |
+| `--health-start-interval`                           | `duration`        |              | Time between running the check during the start period (ms\|s\|m\|h)                                |
+| `--health-start-period`                             | `duration`        |              | Start period for the container to initialize before counting retries towards unstable (ms\|s\|m\|h) |
+| `--health-timeout`                                  | `duration`        |              | Maximum time to allow one check to run (ms\|s\|m\|h)                                                |
+| `--host`                                            | `list`            |              | Set one or more custom host-to-IP mappings (host:ip)                                                |
+| [`--hostname`](#hostname)                           | `string`          |              | Container hostname                                                                                  |
+| `--init`                                            |                   |              | Use an init inside each service container to forward signals and reap processes                     |
+| [`--isolation`](#isolation)                         | `string`          |              | Service container isolation mode                                                                    |
+| [`-l`](#label), [`--label`](#label)                 | `list`            |              | Service labels                                                                                      |
+| `--limit-cpu`                                       | `decimal`         |              | Limit CPUs                                                                                          |
+| `--limit-memory`                                    | `bytes`           | `0`          | Limit Memory                                                                                        |
+| `--limit-pids`                                      | `int64`           | `0`          | Limit maximum number of processes (default 0 = unlimited)                                           |
+| `--log-driver`                                      | `string`          |              | Logging driver for service                                                                          |
+| `--log-opt`                                         | `list`            |              | Logging driver options                                                                              |
+| `--max-concurrent`                                  | `uint`            |              | Number of job tasks to run concurrently (default equal to --replicas)                               |
+| `--mode`                                            | `string`          | `replicated` | Service mode (`replicated`, `global`, `replicated-job`, `global-job`)                               |
+| [`--mount`](#mount)                                 | `mount`           |              | Attach a filesystem mount to the service                                                            |
+| `--name`                                            | `string`          |              | Service name                                                                                        |
+| [`--network`](#network)                             | `network`         |              | Network attachments                                                                                 |
+| `--no-healthcheck`                                  |                   |              | Disable any container-specified HEALTHCHECK                                                         |
+| `--no-resolve-image`                                |                   |              | Do not query the registry to resolve image digest and supported platforms                           |
+| [`--placement-pref`](#placement-pref)               | `pref`            |              | Add a placement preference                                                                          |
+| [`-p`](#publish), [`--publish`](#publish)           | `port`            |              | Publish a port as a node port                                                                       |
+| `-q`, `--quiet`                                     |                   |              | Suppress progress output                                                                            |
+| `--read-only`                                       |                   |              | Mount the container's root filesystem as read only                                                  |
+| [`--replicas`](#replicas)                           | `uint`            |              | Number of tasks                                                                                     |
+| [`--replicas-max-per-node`](#replicas-max-per-node) | `uint64`          | `0`          | Maximum number of tasks per node (default 0 = unlimited)                                            |
+| `--reserve-cpu`                                     | `decimal`         |              | Reserve CPUs                                                                                        |
+| [`--reserve-memory`](#reserve-memory)               | `bytes`           | `0`          | Reserve Memory                                                                                      |
+| `--restart-condition`                               | `string`          |              | Restart when condition is met (`none`, `on-failure`, `any`) (default `any`)                         |
+| `--restart-delay`                                   | `duration`        |              | Delay between restart attempts (ns\|us\|ms\|s\|m\|h) (default 5s)                                   |
+| `--restart-max-attempts`                            | `uint`            |              | Maximum number of restarts before giving up                                                         |
+| `--restart-window`                                  | `duration`        |              | Window used to evaluate the restart policy (ns\|us\|ms\|s\|m\|h)                                    |
+| `--rollback-delay`                                  | `duration`        | `0s`         | Delay between task rollbacks (ns\|us\|ms\|s\|m\|h) (default 0s)                                     |
+| `--rollback-failure-action`                         | `string`          |              | Action on rollback failure (`pause`, `continue`) (default `pause`)                                  |
+| `--rollback-max-failure-ratio`                      | `float`           | `0`          | Failure rate to tolerate during a rollback (default 0)                                              |
+| `--rollback-monitor`                                | `duration`        | `0s`         | Duration after each task rollback to monitor for failure (ns\|us\|ms\|s\|m\|h) (default 5s)         |
+| `--rollback-order`                                  | `string`          |              | Rollback order (`start-first`, `stop-first`) (default `stop-first`)                                 |
+| `--rollback-parallelism`                            | `uint64`          | `1`          | Maximum number of tasks rolled back simultaneously (0 to roll back all at once)                     |
+| [`--secret`](#secret)                               | `secret`          |              | Specify secrets to expose to the service                                                            |
+| `--stop-grace-period`                               | `duration`        |              | Time to wait before force killing a container (ns\|us\|ms\|s\|m\|h) (default 10s)                   |
+| `--stop-signal`                                     | `string`          |              | Signal to stop the container                                                                        |
+| `--sysctl`                                          | `list`            |              | Sysctl options                                                                                      |
+| `-t`, `--tty`                                       |                   |              | Allocate a pseudo-TTY                                                                               |
+| `--ulimit`                                          | `ulimit`          |              | Ulimit options                                                                                      |
+| [`--update-delay`](#update-delay)                   | `duration`        | `0s`         | Delay between updates (ns\|us\|ms\|s\|m\|h) (default 0s)                                            |
+| `--update-failure-action`                           | `string`          |              | Action on update failure (`pause`, `continue`, `rollback`) (default `pause`)                        |
+| `--update-max-failure-ratio`                        | `float`           | `0`          | Failure rate to tolerate during an update (default 0)                                               |
+| `--update-monitor`                                  | `duration`        | `0s`         | Duration after each task update to monitor for failure (ns\|us\|ms\|s\|m\|h) (default 5s)           |
+| `--update-order`                                    | `string`          |              | Update order (`start-first`, `stop-first`) (default `stop-first`)                                   |
+| `--update-parallelism`                              | `uint64`          | `1`          | Maximum number of tasks updated simultaneously (0 to update all at once)                            |
+| `-u`, `--user`                                      | `string`          |              | Username or UID (format: <name\|uid>[:<group\|gid>])                                                |
+| [`--with-registry-auth`](#with-registry-auth)       |                   |              | Send registry authentication details to swarm agents                                                |
+| `-w`, `--workdir`                                   | `string`          |              | Working directory inside the container                                                              |
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
@@ -135,7 +132,7 @@ $ docker service  create \
 
 This passes the login token from your local client to the swarm nodes where the
 service is deployed, using the encrypted WAL logs. With this information, the
-nodes are able to log into the registry and pull the image.
+nodes are able to log in to the registry and pull the image.
 
 ### <a name="replicas"></a> Create a service with 5 replica tasks (--replicas)
 
@@ -150,7 +147,7 @@ $ docker service create --name redis --replicas=5 redis:3.0.6
 
 The above command sets the *desired* number of tasks for the service. Even
 though the command returns immediately, actual scaling of the service may take
-some time. The `REPLICAS` column shows both the *actual* and *desired* number
+some time. The `REPLICAS` column shows both the actual and desired number
 of replica tasks for the service.
 
 In the following example the desired state is  `5` replicas, but the current
@@ -303,8 +300,8 @@ metadata](https://docs.docker.com/config/labels-custom-metadata/).
 
 Docker supports three different kinds of mounts, which allow containers to read
 from or write to files or directories, either on the host operating system, or
-on memory filesystems. These types are _data volumes_ (often referred to simply
-as volumes), _bind mounts_, _tmpfs_, and _named pipes_.
+on memory filesystems. These types are data volumes (often referred to simply
+as volumes), bind mounts, tmpfs, and named pipes.
 
 A **bind mount** makes a file or directory on the host available to the
 container it is mounted within. A bind mount may be either read-only or
@@ -352,7 +349,7 @@ volumes in a service:
     <td>
       <p>The type of mount, can be either <tt>volume</tt>, <tt>bind</tt>, <tt>tmpfs</tt>, or <tt>npipe</tt>. Defaults to <tt>volume</tt> if no type is specified.</p>
       <ul>
-        <li><tt>volume</tt>: mounts a <a href="https://docs.docker.com/engine/reference/commandline/volume_create/">managed volume</a>
+        <li><tt>volume</tt>: mounts a <a href="https://docs.docker.com/reference/cli/docker/volume/create/">managed volume</a>
         into the container.</li> <li><tt>bind</tt>:
         bind-mounts a directory or file from the host into the container.</li>
         <li><tt>tmpfs</tt>: mount a tmpfs in the container</li>
@@ -397,7 +394,7 @@ volumes in a service:
     <td>
       <p>The Engine mounts binds and volumes <tt>read-write</tt> unless <tt>readonly</tt> option
       is given when mounting the bind or volume. Note that setting <tt>readonly</tt> for a
-      bind-mount does not make its submounts <tt>readonly</tt> on the current Linux implementation. See also <tt>bind-nonrecursive</tt>.</p>
+      bind-mount may not make its submounts <tt>readonly</tt> depending on the kernel version. See also <tt>bind-recursive</tt>.</p>
       <ul>
         <li><tt>true</tt> or <tt>1</tt> or no value: Mounts the bind or volume read-only.</li>
         <li><tt>false</tt> or <tt>0</tt>: Mounts the bind or volume read-write.</li>
@@ -406,7 +403,7 @@ volumes in a service:
   </tr>
 </table>
 
-#### Options for Bind Mounts
+#### Options for bind mounts
 
 The following options can only be used for bind mounts (`type=bind`):
 
@@ -435,17 +432,40 @@ The following options can only be used for bind mounts (`type=bind`):
     </td>
   </tr>
   <tr>
-    <td><b>bind-nonrecursive</b></td>
+    <td><b>bind-recursive</b></td>
     <td>
       By default, submounts are recursively bind-mounted as well. However, this behavior can be confusing when a
-      bind mount is configured with <tt>readonly</tt> option, because submounts are not mounted as read-only.
-      Set <tt>bind-nonrecursive</tt> to disable recursive bind-mount.<br />
+      bind mount is configured with <tt>readonly</tt> option, because submounts may not be mounted as read-only,
+      depending on the kernel version.
+      Set <tt>bind-recursive</tt> to control the behavior of the recursive bind-mount.<br />
+      <br />
+      A value is one of:<br />
+      <br />
+      <ul>
+        <li><<tt>enabled</tt>: Enables recursive bind-mount.
+        Read-only mounts are made recursively read-only if kernel is v5.12 or later.
+        Otherwise they are not made recursively read-only.</li>
+        <li><<tt>disabled</tt>: Disables recursive bind-mount.</li>
+        <li><<tt>writable</tt>: Enables recursive bind-mount.
+        Read-only mounts are not made recursively read-only.</li>
+        <li><<tt>readonly</tt>: Enables recursive bind-mount.
+        Read-only mounts are made recursively read-only if kernel is v5.12 or later.
+        Otherwise the Engine raises an error.</li>
+      </ul>
+      When the option is not specified, the default behavior correponds to setting <tt>enabled</tt>.
+    </td>
+  </tr>
+  <tr>
+    <td><b>bind-nonrecursive</b></td>
+    <td>
+      <tt>bind-nonrecursive</tt> is deprecated since Docker Engine v25.0.
+      Use <tt>bind-recursive</tt>instead.<br />
       <br />
       A value is optional:<br />
       <br />
       <ul>
-        <li><tt>true</tt> or <tt>1</tt>: Disables recursive bind-mount.</li>
-        <li><tt>false</tt> or <tt>0</tt>: Default if you do not provide a value. Enables recursive bind-mount.</li>
+        <li><tt>true</tt> or <tt>1</tt>:  Equivalent to <tt>bind-recursive=disabled</tt>.</li>
+        <li><tt>false</tt> or <tt>0</tt>: Equivalent to <tt>bind-recursive=enabled</tt>.</li>
       </ul>
     </td>
   </tr>
@@ -920,7 +940,7 @@ $ docker service create \
 The swarm extends my-network to each node running the service.
 
 Containers on the same network can access each other using
-[service discovery](https://docs.docker.com/network/overlay/#container-discovery).
+[service discovery](https://docs.docker.com/network/drivers/overlay/#container-discovery).
 
 Long form syntax of `--network` allows to specify list of aliases and driver options:
 `--network name=my-network,alias=web1,driver-opt=field1=value1`
@@ -1017,7 +1037,7 @@ registry value must be located in:
 ### Create services using templates
 
 You can use templates for some flags of `service create`, using the syntax
-provided by the Go's [text/template](https://golang.org/pkg/text/template/) package.
+provided by the Go's [text/template](https://pkg.go.dev/text/template) package.
 
 The supported flags are the following :
 

@@ -7,6 +7,7 @@ import (
 
 	"github.com/docker/cli/cli"
 	"github.com/docker/cli/cli/command"
+	"github.com/docker/cli/cli/command/completion"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -29,8 +30,9 @@ func newRemoveCommand(dockerCli command.Cli) *cobra.Command {
 		Args:    cli.RequiresMinArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts.volumes = args
-			return runRemove(dockerCli, &opts)
+			return runRemove(cmd.Context(), dockerCli, &opts)
 		},
+		ValidArgsFunction: completion.VolumeNames(dockerCli),
 	}
 
 	flags := cmd.Flags()
@@ -39,9 +41,8 @@ func newRemoveCommand(dockerCli command.Cli) *cobra.Command {
 	return cmd
 }
 
-func runRemove(dockerCli command.Cli, opts *removeOptions) error {
+func runRemove(ctx context.Context, dockerCli command.Cli, opts *removeOptions) error {
 	client := dockerCli.Client()
-	ctx := context.Background()
 
 	var errs []string
 

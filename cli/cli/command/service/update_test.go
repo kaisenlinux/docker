@@ -199,7 +199,7 @@ func TestUpdateDNSConfig(t *testing.T) {
 	// IPv6
 	flags.Set("dns-add", "2001:db8:abc8::1")
 	// Invalid dns record
-	assert.ErrorContains(t, flags.Set("dns-add", "x.y.z.w"), "x.y.z.w is not an ip address")
+	assert.Check(t, is.ErrorContains(flags.Set("dns-add", "x.y.z.w"), "IP address is not correctly formatted: x.y.z.w"))
 
 	// domains with duplicates
 	flags.Set("dns-search-add", "example.com")
@@ -504,19 +504,23 @@ type secretAPIClientMock struct {
 	listResult []swarm.Secret
 }
 
-func (s secretAPIClientMock) SecretList(ctx context.Context, options types.SecretListOptions) ([]swarm.Secret, error) {
+func (s secretAPIClientMock) SecretList(context.Context, types.SecretListOptions) ([]swarm.Secret, error) {
 	return s.listResult, nil
 }
-func (s secretAPIClientMock) SecretCreate(ctx context.Context, secret swarm.SecretSpec) (types.SecretCreateResponse, error) {
+
+func (s secretAPIClientMock) SecretCreate(context.Context, swarm.SecretSpec) (types.SecretCreateResponse, error) {
 	return types.SecretCreateResponse{}, nil
 }
-func (s secretAPIClientMock) SecretRemove(ctx context.Context, id string) error {
+
+func (s secretAPIClientMock) SecretRemove(context.Context, string) error {
 	return nil
 }
-func (s secretAPIClientMock) SecretInspectWithRaw(ctx context.Context, name string) (swarm.Secret, []byte, error) {
+
+func (s secretAPIClientMock) SecretInspectWithRaw(context.Context, string) (swarm.Secret, []byte, error) {
 	return swarm.Secret{}, []byte{}, nil
 }
-func (s secretAPIClientMock) SecretUpdate(ctx context.Context, id string, version swarm.Version, secret swarm.SecretSpec) error {
+
+func (s secretAPIClientMock) SecretUpdate(context.Context, string, swarm.Version, swarm.SecretSpec) error {
 	return nil
 }
 
@@ -550,7 +554,8 @@ func TestUpdateSecretUpdateInPlace(t *testing.T) {
 		},
 	}
 
-	updatedSecrets, err := getUpdatedSecrets(apiClient, flags, secrets)
+	ctx := context.Background()
+	updatedSecrets, err := getUpdatedSecrets(ctx, apiClient, flags, secrets)
 
 	assert.NilError(t, err)
 	assert.Assert(t, is.Len(updatedSecrets, 1))
@@ -1052,7 +1057,7 @@ func TestUpdateGetUpdatedConfigs(t *testing.T) {
 		},
 	}
 	// cannedConfigRefs is the same thing, but with config references instead
-	// instead of ID, however, it just maps an arbitrary string value. this is
+	// of ID, however, it just maps an arbitrary string value. this is
 	// so we could have multiple config refs using the same config
 	cannedConfigRefs := map[string]*swarm.ConfigReference{
 		"fooRef": {
@@ -1062,7 +1067,7 @@ func TestUpdateGetUpdatedConfigs(t *testing.T) {
 				Name: "foo",
 				UID:  "0",
 				GID:  "0",
-				Mode: 0444,
+				Mode: 0o444,
 			},
 		},
 		"barRef": {
@@ -1072,7 +1077,7 @@ func TestUpdateGetUpdatedConfigs(t *testing.T) {
 				Name: "bar",
 				UID:  "0",
 				GID:  "0",
-				Mode: 0444,
+				Mode: 0o444,
 			},
 		},
 		"bazRef": {
@@ -1082,7 +1087,7 @@ func TestUpdateGetUpdatedConfigs(t *testing.T) {
 				Name: "baz",
 				UID:  "0",
 				GID:  "0",
-				Mode: 0444,
+				Mode: 0o444,
 			},
 		},
 		"credRef": {
@@ -1227,7 +1232,8 @@ func TestUpdateGetUpdatedConfigs(t *testing.T) {
 				},
 			}
 
-			finalConfigs, err := getUpdatedConfigs(fakeClient, flags, containerSpec)
+			ctx := context.Background()
+			finalConfigs, err := getUpdatedConfigs(ctx, fakeClient, flags, containerSpec)
 			assert.NilError(t, err)
 
 			// ensure that the finalConfigs consists of all of the expected
@@ -1279,7 +1285,7 @@ func TestUpdateCredSpec(t *testing.T) {
 			spec:     &swarm.ContainerSpec{},
 			expected: nil,
 		}, {
-			name:    "add a config credenital spec",
+			name:    "add a config credential spec",
 			flagVal: "config://someConfigName",
 			spec: &swarm.ContainerSpec{
 				Configs: []*swarm.ConfigReference{

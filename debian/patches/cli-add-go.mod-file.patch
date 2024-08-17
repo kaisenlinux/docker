@@ -9,9 +9,9 @@ Fix build issue during tests with
  1 file changed, 1 insertion(+)
  create mode 100644 go.mod
 
-Index: docker/cli/go.mod
+Index: docker.io/cli/go.mod
 ===================================================================
 --- /dev/null
-+++ docker/cli/go.mod
++++ docker.io/cli/go.mod
 @@ -0,0 +1 @@
 +module github.com/docker/cli

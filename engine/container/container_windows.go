@@ -1,12 +1,14 @@
 package container // import "github.com/docker/docker/container"
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/docker/docker/api/types"
 	containertypes "github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/events"
 	swarmtypes "github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/pkg/system"
 )
@@ -17,8 +19,11 @@ const (
 	containerInternalSecretMountPath = `C:\ProgramData\Docker\internal\secrets`
 	containerInternalConfigsDirPath  = `C:\ProgramData\Docker\internal\configs`
 
-	// DefaultStopTimeout is the timeout (in seconds) for the shutdown call on a container
-	DefaultStopTimeout = 30
+	// defaultStopSignal is the default syscall signal used to stop a container.
+	defaultStopSignal = "SIGTERM"
+
+	// defaultStopTimeout is the timeout (in seconds) for the shutdown call on a container
+	defaultStopTimeout = 30
 )
 
 // UnmountIpcMount unmounts Ipc related mounts.
@@ -123,8 +128,8 @@ func (container *Container) ConfigMounts() []Mount {
 // DetachAndUnmount unmounts all volumes.
 // On Windows it only delegates to `UnmountVolumes` since there is nothing to
 // force unmount.
-func (container *Container) DetachAndUnmount(volumeEventLog func(name, action string, attributes map[string]string)) error {
-	return container.UnmountVolumes(volumeEventLog)
+func (container *Container) DetachAndUnmount(volumeEventLog func(name string, action events.Action, attributes map[string]string)) error {
+	return container.UnmountVolumes(context.TODO(), volumeEventLog)
 }
 
 // TmpfsMounts returns the list of tmpfs mounts

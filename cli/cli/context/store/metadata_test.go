@@ -1,3 +1,6 @@
+// FIXME(thaJeztah): remove once we are a module; the go:build directive prevents go from downgrading language version to go1.16:
+//go:build go1.19
+
 package store
 
 import (
@@ -5,13 +8,14 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/docker/docker/errdefs"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
 )
 
 func testMetadata(name string) Metadata {
 	return Metadata{
-		Endpoints: map[string]interface{}{
+		Endpoints: map[string]any{
 			"ep1": endpoint{Foo: "bar"},
 		},
 		Metadata: context{Bar: "baz"},
@@ -22,14 +26,14 @@ func testMetadata(name string) Metadata {
 func TestMetadataGetNotExisting(t *testing.T) {
 	testee := metadataStore{root: t.TempDir(), config: testCfg}
 	_, err := testee.get("noexist")
-	assert.Assert(t, IsErrContextDoesNotExist(err))
+	assert.ErrorType(t, err, errdefs.IsNotFound)
 }
 
 func TestMetadataCreateGetRemove(t *testing.T) {
 	testDir := t.TempDir()
 	testee := metadataStore{root: testDir, config: testCfg}
 	expected2 := Metadata{
-		Endpoints: map[string]interface{}{
+		Endpoints: map[string]any{
 			"ep1": endpoint{Foo: "baz"},
 			"ep2": endpoint{Foo: "bee"},
 		},
@@ -41,7 +45,7 @@ func TestMetadataCreateGetRemove(t *testing.T) {
 	assert.NilError(t, err)
 	// create a new instance to check it does not depend on some sort of state
 	testee = metadataStore{root: testDir, config: testCfg}
-	meta, err := testee.get(contextdirOf("test-context"))
+	meta, err := testee.get("test-context")
 	assert.NilError(t, err)
 	assert.DeepEqual(t, meta, testMeta)
 
@@ -49,14 +53,14 @@ func TestMetadataCreateGetRemove(t *testing.T) {
 
 	err = testee.createOrUpdate(expected2)
 	assert.NilError(t, err)
-	meta, err = testee.get(contextdirOf("test-context"))
+	meta, err = testee.get("test-context")
 	assert.NilError(t, err)
 	assert.DeepEqual(t, meta, expected2)
 
-	assert.NilError(t, testee.remove(contextdirOf("test-context")))
-	assert.NilError(t, testee.remove(contextdirOf("test-context"))) // support duplicate remove
-	_, err = testee.get(contextdirOf("test-context"))
-	assert.Assert(t, IsErrContextDoesNotExist(err))
+	assert.NilError(t, testee.remove("test-context"))
+	assert.NilError(t, testee.remove("test-context")) // support duplicate remove
+	_, err = testee.get("test-context")
+	assert.ErrorType(t, err, errdefs.IsNotFound)
 }
 
 func TestMetadataRespectJsonAnnotation(t *testing.T) {
@@ -113,7 +117,7 @@ type embeddedStruct struct {
 func TestWithEmbedding(t *testing.T) {
 	testee := metadataStore{
 		root:   t.TempDir(),
-		config: NewConfig(func() interface{} { return &contextWithEmbedding{} }),
+		config: NewConfig(func() any { return &contextWithEmbedding{} }),
 	}
 	testCtxMeta := contextWithEmbedding{
 		embeddedStruct: embeddedStruct{
@@ -121,7 +125,7 @@ func TestWithEmbedding(t *testing.T) {
 		},
 	}
 	assert.NilError(t, testee.createOrUpdate(Metadata{Metadata: testCtxMeta, Name: "test"}))
-	res, err := testee.get(contextdirOf("test"))
+	res, err := testee.get("test")
 	assert.NilError(t, err)
 	assert.Equal(t, testCtxMeta, res.Metadata)
 }

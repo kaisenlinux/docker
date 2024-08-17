@@ -1,32 +1,24 @@
----
-title: "config rm"
-description: "The config rm command description and usage"
-keywords: ["config, rm"]
----
-
 # config rm
 
-```Markdown
-Usage:  docker config rm CONFIG [CONFIG...]
-
+<!---MARKER_GEN_START-->
 Remove one or more configs
 
-Aliases:
-  rm, remove
+### Aliases
 
-Options:
-      --help   Print usage
-```
+`docker config rm`, `docker config remove`
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
-Removes the specified configs from the swarm.
+Removes the specified configs from the Swarm.
 
 For detailed information about using configs, refer to [store configuration data using Docker Configs](https://docs.docker.com/engine/swarm/configs/).
 
 > **Note**
 >
-> This is a cluster management command, and must be executed on a swarm
+> This is a cluster management command, and must be executed on a Swarm
 > manager node. To learn about managers and workers, refer to the
 > [Swarm mode section](https://docs.docker.com/engine/swarm/) in the
 > documentation.
@@ -42,9 +34,8 @@ sapth4csdo5b6wz2p5uimh5xg
 
 > **Warning**
 >
-> Unlike `docker rm`, this command does not ask for confirmation before removing
-> a config.
-
+> This command doesn't ask for confirmation before removing a config.
+{ .warning }
 
 ## Related commands
 

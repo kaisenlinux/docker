@@ -1,35 +1,32 @@
----
-title: "config ls"
-description: "The config ls command description and usage"
-keywords: ["config, ls"]
----
-
 # config ls
 
-```Markdown
-Usage:  docker config ls [OPTIONS]
-
+<!---MARKER_GEN_START-->
 List configs
 
-Aliases:
-  ls, list
+### Aliases
 
-Options:
-  -f, --filter filter   Filter output based on conditions provided
-      --format string   Pretty-print configs using a Go template
-      --help            Print usage
-  -q, --quiet           Only display IDs
-```
+`docker config ls`, `docker config list`
+
+### Options
+
+| Name                                   | Type     | Default | Description                                                                                                                                                                                                                                                                                                                                                                                                                          |
+|:---------------------------------------|:---------|:--------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`-f`](#filter), [`--filter`](#filter) | `filter` |         | Filter output based on conditions provided                                                                                                                                                                                                                                                                                                                                                                                           |
+| [`--format`](#format)                  | `string` |         | Format output using a custom template:<br>'table':            Print output in table format with column headers (default)<br>'table TEMPLATE':   Print output in table format using the given Go template<br>'json':             Print in JSON format<br>'TEMPLATE':         Print output using the given Go template.<br>Refer to https://docs.docker.com/go/formatting/ for more information about formatting output with templates |
+| `-q`, `--quiet`                        |          |         | Only display IDs                                                                                                                                                                                                                                                                                                                                                                                                                     |
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
-Run this command on a manager node to list the configs in the swarm.
+Run this command on a manager node to list the configs in the Swarm.
 
 For detailed information about using configs, refer to [store configuration data using Docker Configs](https://docs.docker.com/engine/swarm/configs/).
 
 > **Note**
 >
-> This is a cluster management command, and must be executed on a swarm
+> This is a cluster management command, and must be executed on a Swarm
 > manager node. To learn about managers and workers, refer to the
 > [Swarm mode section](https://docs.docker.com/engine/swarm/) in the
 > documentation.

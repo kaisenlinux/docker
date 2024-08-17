@@ -17,11 +17,11 @@ Origin: vendor, Debian
 Forwarded: not-needed, Debian-specific
 Signed-off-by: Arnaud Rebillout <arnaud.rebillout@collabora.com>
 
-Index: docker/cli/cli/command/trust/sign_test.go
+Index: docker.io/cli/cli/command/trust/sign_test.go
 ===================================================================
---- docker.orig/cli/cli/command/trust/sign_test.go
-+++ docker/cli/cli/command/trust/sign_test.go
-@@ -274,6 +274,7 @@ func TestSignCommandChangeListIsCleanedO
+--- docker.io.orig/cli/cli/command/trust/sign_test.go
++++ docker.io/cli/cli/command/trust/sign_test.go
+@@ -272,6 +272,7 @@ func TestSignCommandChangeListIsCleanedO
  }
  
  func TestSignCommandLocalFlag(t *testing.T) {

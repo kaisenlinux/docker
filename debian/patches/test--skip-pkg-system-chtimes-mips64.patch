@@ -11,35 +11,33 @@ Subject: Skip pkg/system chtimes tests on mips64
 
 Bug: https://github.com/moby/moby/issues/41850
 
-Index: docker/engine/pkg/system/chtimes_linux_test.go
+Index: docker.io/engine/pkg/system/chtimes_linux_test.go
 ===================================================================
---- docker.orig/engine/pkg/system/chtimes_linux_test.go
-+++ docker/engine/pkg/system/chtimes_linux_test.go
-@@ -3,6 +3,8 @@ package system // import "github.com/doc
- import (
+--- docker.io.orig/engine/pkg/system/chtimes_linux_test.go
++++ docker.io/engine/pkg/system/chtimes_linux_test.go
+@@ -4,6 +4,8 @@ import (
  	"os"
+ 	"path/filepath"
  	"syscall"
 +	"runtime"
 +	"strings"
  	"testing"
  	"time"
  )
-@@ -74,6 +76,11 @@ func TestChtimesLinux(t *testing.T) {
- 	}
+@@ -74,6 +76,9 @@ func TestChtimesATime(t *testing.T) {
  
- 	// Test both aTime and mTime set to Unix max time
-+	// Doesn't work on mips64, as stat struct has 32-bits types
-+	if strings.HasPrefix(runtime.GOARCH, "mips64") {
-+		return
-+	}
-+
- 	Chtimes(file, unixMaxTime, unixMaxTime)
- 
- 	f, err = os.Stat(file)
-Index: docker/engine/pkg/system/chtimes_test.go
+ 	// Test both aTime and mTime set to after Unix Epoch (valid time)
+ 	t.Run("both aTime and mTime set to after Unix Epoch (valid time)", func(t *testing.T) {
++		if strings.HasPrefix(runtime.GOARCH, "mips64") {
++			t.Skip("Doesn't work on mips64, as stat struct has 32-bits types")
++		}
+ 		if err := Chtimes(file, afterUnixEpochTime, afterUnixEpochTime); err != nil {
+ 			t.Error(err)
+ 		}
+Index: docker.io/engine/pkg/system/chtimes_test.go
 ===================================================================
---- docker.orig/engine/pkg/system/chtimes_test.go
-+++ docker/engine/pkg/system/chtimes_test.go
+--- docker.io.orig/engine/pkg/system/chtimes_test.go
++++ docker.io/engine/pkg/system/chtimes_test.go
 @@ -3,6 +3,8 @@ package system // import "github.com/doc
  import (
  	"os"
@@ -49,15 +47,13 @@ Index: docker/engine/pkg/system/chtimes_test.go
  	"testing"
  	"time"
  )
-@@ -80,6 +82,11 @@ func TestChtimes(t *testing.T) {
- 	}
+@@ -84,6 +86,9 @@ func TestChtimesModTime(t *testing.T) {
  
  	// Test both aTime and mTime set to Unix max time
-+	// Doesn't work on mips64, as stat struct has 32-bits types
-+	if strings.HasPrefix(runtime.GOARCH, "mips64") {
-+		return
-+	}
-+
- 	Chtimes(file, unixMaxTime, unixMaxTime)
- 
- 	f, err = os.Stat(file)
+ 	t.Run("both aTime and mTime set to Unix max time", func(t *testing.T) {
++		if strings.HasPrefix(runtime.GOARCH, "mips64") {
++			t.Skip("Doesn't work on mips64, as stat struct has 32-bits types")
++		}
+ 		if err := Chtimes(file, unixMaxTime, unixMaxTime); err != nil {
+ 			t.Error(err)
+ 		}

@@ -8,33 +8,30 @@ import (
 
 	configtypes "github.com/docker/cli/cli/config/types"
 	"github.com/docker/cli/internal/test"
-	"github.com/docker/docker/api/types"
 	registrytypes "github.com/docker/docker/api/types/registry"
+	"github.com/docker/docker/api/types/system"
 	"github.com/docker/docker/client"
 	"gotest.tools/v3/assert"
 	is "gotest.tools/v3/assert/cmp"
 	"gotest.tools/v3/fs"
 )
 
-const userErr = "userunknownError"
-const testAuthErrMsg = "UNKNOWN_ERR"
-
-var testAuthErrors = map[string]error{
-	userErr: fmt.Errorf(testAuthErrMsg),
-}
-
-var expiredPassword = "I_M_EXPIRED"
-var useToken = "I_M_TOKEN"
+const (
+	unknownUser     = "userunknownError"
+	errUnknownUser  = "UNKNOWN_ERR"
+	expiredPassword = "I_M_EXPIRED"
+	useToken        = "I_M_TOKEN"
+)
 
 type fakeClient struct {
 	client.Client
 }
 
-func (c fakeClient) Info(ctx context.Context) (types.Info, error) {
-	return types.Info{}, nil
+func (c fakeClient) Info(context.Context) (system.Info, error) {
+	return system.Info{}, nil
 }
 
-func (c fakeClient) RegistryLogin(ctx context.Context, auth types.AuthConfig) (registrytypes.AuthenticateOKBody, error) {
+func (c fakeClient) RegistryLogin(_ context.Context, auth registrytypes.AuthConfig) (registrytypes.AuthenticateOKBody, error) {
 	if auth.Password == expiredPassword {
 		return registrytypes.AuthenticateOKBody{}, fmt.Errorf("Invalid Username or Password")
 	}
@@ -43,29 +40,29 @@ func (c fakeClient) RegistryLogin(ctx context.Context, auth types.AuthConfig) (r
 			IdentityToken: auth.Password,
 		}, nil
 	}
-	err := testAuthErrors[auth.Username]
-	return registrytypes.AuthenticateOKBody{}, err
+	if auth.Username == unknownUser {
+		return registrytypes.AuthenticateOKBody{}, fmt.Errorf(errUnknownUser)
+	}
+	return registrytypes.AuthenticateOKBody{}, nil
 }
 
 func TestLoginWithCredStoreCreds(t *testing.T) {
 	testCases := []struct {
-		inputAuthConfig types.AuthConfig
+		inputAuthConfig registrytypes.AuthConfig
 		expectedMsg     string
 		expectedErr     string
 	}{
 		{
-			inputAuthConfig: types.AuthConfig{},
+			inputAuthConfig: registrytypes.AuthConfig{},
 			expectedMsg:     "Authenticating with existing credentials...\n",
 		},
 		{
-			inputAuthConfig: types.AuthConfig{
-				Username: userErr,
+			inputAuthConfig: registrytypes.AuthConfig{
+				Username: unknownUser,
 			},
 			expectedMsg: "Authenticating with existing credentials...\n",
-			expectedErr: fmt.Sprintf("Login did not succeed, error: %s\n", testAuthErrMsg),
+			expectedErr: fmt.Sprintf("Login did not succeed, error: %s\n", errUnknownUser),
 		},
-		// can't easily test the 401 case because client.IsErrUnauthorized(err) involving
-		// creating an error of a private type
 	}
 	ctx := context.Background()
 	for _, tc := range testCases {
@@ -81,10 +78,12 @@ func TestLoginWithCredStoreCreds(t *testing.T) {
 }
 
 func TestRunLogin(t *testing.T) {
-	const storedServerAddress = "reg1"
-	const validUsername = "u1"
-	const validPassword = "p1"
-	const validPassword2 = "p2"
+	const (
+		storedServerAddress = "reg1"
+		validUsername       = "u1"
+		validPassword       = "p1"
+		validPassword2      = "p2"
+	)
 
 	validAuthConfig := configtypes.AuthConfig{
 		ServerAddress: storedServerAddress,
@@ -102,20 +101,22 @@ func TestRunLogin(t *testing.T) {
 		IdentityToken: useToken,
 	}
 	testCases := []struct {
+		doc               string
 		inputLoginOption  loginOptions
 		inputStoredCred   *configtypes.AuthConfig
 		expectedErr       string
 		expectedSavedCred configtypes.AuthConfig
 	}{
 		{
+			doc: "valid auth from store",
 			inputLoginOption: loginOptions{
 				serverAddress: storedServerAddress,
 			},
 			inputStoredCred:   &validAuthConfig,
-			expectedErr:       "",
 			expectedSavedCred: validAuthConfig,
 		},
 		{
+			doc: "expired auth",
 			inputLoginOption: loginOptions{
 				serverAddress: storedServerAddress,
 			},
@@ -123,13 +124,13 @@ func TestRunLogin(t *testing.T) {
 			expectedErr:     "Error: Cannot perform an interactive login from a non TTY device",
 		},
 		{
+			doc: "valid username and password",
 			inputLoginOption: loginOptions{
 				serverAddress: storedServerAddress,
 				user:          validUsername,
 				password:      validPassword2,
 			},
 			inputStoredCred: &validAuthConfig,
-			expectedErr:     "",
 			expectedSavedCred: configtypes.AuthConfig{
 				ServerAddress: storedServerAddress,
 				Username:      validUsername,
@@ -137,27 +138,29 @@ func TestRunLogin(t *testing.T) {
 			},
 		},
 		{
+			doc: "unknown user",
 			inputLoginOption: loginOptions{
 				serverAddress: storedServerAddress,
-				user:          userErr,
+				user:          unknownUser,
 				password:      validPassword,
 			},
 			inputStoredCred: &validAuthConfig,
-			expectedErr:     testAuthErrMsg,
+			expectedErr:     errUnknownUser,
 		},
 		{
+			doc: "valid token",
 			inputLoginOption: loginOptions{
 				serverAddress: storedServerAddress,
 				user:          validUsername,
 				password:      useToken,
 			},
 			inputStoredCred:   &validIdentityToken,
-			expectedErr:       "",
 			expectedSavedCred: validIdentityToken,
 		},
 	}
-	for i, tc := range testCases {
-		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.doc, func(t *testing.T) {
 			tmpFile := fs.NewFile(t, "test-run-login")
 			defer tmpFile.Remove()
 			cli := test.NewFakeCli(&fakeClient{})
@@ -168,7 +171,7 @@ func TestRunLogin(t *testing.T) {
 				cred := *tc.inputStoredCred
 				assert.NilError(t, configfile.GetCredentialsStore(cred.ServerAddress).Store(cred))
 			}
-			loginErr := runLogin(cli, tc.inputLoginOption)
+			loginErr := runLogin(context.Background(), cli, tc.inputLoginOption)
 			if tc.expectedErr != "" {
 				assert.Error(t, loginErr, tc.expectedErr)
 				return

@@ -6,6 +6,7 @@ import (
 
 	"github.com/docker/cli/cli"
 	"github.com/docker/cli/cli/command"
+	"github.com/docker/cli/cli/command/completion"
 	"github.com/docker/cli/cli/command/idresolver"
 	"github.com/docker/cli/cli/command/task"
 	"github.com/docker/cli/opts"
@@ -38,8 +39,9 @@ func newPsCommand(dockerCli command.Cli) *cobra.Command {
 				options.nodeIDs = args
 			}
 
-			return runPs(dockerCli, options)
+			return runPs(cmd.Context(), dockerCli, options)
 		},
+		ValidArgsFunction: completion.NoComplete,
 	}
 	flags := cmd.Flags()
 	flags.BoolVar(&options.noTrunc, "no-trunc", false, "Do not truncate output")
@@ -51,9 +53,8 @@ func newPsCommand(dockerCli command.Cli) *cobra.Command {
 	return cmd
 }
 
-func runPs(dockerCli command.Cli, options psOptions) error {
+func runPs(ctx context.Context, dockerCli command.Cli, options psOptions) error {
 	client := dockerCli.Client()
-	ctx := context.Background()
 
 	var (
 		errs  []string

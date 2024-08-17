@@ -47,15 +47,15 @@ Buildd logs can be found at:
 	/<<PKGBUILDDIR>>/.gopath/src/github.com/docker/cli/cli/command/container/tty.go:103 +0xb1
 ~~~~
 
-Index: docker/cli/cli/command/container/run_test.go
+Index: docker.io/cli/cli/command/container/run_test.go
 ===================================================================
---- docker.orig/cli/cli/command/container/run_test.go
-+++ docker/cli/cli/command/container/run_test.go
-@@ -15,6 +15,7 @@ import (
+--- docker.io.orig/cli/cli/command/container/run_test.go
++++ docker.io/cli/cli/command/container/run_test.go
+@@ -18,6 +18,7 @@ import (
  )
  
  func TestRunLabel(t *testing.T) {
 +	t.Skip("DM - skipping dodgy test")
  	cli := test.NewFakeCli(&fakeClient{
- 		createContainerFunc: func(_ *container.Config, _ *container.HostConfig, _ *network.NetworkingConfig, _ *specs.Platform, _ string) (container.ContainerCreateCreatedBody, error) {
- 			return container.ContainerCreateCreatedBody{
+ 		createContainerFunc: func(_ *container.Config, _ *container.HostConfig, _ *network.NetworkingConfig, _ *specs.Platform, _ string) (container.CreateResponse, error) {
+ 			return container.CreateResponse{

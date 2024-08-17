@@ -2,6 +2,8 @@ package manager
 
 import (
 	"encoding/json"
+	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -10,9 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	pluginNameRe = regexp.MustCompile("^[a-z][a-z0-9]*$")
-)
+var pluginNameRe = regexp.MustCompile("^[a-z][a-z0-9]*$")
 
 // Plugin represents a potential plugin with all it's metadata.
 type Plugin struct {
@@ -33,7 +33,7 @@ type Plugin struct {
 // is set, and is always a `pluginError`, but the `Plugin` is still
 // returned with no error. An error is only returned due to a
 // non-recoverable error.
-func newPlugin(c Candidate, rootcmd *cobra.Command) (Plugin, error) {
+func newPlugin(c Candidate, cmds []*cobra.Command) (Plugin, error) {
 	path := c.Path()
 	if path == "" {
 		return Plugin{}, errors.New("plugin candidate path cannot be empty")
@@ -64,22 +64,20 @@ func newPlugin(c Candidate, rootcmd *cobra.Command) (Plugin, error) {
 		return p, nil
 	}
 
-	if rootcmd != nil {
-		for _, cmd := range rootcmd.Commands() {
-			// Ignore conflicts with commands which are
-			// just plugin stubs (i.e. from a previous
-			// call to AddPluginCommandStubs).
-			if p := cmd.Annotations[CommandAnnotationPlugin]; p == "true" {
-				continue
-			}
-			if cmd.Name() == p.Name {
-				p.Err = NewPluginError("plugin %q duplicates builtin command", p.Name)
-				return p, nil
-			}
-			if cmd.HasAlias(p.Name) {
-				p.Err = NewPluginError("plugin %q duplicates an alias of builtin command %q", p.Name, cmd.Name())
-				return p, nil
-			}
+	for _, cmd := range cmds {
+		// Ignore conflicts with commands which are
+		// just plugin stubs (i.e. from a previous
+		// call to AddPluginCommandStubs).
+		if IsPluginCommand(cmd) {
+			continue
+		}
+		if cmd.Name() == p.Name {
+			p.Err = NewPluginError("plugin %q duplicates builtin command", p.Name)
+			return p, nil
+		}
+		if cmd.HasAlias(p.Name) {
+			p.Err = NewPluginError("plugin %q duplicates an alias of builtin command %q", p.Name, cmd.Name())
+			return p, nil
 		}
 	}
 
@@ -103,4 +101,23 @@ func newPlugin(c Candidate, rootcmd *cobra.Command) (Plugin, error) {
 		return p, nil
 	}
 	return p, nil
+}
+
+// RunHook executes the plugin's hooks command
+// and returns its unprocessed output.
+func (p *Plugin) RunHook(hookData HookPluginData) ([]byte, error) {
+	hDataBytes, err := json.Marshal(hookData)
+	if err != nil {
+		return nil, wrapAsPluginError(err, "failed to marshall hook data")
+	}
+
+	pCmd := exec.Command(p.Path, p.Name, HookSubcommandName, string(hDataBytes))
+	pCmd.Env = os.Environ()
+	pCmd.Env = append(pCmd.Env, ReexecEnvvar+"="+os.Args[0])
+	hookCmdOutput, err := pCmd.Output()
+	if err != nil {
+		return nil, wrapAsPluginError(err, "failed to execute plugin hook subcommand")
+	}
+
+	return hookCmdOutput, nil
 }

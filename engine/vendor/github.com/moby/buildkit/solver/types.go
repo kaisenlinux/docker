@@ -7,8 +7,9 @@ import (
 	"github.com/containerd/containerd/content"
 	"github.com/moby/buildkit/session"
 	"github.com/moby/buildkit/solver/pb"
+	"github.com/moby/buildkit/util/compression"
 	digest "github.com/opencontainers/go-digest"
-	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
+	ocispecs "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
 // Vertex is a node in a build graph. It defines an interface for a
@@ -54,6 +55,7 @@ type VertexOptions struct {
 	Description  map[string]string // text values with no special meaning for solver
 	ExportCache  *bool
 	// WorkerConstraint
+	ProgressGroup *pb.ProgressGroup
 }
 
 // Result is an abstract return value for a solve
@@ -70,10 +72,17 @@ type CachedResult interface {
 	CacheKeys() []ExportableCacheKey
 }
 
+type CachedResultWithProvenance interface {
+	CachedResult
+	WalkProvenance(context.Context, func(ProvenanceProvider) error) error
+}
+
 type ResultProxy interface {
+	ID() string
 	Result(context.Context) (CachedResult, error)
 	Release(context.Context) error
 	Definition() *pb.Definition
+	Provenance() interface{}
 }
 
 // CacheExportMode is the type for setting cache exporting modes
@@ -92,12 +101,17 @@ const (
 
 // CacheExportOpt defines options for exporting build cache
 type CacheExportOpt struct {
-	// Convert can convert a build result to transferable object
-	Convert func(context.Context, Result) (*Remote, error)
+	// ResolveRemotes can convert a build result to transferable objects
+	ResolveRemotes func(context.Context, Result) ([]*Remote, error)
 	// Mode defines a cache export algorithm
 	Mode CacheExportMode
 	// Session is the session group to client (for auth credentials etc)
 	Session session.Group
+	// CompressionOpt is an option to specify the compression of the object to load.
+	// If specified, all objects that meet the option will be cached.
+	CompressionOpt *compression.Config
+	// ExportRoots defines if records for root vertexes should be exported.
+	ExportRoots bool
 }
 
 // CacheExporter can export the artifacts of the build chain
@@ -107,14 +121,19 @@ type CacheExporter interface {
 
 // CacheExporterTarget defines object capable of receiving exports
 type CacheExporterTarget interface {
+	// Add creates a new object record that we can then add results to and
+	// connect to other records.
 	Add(dgst digest.Digest) CacheExporterRecord
-	Visit(interface{})
-	Visited(interface{}) bool
+
+	// Visit marks a target as having been visited.
+	Visit(target any)
+	// Vistited returns true if a target has previously been marked as visited.
+	Visited(target any) bool
 }
 
 // CacheExporterRecord is a single object being exported
 type CacheExporterRecord interface {
-	AddResult(createdAt time.Time, result *Remote)
+	AddResult(vtx digest.Digest, index int, createdAt time.Time, result *Remote)
 	LinkFrom(src CacheExporterRecord, index int, selector string)
 }
 
@@ -122,8 +141,8 @@ type CacheExporterRecord interface {
 // from a content provider
 // TODO: add closer to keep referenced data from getting deleted
 type Remote struct {
-	Descriptors []ocispec.Descriptor
-	Provider    content.Provider
+	Descriptors []ocispecs.Descriptor
+	Provider    content.InfoReaderProvider
 }
 
 // CacheLink is a link between two cache records
@@ -134,6 +153,8 @@ type CacheLink struct {
 	Base     digest.Digest `json:",omitempty"`
 	Selector digest.Digest `json:",omitempty"`
 }
+
+type ReleaseFunc func()
 
 // Op defines how the solver can evaluate the properties of a vertex operation.
 // An op is executed in the worker, and is retrieved from the vertex by the
@@ -146,6 +167,13 @@ type Op interface {
 
 	// Exec runs an operation given results from previous operations.
 	Exec(ctx context.Context, g session.Group, inputs []Result) (outputs []Result, err error)
+
+	// Acquire acquires the necessary resources to execute the `Op`.
+	Acquire(ctx context.Context) (release ReleaseFunc, err error)
+}
+
+type ProvenanceProvider interface {
+	IsProvenanceProvider()
 }
 
 type ResultBasedCacheFunc func(context.Context, Result, session.Group) (digest.Digest, error)
@@ -205,6 +233,17 @@ type CacheRecord struct {
 	key          *CacheKey
 }
 
+func (ck *CacheRecord) TraceFields() map[string]any {
+	return map[string]any{
+		"id":            ck.ID,
+		"size":          ck.Size,
+		"createdAt":     ck.CreatedAt,
+		"priority":      ck.Priority,
+		"cache_manager": ck.cacheManager.ID(),
+		"cache_key":     ck.key.TraceFields(),
+	}
+}
+
 // CacheManager determines if there is a result that matches the cache keys
 // generated during the build that could be reused instead of fully
 // reevaluating the vertex and its inputs. There can be multiple cache
@@ -218,7 +257,7 @@ type CacheManager interface {
 	// Query searches for cache paths from one cache key to the output of a
 	// possible match.
 	Query(inp []CacheKeyWithSelector, inputIndex Index, dgst digest.Digest, outputIndex Index) ([]*CacheKey, error)
-	Records(ck *CacheKey) ([]*CacheRecord, error)
+	Records(ctx context.Context, ck *CacheKey) ([]*CacheRecord, error)
 
 	// Load loads a cache record into a result reference.
 	Load(ctx context.Context, rec *CacheRecord) (Result, error)

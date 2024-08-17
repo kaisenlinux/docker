@@ -1,3 +1,139 @@
+docker.io (26.1.4+kaisen1-1) kaisen-packages; urgency=medium
+
+  * Import the 26.1.4 release
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sat, 17 Aug 2024 23:56:10 +0200
+
+docker.io (26.1.4+dfsg3-1) unstable; urgency=medium
+
+  * Unvendor "distribution/reference"
+
+ -- Reinhard Tartler <siretart@tauware.de>  Thu, 15 Aug 2024 17:57:23 -0400
+
+docker.io (26.1.4+dfsg2-1) unstable; urgency=medium
+
+  * Use packaged golang-github-moby-docker-image-spec (Closes: #1078435)
+  * Copy relative grpc-middleware v1 function (Closes: #1078280)
+    grpc-middleware has been updated to v2.
+
+ -- Shengjing Zhu <zhsj@debian.org>  Tue, 13 Aug 2024 15:57:09 +0800
+
+docker.io (26.1.4+dfsg1-9) unstable; urgency=medium
+
+  * Team upload
+  * Upload changes from experimental to unstable
+
+ -- Mathias Gibbens <gibmat@debian.org>  Fri, 26 Jul 2024 08:28:37 +0000
+
+docker.io (26.1.4+dfsg1-8) experimental; urgency=medium
+
+  * Declare Proper conflicts/replaces/breaks, Closes: #1076373
+  * Fix FTBFS on mips64el
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 23 Jul 2024 09:41:02 +0200
+
+docker.io (26.1.4+dfsg1-7) experimental; urgency=medium
+
+  [ Tianon Gravi ]
+  * Add "docker-cli" binary package, Closes: #1035338
+
+  [ Reinhard Tartler ]
+  * Install docker/{plugin,volume} golang packages, Closes: #1001918
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 12 Jul 2024 19:07:13 -0400
+
+docker.io (26.1.4+dfsg1-6) experimental; urgency=medium
+
+  * Depend on golang-github-containerd-typeurl-dev, it is an other indirect
+    build dependency of buildkit
+
+ -- Reinhard Tartler <siretart@tauware.de>  Wed, 10 Jul 2024 21:45:58 -0400
+
+docker.io (26.1.4+dfsg1-5) experimental; urgency=medium
+
+  * Add back golang-github-mitchellh-hashstructure-dev, it is an indirect
+    build dependency of buildkit
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 07 Jul 2024 07:32:58 -0400
+
+docker.io (26.1.4+dfsg1-4) experimental; urgency=medium
+
+  * drop golang-github-mitchellh-hashstructure-dev
+  * docker-docker-dev: Add depends on moby/{locker,patternmatcher,pubsub,sys}
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sat, 06 Jul 2024 20:10:47 -0400
+
+docker.io (26.1.4+dfsg1-3) experimental; urgency=medium
+
+  * golang-github-docker-docker-dev: add opentelemetry deps
+  * install vendored dependencies, specifically:
+    - docker/internal
+    - moby/docker-image-spec
+    - distribution/reference
+
+ -- Reinhard Tartler <siretart@tauware.de>  Fri, 05 Jul 2024 17:26:42 -0400
+
+docker.io (26.1.4+dfsg1-2) experimental; urgency=medium
+
+  * Add myself to uploaders
+  * Restore setting GOCACHE, fixes FTBFS
+
+ -- Reinhard Tartler <siretart@tauware.de>  Thu, 04 Jul 2024 10:24:08 -0400
+
+docker.io (26.1.4+dfsg1-1) experimental; urgency=medium
+
+  * Team upload
+  * New upstream release [24.0.9]
+  * New upstream release [26.1.4], closes: #1051202, #1051202, #1033839
+    - libnetwork: Add docker interfaces to firewalld docker zone,
+      closes: #913664
+    - engine: CVE-2024-29018, closes: #1068460
+    - engine: CVE-2024-24557, closes: #1071745
+    - engine: CVE-2024-32473, closes: #1070378
+    - engine: reportedly no longer randomly kills containers, cf.
+      https://github.com/moby/moby/issues/38768#issuecomment-688518332,
+      closes: #979316
+  * Recommend dbus-user-session, closes: #992486
+  * Make failing unit tests not fail the package build
+    Closes: #1070821, #1038902
+    rationale: Unit tests are written to be run in well-controlled
+    containers, which are hard to replicate in a package build. Instead,
+    run a smoke test that ensures the executables are linked correctly.
+  * Skip Failing test Can't find mount point of /, Closes: #1072145
+
+ -- Reinhard Tartler <siretart@tauware.de>  Thu, 04 Jul 2024 07:42:06 -0400
+
+docker.io (20.10.25+dfsg1-4) experimental; urgency=medium
+
+  * Team Upload
+  * Compile against golang/protobuf@1.5
+
+ -- Reinhard Tartler <siretart@tauware.de>  Sun, 09 Jun 2024 16:04:49 -0400
+
+docker.io (20.10.25+dfsg1-3) unstable; urgency=medium
+
+  * Team upload.
+  * Backport
+    https://github.com/moby/moby/commit/97921915a801dd82b1f5a70e0a69353539c1e3ae.patch
+    to fix FTBFS, (Closes: #1068755).
+
+ -- Reinhard Tartler <siretart@tauware.de>  Tue, 07 May 2024 06:33:18 -0400
+
+docker.io (20.10.25+dfsg1-2) unstable; urgency=medium
+
+  * Backport https://github.com/moby/buildkit/pull/3104 to fix FTBFS (due to
+    updated opencontainers/image-spec)
+
+ -- Tianon Gravi <tianon@debian.org>  Fri, 22 Sep 2023 16:09:48 -0700
+
+docker.io (20.10.25+dfsg1-1) unstable; urgency=medium
+
+  * Team upload.
+  * New upstream release [20.10.25]
+  * Backport patch to fix building with Go 1.20.6 (Closes: #1041254)
+
+ -- Shengjing Zhu <zhsj@debian.org>  Mon, 17 Jul 2023 16:24:02 +0800
+
 docker.io (20.10.24+kaisen1-1) kaisen-packages; urgency=medium
 
   * Import the new upstream release

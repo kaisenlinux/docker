@@ -1,28 +1,24 @@
----
-title: "node inspect"
-description: "The node inspect command description and usage"
-keywords: "node, inspect"
----
-
 # node inspect
 
-```markdown
-Usage:  docker node inspect [OPTIONS] self|NODE [NODE...]
-
+<!---MARKER_GEN_START-->
 Display detailed information on one or more nodes
 
-Options:
-  -f, --format string   Format the output using the given Go template
-      --help            Print usage
-      --pretty          Print the information in a human friendly format
-```
+### Options
+
+| Name                                   | Type     | Default | Description                                                                                                                                                                                                                                                        |
+|:---------------------------------------|:---------|:--------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`-f`](#format), [`--format`](#format) | `string` |         | Format output using a custom template:<br>'json':             Print in JSON format<br>'TEMPLATE':         Print output using the given Go template.<br>Refer to https://docs.docker.com/go/formatting/ for more information about formatting output with templates |
+| `--pretty`                             |          |         | Print the information in a human friendly format                                                                                                                                                                                                                   |
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
 Returns information about a node. By default, this command renders all results
 in a JSON array. You can specify an alternate format to execute a
 given template for each result. Go's
-[text/template](https://golang.org/pkg/text/template/) package describes all the
+[text/template](https://pkg.go.dev/text/template) package describes all the
 details of the format.
 
 > **Note**

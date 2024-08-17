@@ -3,6 +3,7 @@ package dockerfile // import "github.com/docker/docker/builder/dockerfile"
 import (
 	"fmt"
 	"io"
+	"sort"
 
 	"github.com/docker/docker/runconfig/opts"
 )
@@ -19,6 +20,8 @@ var builtinAllowedBuildArgs = map[string]bool{
 	"ftp_proxy":   true,
 	"NO_PROXY":    true,
 	"no_proxy":    true,
+	"ALL_PROXY":   true,
+	"all_proxy":   true,
 }
 
 // BuildArgs manages arguments used by the builder
@@ -78,6 +81,7 @@ func (b *BuildArgs) WarnOnUnusedBuildArgs(out io.Writer) {
 		}
 	}
 	if len(leftoverArgs) > 0 {
+		sort.Strings(leftoverArgs)
 		fmt.Fprintf(out, "[Warning] One or more build-args %v were not consumed\n", leftoverArgs)
 	}
 }

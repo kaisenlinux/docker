@@ -1,3 +1,6 @@
+// FIXME(thaJeztah): remove once we are a module; the go:build directive prevents go from downgrading language version to go1.16:
+//go:build go1.19
+
 package formatter
 
 import (
@@ -33,18 +36,20 @@ func TestContainerPsContext(t *testing.T) {
 		{types.Container{Image: "ubuntu"}, true, "ubuntu", ctx.Image},
 		{types.Container{Image: "verylongimagename"}, true, "verylongimagename", ctx.Image},
 		{types.Container{Image: "verylongimagename"}, false, "verylongimagename", ctx.Image},
-		{types.Container{
-			Image:   "a5a665ff33eced1e0803148700880edab4",
-			ImageID: "a5a665ff33eced1e0803148700880edab4269067ed77e27737a708d0d293fbf5",
-		},
+		{
+			types.Container{
+				Image:   "a5a665ff33eced1e0803148700880edab4",
+				ImageID: "a5a665ff33eced1e0803148700880edab4269067ed77e27737a708d0d293fbf5",
+			},
 			true,
 			"a5a665ff33ec",
 			ctx.Image,
 		},
-		{types.Container{
-			Image:   "a5a665ff33eced1e0803148700880edab4",
-			ImageID: "a5a665ff33eced1e0803148700880edab4269067ed77e27737a708d0d293fbf5",
-		},
+		{
+			types.Container{
+				Image:   "a5a665ff33eced1e0803148700880edab4",
+				ImageID: "a5a665ff33eced1e0803148700880edab4269067ed77e27737a708d0d293fbf5",
+			},
 			false,
 			"a5a665ff33eced1e0803148700880edab4",
 			ctx.Image,
@@ -161,7 +166,7 @@ containerID2   ubuntu    ""        24 hours ago                       foobar_bar
 		},
 		{
 			Context{Format: NewContainerFormat("table {{.Image}}", true, false)},
-			"IMAGE\nubuntu\nubuntu\n",
+			"containerID1\ncontainerID2\n",
 		},
 		{
 			Context{Format: NewContainerFormat("table", true, false)},
@@ -263,7 +268,6 @@ size: 0B
 				assert.Equal(t, out.String(), tc.expected)
 			}
 		})
-
 	}
 }
 
@@ -338,7 +342,7 @@ func TestContainerContextWriteJSON(t *testing.T) {
 		{ID: "containerID2", Names: []string{"/foobar_bar"}, Image: "ubuntu", Created: unix, State: "running"},
 	}
 	expectedCreated := time.Unix(unix, 0).String()
-	expectedJSONs := []map[string]interface{}{
+	expectedJSONs := []map[string]any{
 		{
 			"Command":      "\"\"",
 			"CreatedAt":    expectedCreated,
@@ -379,7 +383,7 @@ func TestContainerContextWriteJSON(t *testing.T) {
 	}
 	for i, line := range strings.Split(strings.TrimSpace(out.String()), "\n") {
 		msg := fmt.Sprintf("Output: line %d: %s", i, line)
-		var m map[string]interface{}
+		var m map[string]any
 		err := json.Unmarshal([]byte(line), &m)
 		assert.NilError(t, err, msg)
 		assert.Check(t, is.DeepEqual(expectedJSONs[i], m), msg)
@@ -446,7 +450,8 @@ func TestDisplayablePorts(t *testing.T) {
 					Type:        "tcp",
 				},
 			},
-			"9988/tcp"},
+			"9988/tcp",
+		},
 		{
 			[]types.Port{
 				{

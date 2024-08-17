@@ -1,18 +1,21 @@
 package cacheimport
 
 import (
+	"context"
 	"fmt"
 	"sort"
 
-	"github.com/moby/buildkit/exporter/containerimage/exptypes"
 	"github.com/moby/buildkit/solver"
+	"github.com/moby/buildkit/util/bklog"
 	digest "github.com/opencontainers/go-digest"
+	ocispecs "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/pkg/errors"
 )
 
-// EmptyLayerRemovalSupported defines if implementation supports removal of empty layers. Buildkit image exporter
-// removes empty layers, but moby layerstore based implementation does not.
-var EmptyLayerRemovalSupported = true
+type withCheckDescriptor interface {
+	// CheckDescriptor is additional method on Provider to check if the descriptor is available without opening the reader
+	CheckDescriptor(context.Context, ocispecs.Descriptor) error
+}
 
 // sortConfig sorts the config structure to make sure it is deterministic
 func sortConfig(cc *CacheConfig) {
@@ -130,6 +133,53 @@ type normalizeState struct {
 	next  int
 }
 
+func (s *normalizeState) removeLoops(ctx context.Context) {
+	roots := []digest.Digest{}
+	for dgst, it := range s.byKey {
+		if len(it.links) == 0 {
+			roots = append(roots, dgst)
+		}
+	}
+
+	visited := map[digest.Digest]struct{}{}
+
+	for _, d := range roots {
+		s.checkLoops(ctx, d, visited)
+	}
+}
+
+func (s *normalizeState) checkLoops(ctx context.Context, d digest.Digest, visited map[digest.Digest]struct{}) {
+	it, ok := s.byKey[d]
+	if !ok {
+		return
+	}
+	links, ok := s.links[it]
+	if !ok {
+		return
+	}
+	visited[d] = struct{}{}
+	defer func() {
+		delete(visited, d)
+	}()
+
+	for l, ids := range links {
+		for id := range ids {
+			if _, ok := visited[id]; ok {
+				it2, ok := s.byKey[id]
+				if !ok {
+					continue
+				}
+				if !it2.removeLink(it) {
+					bklog.G(ctx).Warnf("failed to remove looping cache key %s %s", d, id)
+				}
+				delete(links[l], id)
+			} else {
+				s.checkLoops(ctx, id, visited)
+			}
+		}
+	}
+}
+
 func normalizeItem(it *item, state *normalizeState) (*item, error) {
 	if it2, ok := state.added[it]; ok {
 		return it2, nil
@@ -229,9 +279,17 @@ type marshalState struct {
 	recordsByItem map[*item]int
 }
 
-func marshalRemote(r *solver.Remote, state *marshalState) string {
+func marshalRemote(ctx context.Context, r *solver.Remote, state *marshalState) string {
 	if len(r.Descriptors) == 0 {
 		return ""
+	}
+
+	if cd, ok := r.Provider.(withCheckDescriptor); ok && len(r.Descriptors) > 0 {
+		for _, d := range r.Descriptors {
+			if cd.CheckDescriptor(ctx, d) != nil {
+				return ""
+			}
+		}
 	}
 	var parentID string
 	if len(r.Descriptors) > 1 {
@@ -239,13 +297,9 @@ func marshalRemote(r *solver.Remote, state *marshalState) string {
 			Descriptors: r.Descriptors[:len(r.Descriptors)-1],
 			Provider:    r.Provider,
 		}
-		parentID = marshalRemote(r2, state)
+		parentID = marshalRemote(ctx, r2, state)
 	}
 	desc := r.Descriptors[len(r.Descriptors)-1]
-
-	if desc.Digest == exptypes.EmptyGZLayer && EmptyLayerRemovalSupported {
-		return parentID
-	}
 
 	state.descriptors[desc.Digest] = DescriptorProviderPair{
 		Descriptor: desc,
@@ -270,7 +324,7 @@ func marshalRemote(r *solver.Remote, state *marshalState) string {
 	return id
 }
 
-func marshalItem(it *item, state *marshalState) error {
+func marshalItem(ctx context.Context, it *item, state *marshalState) error {
 	if _, ok := state.recordsByItem[it]; ok {
 		return nil
 	}
@@ -282,7 +336,7 @@ func marshalItem(it *item, state *marshalState) error {
 
 	for i, m := range it.links {
 		for l := range m {
-			if err := marshalItem(l.src, state); err != nil {
+			if err := marshalItem(ctx, l.src, state); err != nil {
 				return err
 			}
 			idx, ok := state.recordsByItem[l.src]
@@ -297,7 +351,7 @@ func marshalItem(it *item, state *marshalState) error {
 	}
 
 	if it.result != nil {
-		id := marshalRemote(it.result, state)
+		id := marshalRemote(ctx, it.result, state)
 		if id != "" {
 			idx, ok := state.chainsByID[id]
 			if !ok {

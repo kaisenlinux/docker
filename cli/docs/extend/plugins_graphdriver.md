@@ -25,7 +25,7 @@ advisory: experimental
 
 Docker graph driver plugins enable admins to use an external/out-of-process
 graph driver for use with Docker engine. This is an alternative to using the
-built-in storage drivers, such as aufs/overlay/devicemapper/btrfs.
+built-in storage drivers, such as overlay2.
 
 You need to install and enable the plugin and then restart the Docker daemon
 before using the plugin. See the following example for the correct ordering
@@ -311,9 +311,7 @@ and `Parent`. `Parent` may be an empty string, in which case there is no parent.
 **Response**:
 
 ```
-{% raw %}
 {{ TAR STREAM }}
-{% endraw %}
 ```
 
 ### /GraphDriver.Changes
@@ -357,9 +355,7 @@ Respond with a non-empty string error if an error occurred.
 **Request**:
 
 ```
-{% raw %}
 {{ TAR STREAM }}
-{% endraw %}
 ```
 
 Extract the changeset from the given diff into the layer with the specified `ID`

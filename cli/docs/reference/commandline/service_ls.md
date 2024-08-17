@@ -1,29 +1,26 @@
----
-title: "service ls"
-description: "The service ls command description and usage"
-keywords: "service, ls"
----
-
 # service ls
 
-```Markdown
-Usage:  docker service ls [OPTIONS]
-
+<!---MARKER_GEN_START-->
 List services
 
-Aliases:
-  ls, list
+### Aliases
 
-Options:
-  -f, --filter filter   Filter output based on conditions provided
-      --format string   Pretty-print services using a Go template
-      --help            Print usage
-  -q, --quiet           Only display IDs
-```
+`docker service ls`, `docker service list`
+
+### Options
+
+| Name                                   | Type     | Default | Description                                                                                                                                                                                                                                                                                                                                                                                                                          |
+|:---------------------------------------|:---------|:--------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`-f`](#filter), [`--filter`](#filter) | `filter` |         | Filter output based on conditions provided                                                                                                                                                                                                                                                                                                                                                                                           |
+| [`--format`](#format)                  | `string` |         | Format output using a custom template:<br>'table':            Print output in table format with column headers (default)<br>'table TEMPLATE':   Print output in table format using the given Go template<br>'json':             Print in JSON format<br>'TEMPLATE':         Print output using the given Go template.<br>Refer to https://docs.docker.com/go/formatting/ for more information about formatting output with templates |
+| `-q`, `--quiet`                        |          |         | Only display IDs                                                                                                                                                                                                                                                                                                                                                                                                                     |
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
-This command lists services are running in the swarm.
+This command lists services that are running in the swarm.
 
 > **Note**
 >
@@ -46,7 +43,7 @@ iwe3278osahj  mongo     global          7/7                  mongo:3.3
 hh08h9uu8uwr  job       replicated-job  1/1 (3/5 completed)  nginx:latest
 ```
 
-The `REPLICAS` column shows both the *actual* and *desired* number of tasks for
+The `REPLICAS` column shows both the actual and desired number of tasks for
 the service. If the service is in `replicated-job` or `global-job`, it will
 additionally show the completion status of the job as completed tasks over
 total tasks the job will execute.
@@ -54,7 +51,7 @@ total tasks the job will execute.
 ### <a name="filter"></a> Filtering (--filter)
 
 The filtering flag (`-f` or `--filter`) format is of "key=value". If there is more
-than one filter, then pass multiple flags (e.g., `--filter "foo=bar" --filter "bif=baz"`)
+than one filter, then pass multiple flags (e.g., `--filter "foo=bar" --filter "bif=baz"`).
 
 The currently supported filters are:
 
@@ -65,7 +62,9 @@ The currently supported filters are:
 
 #### id
 
-The `id` filter matches all or part of a service's id.
+The `id` filter matches all or the prefix of a service's ID.
+
+The following filter matches services with an ID starting with `0bcjw`:
 
 ```console
 $ docker service ls -f "id=0bcjw"
@@ -113,9 +112,9 @@ w7y0v2yrn620        top                 global              1/1                 
 
 #### name
 
-The `name` filter matches on all or part of a service's name.
+The `name` filter matches on all or the prefix of a service's name.
 
-The following filter matches services with a name containing `redis`.
+The following filter matches services with a name starting with `redis`.
 
 ```console
 $ docker service ls --filter name=redis
@@ -151,6 +150,13 @@ $ docker service ls --format "{{.ID}}: {{.Mode}} {{.Replicas}}"
 
 0zmvwuiu3vue: replicated 10/10
 fm6uf97exkul: global 5/5
+```
+
+To list all services in JSON format, use the `json` directive:
+
+```console
+$ docker service ls --format json
+{"ID":"ssniordqolsi","Image":"hello-world:latest","Mode":"replicated","Name":"hello","Ports":"","Replicas":"0/1"}
 ```
 
 ## Related commands

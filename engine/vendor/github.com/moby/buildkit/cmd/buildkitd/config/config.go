@@ -1,52 +1,54 @@
 package config
 
-import "github.com/BurntSushi/toml"
+import (
+	resolverconfig "github.com/moby/buildkit/util/resolver/config"
+)
 
 // Config provides containerd configuration data for the server
 type Config struct {
 	Debug bool `toml:"debug"`
+	Trace bool `toml:"trace"`
 
 	// Root is the path to a directory where buildkit will store persistent data
 	Root string `toml:"root"`
 
-	//Entitlements e.g. security.insecure, network.host
+	// Entitlements e.g. security.insecure, network.host
 	Entitlements []string `toml:"insecure-entitlements"`
+
+	// LogFormat is the format of the logs. It can be "json" or "text".
+	Log LogConfig `toml:"log"`
+
 	// GRPC configuration settings
 	GRPC GRPCConfig `toml:"grpc"`
+
+	OTEL OTELConfig `toml:"otel"`
 
 	Workers struct {
 		OCI        OCIConfig        `toml:"oci"`
 		Containerd ContainerdConfig `toml:"containerd"`
 	} `toml:"worker"`
 
-	Registries map[string]RegistryConfig `toml:"registry"`
+	Registries map[string]resolverconfig.RegistryConfig `toml:"registry"`
 
 	DNS *DNSConfig `toml:"dns"`
+
+	History *HistoryConfig `toml:"history"`
+}
+
+type LogConfig struct {
+	Format string `toml:"format"`
 }
 
 type GRPCConfig struct {
-	Address      []string `toml:"address"`
-	DebugAddress string   `toml:"debugAddress"`
-	UID          int      `toml:"uid"`
-	GID          int      `toml:"gid"`
+	Address            []string `toml:"address"`
+	DebugAddress       string   `toml:"debugAddress"`
+	UID                *int     `toml:"uid"`
+	GID                *int     `toml:"gid"`
+	SecurityDescriptor string   `toml:"securityDescriptor"`
 
 	TLS TLSConfig `toml:"tls"`
 	// MaxRecvMsgSize int    `toml:"max_recv_message_size"`
 	// MaxSendMsgSize int    `toml:"max_send_message_size"`
-}
-
-type RegistryConfig struct {
-	Mirrors      []string     `toml:"mirrors"`
-	PlainHTTP    *bool        `toml:"http"`
-	Insecure     *bool        `toml:"insecure"`
-	RootCAs      []string     `toml:"ca"`
-	KeyPairs     []TLSKeyPair `toml:"keypair"`
-	TLSConfigDir []string     `toml:"tlsconfigdir"`
-}
-
-type TLSKeyPair struct {
-	Key         string `toml:"key"`
-	Certificate string `toml:"cert"`
 }
 
 type TLSConfig struct {
@@ -55,9 +57,13 @@ type TLSConfig struct {
 	CA   string `toml:"ca"`
 }
 
+type OTELConfig struct {
+	SocketPath string `toml:"socketPath"`
+}
+
 type GCConfig struct {
 	GC            *bool      `toml:"gc"`
-	GCKeepStorage int64      `toml:"gckeepstorage"`
+	GCKeepStorage DiskSpace  `toml:"gckeepstorage"`
 	GCPolicy      []GCPolicy `toml:"gcpolicy"`
 }
 
@@ -65,6 +71,9 @@ type NetworkConfig struct {
 	Mode          string `toml:"networkMode"`
 	CNIConfigPath string `toml:"cniConfigPath"`
 	CNIBinaryPath string `toml:"cniBinaryPath"`
+	CNIPoolSize   int    `toml:"cniPoolSize"`
+	BridgeName    string `toml:"bridgeName"`
+	BridgeSubnet  string `toml:"bridgeSubnet"`
 }
 
 type OCIConfig struct {
@@ -82,15 +91,22 @@ type OCIConfig struct {
 	// For use in storing the OCI worker binary name that will replace buildkit-runc
 	Binary               string `toml:"binary"`
 	ProxySnapshotterPath string `toml:"proxySnapshotterPath"`
+	DefaultCgroupParent  string `toml:"defaultCgroupParent"`
 
 	// StargzSnapshotterConfig is configuration for stargz snapshotter.
-	// Decoding this is delayed in order to remove the dependency from this
-	// config pkg to stargz snapshotter's config pkg.
-	StargzSnapshotterConfig toml.Primitive `toml:"stargzSnapshotter"`
+	// We use a generic map[string]interface{} in order to remove the dependency
+	// on stargz snapshotter's config pkg from our config.
+	StargzSnapshotterConfig map[string]interface{} `toml:"stargzSnapshotter"`
 
 	// ApparmorProfile is the name of the apparmor profile that should be used to constrain build containers.
 	// The profile should already be loaded (by a higher level system) before creating a worker.
 	ApparmorProfile string `toml:"apparmor-profile"`
+
+	// SELinux enables applying SELinux labels.
+	SELinux bool `toml:"selinux"`
+
+	// MaxParallelism is the maximum number of parallel build steps that can be run at the same time.
+	MaxParallelism int `toml:"max-parallelism"`
 }
 
 type ContainerdConfig struct {
@@ -99,6 +115,7 @@ type ContainerdConfig struct {
 	Labels    map[string]string `toml:"labels"`
 	Platforms []string          `toml:"platforms"`
 	Namespace string            `toml:"namespace"`
+	Runtime   ContainerdRuntime `toml:"runtime"`
 	GCConfig
 	NetworkConfig
 	Snapshotter string `toml:"snapshotter"`
@@ -106,17 +123,35 @@ type ContainerdConfig struct {
 	// ApparmorProfile is the name of the apparmor profile that should be used to constrain build containers.
 	// The profile should already be loaded (by a higher level system) before creating a worker.
 	ApparmorProfile string `toml:"apparmor-profile"`
+
+	// SELinux enables applying SELinux labels.
+	SELinux bool `toml:"selinux"`
+
+	MaxParallelism int `toml:"max-parallelism"`
+
+	Rootless bool `toml:"rootless"`
+}
+
+type ContainerdRuntime struct {
+	Name    string                 `toml:"name"`
+	Path    string                 `toml:"path"`
+	Options map[string]interface{} `toml:"options"`
 }
 
 type GCPolicy struct {
-	All          bool     `toml:"all"`
-	KeepBytes    int64    `toml:"keepBytes"`
-	KeepDuration int64    `toml:"keepDuration"`
-	Filters      []string `toml:"filters"`
+	All          bool      `toml:"all"`
+	KeepBytes    DiskSpace `toml:"keepBytes"`
+	KeepDuration Duration  `toml:"keepDuration"`
+	Filters      []string  `toml:"filters"`
 }
 
 type DNSConfig struct {
 	Nameservers   []string `toml:"nameservers"`
 	Options       []string `toml:"options"`
 	SearchDomains []string `toml:"searchDomains"`
+}
+
+type HistoryConfig struct {
+	MaxAge     Duration `toml:"maxAge"`
+	MaxEntries int64    `toml:"maxEntries"`
 }

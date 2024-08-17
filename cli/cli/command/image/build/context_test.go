@@ -11,28 +11,31 @@ import (
 	"testing"
 
 	"github.com/docker/docker/pkg/archive"
-	"github.com/docker/docker/pkg/fileutils"
+	"github.com/moby/patternmatcher"
 	"gotest.tools/v3/assert"
 	is "gotest.tools/v3/assert/cmp"
 )
 
 const dockerfileContents = "FROM busybox"
 
-func prepareEmpty(t *testing.T) string {
+func prepareEmpty(_ *testing.T) string {
 	return ""
 }
 
 func prepareNoFiles(t *testing.T) string {
+	t.Helper()
 	return createTestTempDir(t)
 }
 
 func prepareOneFile(t *testing.T) string {
+	t.Helper()
 	contextDir := createTestTempDir(t)
 	createTestTempFile(t, contextDir, DefaultDockerfileName, dockerfileContents)
 	return contextDir
 }
 
 func testValidateContextDirectory(t *testing.T, prepare func(t *testing.T) string, excludes []string) {
+	t.Helper()
 	contextDir := prepare(t)
 	err := ValidateContextDirectory(contextDir, excludes)
 	assert.NilError(t, err)
@@ -119,7 +122,6 @@ func TestGetContextFromLocalDirWithCustomDockerfile(t *testing.T) {
 
 func TestGetContextFromReaderString(t *testing.T) {
 	tarArchive, relDockerfile, err := GetContextFromReader(io.NopCloser(strings.NewReader(dockerfileContents)), "")
-
 	if err != nil {
 		t.Fatalf("Error when executing GetContextFromReader: %s", err)
 	}
@@ -127,7 +129,6 @@ func TestGetContextFromReaderString(t *testing.T) {
 	tarReader := tar.NewReader(tarArchive)
 
 	_, err = tarReader.Next()
-
 	if err != nil {
 		t.Fatalf("Error when reading tar archive: %s", err)
 	}
@@ -151,6 +152,13 @@ func TestGetContextFromReaderString(t *testing.T) {
 	if relDockerfile != DefaultDockerfileName {
 		t.Fatalf("Relative path not equals %s, got: %s", DefaultDockerfileName, relDockerfile)
 	}
+}
+
+func TestGetContextFromReaderStringConflict(t *testing.T) {
+	rdr, relDockerfile, err := GetContextFromReader(io.NopCloser(strings.NewReader(dockerfileContents)), "custom.Dockerfile")
+	assert.Check(t, is.Equal(rdr, nil))
+	assert.Check(t, is.Equal(relDockerfile, ""))
+	assert.Check(t, is.ErrorContains(err, "ambiguous Dockerfile source: both stdin and flag correspond to Dockerfiles"))
 }
 
 func TestGetContextFromReaderTar(t *testing.T) {
@@ -234,7 +242,7 @@ func createTestTempDir(t *testing.T) string {
 func createTestTempFile(t *testing.T, dir, filename, contents string) string {
 	t.Helper()
 	filePath := filepath.Join(dir, filename)
-	err := os.WriteFile(filePath, []byte(contents), 0777)
+	err := os.WriteFile(filePath, []byte(contents), 0o777)
 	assert.NilError(t, err)
 	return filePath
 }
@@ -244,6 +252,7 @@ func createTestTempFile(t *testing.T, dir, filename, contents string) string {
 // This function is meant to be executed as a deferred call.
 // When an error occurs, it terminates the test.
 func chdir(t *testing.T, dir string) {
+	t.Helper()
 	workingDirectory, err := os.Getwd()
 	assert.NilError(t, err)
 	assert.NilError(t, os.Chdir(dir))
@@ -253,7 +262,7 @@ func chdir(t *testing.T, dir string) {
 }
 
 func TestIsArchive(t *testing.T) {
-	var testcases = []struct {
+	testcases := []struct {
 		doc      string
 		header   []byte
 		expected bool
@@ -285,7 +294,7 @@ func TestIsArchive(t *testing.T) {
 }
 
 func TestDetectArchiveReader(t *testing.T) {
-	var testcases = []struct {
+	testcases := []struct {
 		file     string
 		desc     string
 		expected bool
@@ -317,9 +326,9 @@ func TestDetectArchiveReader(t *testing.T) {
 	}
 }
 
-func mustPatternMatcher(t *testing.T, patterns []string) *fileutils.PatternMatcher {
+func mustPatternMatcher(t *testing.T, patterns []string) *patternmatcher.PatternMatcher {
 	t.Helper()
-	pm, err := fileutils.NewPatternMatcher(patterns)
+	pm, err := patternmatcher.New(patterns)
 	if err != nil {
 		t.Fatal("failed to construct pattern matcher: ", err)
 	}

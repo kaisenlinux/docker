@@ -1,21 +1,16 @@
----
-title: "trust sign"
-description: "The sign command description and usage"
-keywords: "sign, notary, trust"
----
-
 # trust sign
 
-```markdown
-Usage:  docker trust sign [OPTIONS] IMAGE:TAG
-
+<!---MARKER_GEN_START-->
 Sign an image
 
-Options:
-      --help    print usage
-      --local   force the signing of a local image
+### Options
 
-```
+| Name      | Type | Default | Description                 |
+|:----------|:-----|:--------|:----------------------------|
+| `--local` |      |         | Sign a locally tagged image |
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
@@ -23,7 +18,7 @@ Options:
 
 ## Examples
 
-### Sign a tag as a repo admin
+### Sign a tag as a repository admin
 
 Given an image:
 
@@ -130,14 +125,14 @@ Repository Key: ecc457614c9fc399da523a5f4e24fe306a0a6ee1cc79a10e4555b3c6ab02f71e
 Root Key:       3cb2228f6561e58f46dbc4cda4fcaff9d5ef22e865a94636f82450d1d2234949
 ```
 
-## Initialize a new repo and sign a tag
+## Initialize a new repository and sign a tag
 
-When signing an image on a repo for the first time, `docker trust sign` sets up new keys before signing the image.
+When signing an image on a repository for the first time, `docker trust sign` sets up new keys before signing the image.
 
 ```console
 $ docker trust inspect --pretty example/trust-demo
 
-No signatures or cannot access example/trust-demo
+no signatures or cannot access example/trust-demo
 ```
 
 ```console

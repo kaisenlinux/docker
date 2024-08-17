@@ -7,6 +7,7 @@ import (
 
 	"github.com/docker/cli/cli"
 	"github.com/docker/cli/cli/command"
+	"github.com/docker/cli/cli/command/completion"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -27,18 +28,21 @@ func NewKillCommand(dockerCli command.Cli) *cobra.Command {
 		Args:  cli.RequiresMinArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts.containers = args
-			return runKill(dockerCli, &opts)
+			return runKill(cmd.Context(), dockerCli, &opts)
 		},
+		Annotations: map[string]string{
+			"aliases": "docker container kill, docker kill",
+		},
+		ValidArgsFunction: completion.ContainerNames(dockerCli, false),
 	}
 
 	flags := cmd.Flags()
-	flags.StringVarP(&opts.signal, "signal", "s", "KILL", "Signal to send to the container")
+	flags.StringVarP(&opts.signal, "signal", "s", "", "Signal to send to the container")
 	return cmd
 }
 
-func runKill(dockerCli command.Cli, opts *killOptions) error {
+func runKill(ctx context.Context, dockerCli command.Cli, opts *killOptions) error {
 	var errs []string
-	ctx := context.Background()
 	errChan := parallelOperation(ctx, opts.containers, func(ctx context.Context, container string) error {
 		return dockerCli.Client().ContainerKill(ctx, container, opts.signal)
 	})

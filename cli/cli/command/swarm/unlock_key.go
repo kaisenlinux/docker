@@ -7,6 +7,7 @@ import (
 
 	"github.com/docker/cli/cli"
 	"github.com/docker/cli/cli/command"
+	"github.com/docker/cli/cli/command/completion"
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -25,8 +26,13 @@ func newUnlockKeyCommand(dockerCli command.Cli) *cobra.Command {
 		Short: "Manage the unlock key",
 		Args:  cli.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runUnlockKey(dockerCli, opts)
+			return runUnlockKey(cmd.Context(), dockerCli, opts)
 		},
+		Annotations: map[string]string{
+			"version": "1.24",
+			"swarm":   "manager",
+		},
+		ValidArgsFunction: completion.NoComplete,
 	}
 
 	flags := cmd.Flags()
@@ -36,9 +42,8 @@ func newUnlockKeyCommand(dockerCli command.Cli) *cobra.Command {
 	return cmd
 }
 
-func runUnlockKey(dockerCli command.Cli, opts unlockKeyOptions) error {
+func runUnlockKey(ctx context.Context, dockerCli command.Cli, opts unlockKeyOptions) error {
 	client := dockerCli.Client()
-	ctx := context.Background()
 
 	if opts.rotate {
 		flags := swarm.UpdateFlags{RotateManagerUnlockKey: true}

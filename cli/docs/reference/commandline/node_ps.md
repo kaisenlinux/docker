@@ -1,25 +1,20 @@
----
-title: "node ps"
-description: "The node ps command description and usage"
-keywords: node, tasks, ps
-aliases: ["/engine/reference/commandline/node_tasks/"]
----
-
 # node ps
 
-```markdown
-Usage:  docker node ps [OPTIONS] [NODE...]
+<!---MARKER_GEN_START-->
+List tasks running on one or more nodes, defaults to current node
 
-List tasks running on one or more nodes, defaults to current node.
+### Options
 
-Options:
-  -f, --filter filter   Filter output based on conditions provided
-      --format string   Pretty-print tasks using a Go template
-      --help            Print usage
-      --no-resolve      Do not map IDs to Names
-      --no-trunc        Do not truncate output
-  -q, --quiet           Only display task IDs
-```
+| Name                                   | Type     | Default | Description                                |
+|:---------------------------------------|:---------|:--------|:-------------------------------------------|
+| [`-f`](#filter), [`--filter`](#filter) | `filter` |         | Filter output based on conditions provided |
+| [`--format`](#format)                  | `string` |         | Pretty-print tasks using a Go template     |
+| `--no-resolve`                         |          |         | Do not map IDs to Names                    |
+| `--no-trunc`                           |          |         | Do not truncate output                     |
+| `-q`, `--quiet`                        |          |         | Only display task IDs                      |
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
@@ -49,8 +44,9 @@ redis.10.0tgctg8h8cech4w0k0gwrmr23  redis:3.0.6  swarm-manager1  Running        
 
 ### <a name="filter"></a> Filtering (--filter)
 
-The filtering flag (`-f` or `--filter`) format is of "key=value". If there is more
-than one filter, then pass multiple flags (e.g., `--filter "foo=bar" --filter "bif=baz"`)
+The filtering flag (`-f` or `--filter`) format is of "key=value". If there is
+more than one filter, then pass multiple flags (e.g., `--filter "foo=bar"
+--filter "bif=baz"`).
 
 The currently supported filters are:
 

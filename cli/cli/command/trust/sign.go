@@ -12,7 +12,9 @@ import (
 	"github.com/docker/cli/cli/command"
 	"github.com/docker/cli/cli/command/image"
 	"github.com/docker/cli/cli/trust"
-	"github.com/docker/docker/api/types"
+	imagetypes "github.com/docker/docker/api/types/image"
+	registrytypes "github.com/docker/docker/api/types/registry"
+	apiclient "github.com/docker/docker/client"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/theupdateframework/notary/client"
@@ -24,7 +26,7 @@ type signOptions struct {
 	imageName string
 }
 
-func newSignCommand(dockerCli command.Cli) *cobra.Command {
+func newSignCommand(dockerCLI command.Cli) *cobra.Command {
 	options := signOptions{}
 	cmd := &cobra.Command{
 		Use:   "sign IMAGE:TAG",
@@ -32,7 +34,7 @@ func newSignCommand(dockerCli command.Cli) *cobra.Command {
 		Args:  cli.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options.imageName = args[0]
-			return runSignImage(dockerCli, options)
+			return runSignImage(cmd.Context(), dockerCLI, options)
 		},
 	}
 	flags := cmd.Flags()
@@ -40,10 +42,9 @@ func newSignCommand(dockerCli command.Cli) *cobra.Command {
 	return cmd
 }
 
-func runSignImage(cli command.Cli, options signOptions) error {
+func runSignImage(ctx context.Context, dockerCLI command.Cli, options signOptions) error {
 	imageName := options.imageName
-	ctx := context.Background()
-	imgRefAndAuth, err := trust.GetImageReferencesAndAuth(ctx, nil, image.AuthResolver(cli), imageName)
+	imgRefAndAuth, err := trust.GetImageReferencesAndAuth(ctx, image.AuthResolver(dockerCLI), imageName)
 	if err != nil {
 		return err
 	}
@@ -51,7 +52,7 @@ func runSignImage(cli command.Cli, options signOptions) error {
 		return err
 	}
 
-	notaryRepo, err := cli.NotaryClient(imgRefAndAuth, trust.ActionsPushAndPull)
+	notaryRepo, err := dockerCLI.NotaryClient(imgRefAndAuth, trust.ActionsPushAndPull)
 	if err != nil {
 		return trust.NotaryError(imgRefAndAuth.Reference().Name(), err)
 	}
@@ -65,7 +66,7 @@ func runSignImage(cli command.Cli, options signOptions) error {
 		switch err.(type) {
 		case client.ErrRepoNotInitialized, client.ErrRepositoryNotExist:
 			// before initializing a new repo, check that the image exists locally:
-			if err := checkLocalImageExistence(ctx, cli, imageName); err != nil {
+			if err := checkLocalImageExistence(ctx, dockerCLI.Client(), imageName); err != nil {
 				return err
 			}
 
@@ -74,39 +75,39 @@ func runSignImage(cli command.Cli, options signOptions) error {
 				return trust.NotaryError(imgRefAndAuth.Reference().Name(), err)
 			}
 
-			fmt.Fprintf(cli.Out(), "Created signer: %s\n", imgRefAndAuth.AuthConfig().Username)
-			fmt.Fprintf(cli.Out(), "Finished initializing signed repository for %s\n", imageName)
+			fmt.Fprintf(dockerCLI.Out(), "Created signer: %s\n", imgRefAndAuth.AuthConfig().Username)
+			fmt.Fprintf(dockerCLI.Out(), "Finished initializing signed repository for %s\n", imageName)
 		default:
 			return trust.NotaryError(imgRefAndAuth.RepoInfo().Name.Name(), err)
 		}
 	}
-	requestPrivilege := command.RegistryAuthenticationPrivilegedFunc(cli, imgRefAndAuth.RepoInfo().Index, "push")
+	requestPrivilege := command.RegistryAuthenticationPrivilegedFunc(dockerCLI, imgRefAndAuth.RepoInfo().Index, "push")
 	target, err := createTarget(notaryRepo, imgRefAndAuth.Tag())
 	if err != nil || options.local {
 		switch err := err.(type) {
 		// If the error is nil then the local flag is set
 		case client.ErrNoSuchTarget, client.ErrRepositoryNotExist, nil:
 			// Fail fast if the image doesn't exist locally
-			if err := checkLocalImageExistence(ctx, cli, imageName); err != nil {
+			if err := checkLocalImageExistence(ctx, dockerCLI.Client(), imageName); err != nil {
 				return err
 			}
-			fmt.Fprintf(cli.Err(), "Signing and pushing trust data for local image %s, may overwrite remote trust data\n", imageName)
+			fmt.Fprintf(dockerCLI.Err(), "Signing and pushing trust data for local image %s, may overwrite remote trust data\n", imageName)
 
-			authConfig := command.ResolveAuthConfig(ctx, cli, imgRefAndAuth.RepoInfo().Index)
-			encodedAuth, err := command.EncodeAuthToBase64(authConfig)
+			authConfig := command.ResolveAuthConfig(dockerCLI.ConfigFile(), imgRefAndAuth.RepoInfo().Index)
+			encodedAuth, err := registrytypes.EncodeAuthConfig(authConfig)
 			if err != nil {
 				return err
 			}
-			options := types.ImagePushOptions{
+			options := imagetypes.PushOptions{
 				RegistryAuth:  encodedAuth,
 				PrivilegeFunc: requestPrivilege,
 			}
-			return image.TrustedPush(ctx, cli, imgRefAndAuth.RepoInfo(), imgRefAndAuth.Reference(), *imgRefAndAuth.AuthConfig(), options)
+			return image.TrustedPush(ctx, dockerCLI, imgRefAndAuth.RepoInfo(), imgRefAndAuth.Reference(), *imgRefAndAuth.AuthConfig(), options)
 		default:
 			return err
 		}
 	}
-	return signAndPublishToTarget(cli.Out(), imgRefAndAuth, notaryRepo, target)
+	return signAndPublishToTarget(dockerCLI.Out(), imgRefAndAuth, notaryRepo, target)
 }
 
 func signAndPublishToTarget(out io.Writer, imgRefAndAuth trust.ImageRefAndAuth, notaryRepo client.Repository, target client.Target) error {
@@ -132,15 +133,15 @@ func validateTag(imgRefAndAuth trust.ImageRefAndAuth) error {
 	tag := imgRefAndAuth.Tag()
 	if tag == "" {
 		if imgRefAndAuth.Digest() != "" {
-			return fmt.Errorf("cannot use a digest reference for IMAGE:TAG")
+			return errors.New("cannot use a digest reference for IMAGE:TAG")
 		}
-		return fmt.Errorf("No tag specified for %s", imgRefAndAuth.Name())
+		return fmt.Errorf("no tag specified for %s", imgRefAndAuth.Name())
 	}
 	return nil
 }
 
-func checkLocalImageExistence(ctx context.Context, cli command.Cli, imageName string) error {
-	_, _, err := cli.Client().ImageInspectWithRaw(ctx, imageName)
+func checkLocalImageExistence(ctx context.Context, apiClient apiclient.APIClient, imageName string) error {
+	_, _, err := apiClient.ImageInspectWithRaw(ctx, imageName)
 	return err
 }
 
@@ -148,7 +149,7 @@ func createTarget(notaryRepo client.Repository, tag string) (client.Target, erro
 	target := &client.Target{}
 	var err error
 	if tag == "" {
-		return *target, fmt.Errorf("No tag specified")
+		return *target, errors.New("no tag specified")
 	}
 	target.Name = tag
 	target.Hashes, target.Length, err = getSignedManifestHashAndSize(notaryRepo, tag)

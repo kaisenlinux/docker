@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/distribution/reference"
 	"github.com/docker/cli/cli/manifest/types"
-	"github.com/docker/distribution/reference"
 	"github.com/google/go-cmp/cmp"
 	"gotest.tools/v3/assert"
 	is "gotest.tools/v3/assert/cmp"
@@ -58,7 +58,7 @@ func TestStoreSaveAndGet(t *testing.T) {
 	err := store.Save(listRef, ref("exists"), data)
 	assert.NilError(t, err)
 
-	var testcases = []struct {
+	testcases := []struct {
 		listRef     reference.Reference
 		manifestRef reference.Reference
 		expected    types.ImageManifest

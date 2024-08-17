@@ -3,10 +3,11 @@ package plugin
 import (
 	"context"
 
+	"github.com/distribution/reference"
 	"github.com/docker/cli/cli"
 	"github.com/docker/cli/cli/command"
 	"github.com/docker/cli/cli/command/image"
-	"github.com/docker/distribution/reference"
+	registrytypes "github.com/docker/docker/api/types/registry"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/docker/docker/registry"
 	"github.com/pkg/errors"
@@ -26,7 +27,7 @@ func newPushCommand(dockerCli command.Cli) *cobra.Command {
 		Args:  cli.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts.name = args[0]
-			return runPush(dockerCli, opts)
+			return runPush(cmd.Context(), dockerCli, opts)
 		},
 	}
 
@@ -37,7 +38,7 @@ func newPushCommand(dockerCli command.Cli) *cobra.Command {
 	return cmd
 }
 
-func runPush(dockerCli command.Cli, opts pushOptions) error {
+func runPush(ctx context.Context, dockerCli command.Cli, opts pushOptions) error {
 	named, err := reference.ParseNormalizedNamed(opts.name)
 	if err != nil {
 		return err
@@ -48,15 +49,12 @@ func runPush(dockerCli command.Cli, opts pushOptions) error {
 
 	named = reference.TagNameOnly(named)
 
-	ctx := context.Background()
-
 	repoInfo, err := registry.ParseRepositoryInfo(named)
 	if err != nil {
 		return err
 	}
-	authConfig := command.ResolveAuthConfig(ctx, dockerCli, repoInfo.Index)
-
-	encodedAuth, err := command.EncodeAuthToBase64(authConfig)
+	authConfig := command.ResolveAuthConfig(dockerCli.ConfigFile(), repoInfo.Index)
+	encodedAuth, err := registrytypes.EncodeAuthConfig(authConfig)
 	if err != nil {
 		return err
 	}
@@ -68,7 +66,6 @@ func runPush(dockerCli command.Cli, opts pushOptions) error {
 	defer responseBody.Close()
 
 	if !opts.untrusted {
-		repoInfo.Class = "plugin"
 		return image.PushTrustedReference(dockerCli, repoInfo, named, authConfig, responseBody)
 	}
 

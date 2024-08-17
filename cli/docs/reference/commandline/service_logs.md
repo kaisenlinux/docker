@@ -1,26 +1,24 @@
----
-title: "service logs"
-description: "The service logs command description and usage"
-keywords: "service, task, logs"
----
-
 # service logs
 
-```Markdown
-Usage:  docker service logs [OPTIONS] SERVICE|TASK
-
+<!---MARKER_GEN_START-->
 Fetch the logs of a service or task
 
-Options:
-  -f, --follow         Follow log output
-      --help           Print usage
-      --no-resolve     Do not map IDs to Names in output
-      --no-task-ids    Do not include task IDs in output
-      --no-trunc        Do not truncate output
-      --since string   Show logs since timestamp
-  -n, --tail string    Number of lines to show from the end of the logs (default "all")
-  -t, --timestamps     Show timestamps
-```
+### Options
+
+| Name                 | Type     | Default | Description                                                                                     |
+|:---------------------|:---------|:--------|:------------------------------------------------------------------------------------------------|
+| `--details`          |          |         | Show extra details provided to logs                                                             |
+| `-f`, `--follow`     |          |         | Follow log output                                                                               |
+| `--no-resolve`       |          |         | Do not map IDs to Names in output                                                               |
+| `--no-task-ids`      |          |         | Do not include task IDs in output                                                               |
+| `--no-trunc`         |          |         | Do not truncate output                                                                          |
+| `--raw`              |          |         | Do not neatly format logs                                                                       |
+| `--since`            | `string` |         | Show logs since timestamp (e.g. `2013-01-02T13:23:37Z`) or relative (e.g. `42m` for 42 minutes) |
+| `-n`, `--tail`       | `string` | `all`   | Number of lines to show from the end of the logs                                                |
+| `-t`, `--timestamps` |          |         | Show timestamps                                                                                 |
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
@@ -52,7 +50,7 @@ the service's `STDOUT` and `STDERR`.
 Passing a negative number or a non-integer to `--tail` is invalid and the
 value is set to `all` in that case.
 
-The `docker service logs --timestamps` command will add an [RFC3339Nano timestamp](https://golang.org/pkg/time/#pkg-constants)
+The `docker service logs --timestamps` command will add an [RFC3339Nano timestamp](https://pkg.go.dev/time#RFC3339Nano)
 , for example `2014-09-16T06:17:46.000000000Z`, to each
 log entry. To ensure that the timestamps are aligned the
 nano-second part of the timestamp will be padded with zero when necessary.

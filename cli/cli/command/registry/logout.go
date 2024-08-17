@@ -14,27 +14,30 @@ import (
 func NewLogoutCommand(dockerCli command.Cli) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "logout [SERVER]",
-		Short: "Log out from a Docker registry",
-		Long:  "Log out from a Docker registry.\nIf no server is specified, the default is defined by the daemon.",
+		Short: "Log out from a registry",
+		Long:  "Log out from a registry.\nIf no server is specified, the default is defined by the daemon.",
 		Args:  cli.RequiresMaxArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var serverAddress string
 			if len(args) > 0 {
 				serverAddress = args[0]
 			}
-			return runLogout(dockerCli, serverAddress)
+			return runLogout(cmd.Context(), dockerCli, serverAddress)
 		},
+		Annotations: map[string]string{
+			"category-top": "9",
+		},
+		// TODO (thaJeztah) add completion for registries we have authentication stored for
 	}
 
 	return cmd
 }
 
-func runLogout(dockerCli command.Cli, serverAddress string) error {
-	ctx := context.Background()
+func runLogout(_ context.Context, dockerCli command.Cli, serverAddress string) error {
 	var isDefaultRegistry bool
 
 	if serverAddress == "" {
-		serverAddress = command.ElectAuthServer(ctx, dockerCli)
+		serverAddress = registry.IndexServer
 		isDefaultRegistry = true
 	}
 

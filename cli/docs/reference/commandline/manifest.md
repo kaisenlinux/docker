@@ -1,33 +1,41 @@
----
-title: "manifest"
-description: "The manifest command description and usage"
-keywords: "docker, manifest"
----
+# manifest
 
-```markdown
-Usage:  docker manifest COMMAND
+<!---MARKER_GEN_START-->
 
-Manage Docker image manifests and manifest lists
+The **docker manifest** command has subcommands for managing image manifests and
+manifest lists. A manifest list allows you to use one name to refer to the same image
+built for multiple architectures.
 
-Options:
-      --help   Print usage
+To see help for a subcommand, use:
 
-Commands:
-  annotate    Add additional information to a local image manifest
-  create      Create a local manifest list for annotating and pushing to a registry
-  inspect     Display an image manifest, or manifest list
-  push        Push a manifest list to a repository
+    docker manifest CMD --help
 
-```
+For full details on using docker manifest lists, see the registry v2 specification.
+
+
+
+### Subcommands
+
+| Name                               | Description                                                           |
+|:-----------------------------------|:----------------------------------------------------------------------|
+| [`annotate`](manifest_annotate.md) | Add additional information to a local image manifest                  |
+| [`create`](manifest_create.md)     | Create a local manifest list for annotating and pushing to a registry |
+| [`inspect`](manifest_inspect.md)   | Display an image manifest, or manifest list                           |
+| [`push`](manifest_push.md)         | Push a manifest list to a repository                                  |
+| [`rm`](manifest_rm.md)             | Delete one or more manifest lists from local storage                  |
+
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
 The `docker manifest` command by itself performs no action. In order to operate
 on a manifest or manifest list, one of the subcommands must be used.
 
-A single manifest is information about an image, such as layers, size, and digest.
-The docker manifest command also gives users additional information such as the os
-and architecture an image was built for.
+A single manifest is information about an image, such as layers, size, and
+digest. The `docker manifest` command also gives you additional information,
+such as the OS and architecture an image was built for.
 
 A manifest list is a list of image layers that is created by specifying one or
 more (ideally more than one) image names. It can then be used in the same way as
@@ -36,7 +44,7 @@ an image name in `docker pull` and `docker run` commands, for example.
 Ideally a manifest list is created from images that are identical in function for
 different os/arch combinations. For this reason, manifest lists are often referred
 to as "multi-arch images". However, a user could create a manifest list that points
-to two images -- one for windows on amd64, and one for darwin on amd64.
+to two images -- one for Windows on AMD64, and one for Darwin on AMD64.
 
 ### manifest inspect
 
@@ -98,7 +106,7 @@ Options:
 
 ### Working with insecure registries
 
-The manifest command interacts solely with a Docker registry. Because of this,
+The manifest command interacts solely with a registry. Because of this,
 it has no way to query the engine for the list of allowed insecure registries.
 To allow the CLI to interact with an insecure registry, some `docker manifest`
 commands have an `--insecure` flag. For each transaction, such as a `create`,
@@ -135,10 +143,10 @@ $ docker manifest inspect hello-world
 
 ### Inspect an image's manifest and get the os/arch info
 
-The `docker manifest inspect` command takes an optional `--verbose` flag
-that gives you the image's name (Ref), and architecture and os (Platform).
+The `docker manifest inspect` command takes an optional `--verbose` flag that
+gives you the image's name (Ref), as well as the architecture and OS (Platform).
 
-Just as with other docker commands that take image names, you can refer to an image with or
+Just as with other Docker commands that take image names, you can refer to an image with or
 without a tag, or by digest (e.g. `hello-world@sha256:f3b3b28a45160805bb16542c9531888519430e9e6d6ffc09d72261b0d26ff74f`).
 
 Here is an example of inspecting an image's manifest with the `--verbose` flag:

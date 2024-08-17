@@ -1,20 +1,17 @@
----
-title: "config create"
-description: "The config create command description and usage"
-keywords: ["config, create"]
----
-
 # config create
 
-```Markdown
-Usage:  docker config create [OPTIONS] CONFIG [file|-]
+<!---MARKER_GEN_START-->
+Create a config from a file or STDIN
 
-Create a config from a file or STDIN as content
+### Options
 
-Options:
-  -l, --label list               Config labels
-      --template-driver string   Template driver
-```
+| Name                                | Type     | Default | Description     |
+|:------------------------------------|:---------|:--------|:----------------|
+| [`-l`](#label), [`--label`](#label) | `list`   |         | Config labels   |
+| `--template-driver`                 | `string` |         | Template driver |
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
@@ -24,7 +21,7 @@ For detailed information about using configs, refer to [store configuration data
 
 > **Note**
 >
-> This is a cluster management command, and must be executed on a swarm
+> This is a cluster management command, and must be executed on a Swarm
 > manager node. To learn about managers and workers, refer to the
 > [Swarm mode section](https://docs.docker.com/engine/swarm/) in the
 > documentation.
@@ -90,7 +87,6 @@ $ docker config inspect my_config
     }
 ]
 ```
-
 
 ## Related commands
 

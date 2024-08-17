@@ -1,31 +1,31 @@
 debian-bash-completion-no-shebang.patch
-debian-systemd-unit-tasksmax.patch
 # If upstream ever adds EnvFile, remove this patch.
 # (see also https://github.com/docker/docker/pull/7220#issuecomment-50076589)
 debian-systemd-unit-environment-file.patch
 debian-dockerd-binary-location.patch
-debian-cgroupfs-mount-convenience-copy.patch
 debian-nuke-no-prompt.patch
 
 cli-add-go.mod-file.patch
-cli-dont-duplicate-authconfig.patch
 
 engine-add-go.mod-file.patch
-engine-build-against-containerd-v1.5.2.patch
-engine-build-against-runc-1.0.patch
-engine-seccomp-mipsx.patch
-engine-systemd-service-after-containerd.patch
+engine-avoid-hcsshim.patch
+engine-ftbfs-mips.patch
 
-libnetwork-add-go.mod-file.patch
-libnetwork_proto.patch
-libnetwork_proto_no_unrecognized_all.patch
+#libnetwork_proto.patch
 
 test--cli-skip-network-tests.patch
-test--cli-skip-TestRunLabel.patch
+#test--cli-skip-TestRunLabel.patch
 test--cli-skip-TestSignCommandLocalFlag.patch
 test--skip-daemon-oci-linux-pbuilder-tests.patch
-test--skip-pkg-signal-flaky-tests.patch
 test--skip-pkg-system-chtimes-mips64.patch
 test--skip-TestGetRootUIDGID.patch
 test--skip-TestStateRunStop.patch
-avoid-consul.patch
+cli-fix-generate-man.patch
+test_invalid_cert_pem.patch
+test-disable-tests-that-require-root.patch
+test-docker-pull-error.patch
+test--cli-fix-string-issues.patch
+test--cli-TestInitializeFromClientHangs.patch
+test--cli-TestUseHostOverrideEmpty.patch
+test--cli-TestCloseRunningCommand.patch
+grpc-middleware-v1.patch

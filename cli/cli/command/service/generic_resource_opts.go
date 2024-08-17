@@ -7,14 +7,14 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/docker/docker/api/types/swarm"
-	swarmapi "github.com/docker/swarmkit/api"
-	"github.com/docker/swarmkit/api/genericresource"
+	swarmapi "github.com/moby/swarmkit/v2/api"
+	"github.com/moby/swarmkit/v2/api/genericresource"
 )
 
 // GenericResource is a concept that a user can use to advertise user-defined
 // resources on a node and thus better place services based on these resources.
 // E.g: NVIDIA GPUs, Intel FPGAs, ...
-// See https://github.com/docker/swarmkit/blob/master/design/generic_resources.md
+// See https://github.com/moby/swarmkit/blob/de950a7ed842c7b7e47e9451cde9bf8f96031894/design/generic_resources.md
 
 // ValidateSingleGenericResource validates that a single entry in the
 // generic resource list is valid.
@@ -52,7 +52,7 @@ func ParseGenericResources(value []string) ([]swarm.GenericResource, error) {
 
 // genericResourcesFromGRPC converts a GRPC GenericResource to a GenericResource
 func genericResourcesFromGRPC(genericRes []*swarmapi.GenericResource) []swarm.GenericResource {
-	var generic []swarm.GenericResource
+	generic := make([]swarm.GenericResource, 0, len(genericRes))
 	for _, res := range genericRes {
 		var current swarm.GenericResource
 
@@ -95,7 +95,7 @@ func buildGenericResourceMap(genericRes []swarm.GenericResource) (map[string]swa
 }
 
 func buildGenericResourceList(genericRes map[string]swarm.GenericResource) []swarm.GenericResource {
-	var l []swarm.GenericResource
+	l := make([]swarm.GenericResource, 0, len(genericRes))
 
 	for _, res := range genericRes {
 		l = append(l, res)

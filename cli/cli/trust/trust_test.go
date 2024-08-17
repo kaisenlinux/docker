@@ -3,8 +3,8 @@ package trust
 import (
 	"testing"
 
-	"github.com/docker/distribution/reference"
-	digest "github.com/opencontainers/go-digest"
+	"github.com/distribution/reference"
+	"github.com/opencontainers/go-digest"
 	"github.com/theupdateframework/notary/client"
 	"github.com/theupdateframework/notary/passphrase"
 	"github.com/theupdateframework/notary/trustpinning"

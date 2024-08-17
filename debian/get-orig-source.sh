@@ -41,8 +41,6 @@ fi
 # components, with optional '=VERSION'
 COMPONENTS=(
 "docker/cli=v$( debian/helpers/real-upstream-version.sh "$VERSION" )"
-"docker/libnetwork"
-"docker/swarmkit"
 )
 
 DEB_SOURCE="$( dpkg-parsechangelog -SSource )"
@@ -151,8 +149,8 @@ for I in "${COMPONENTS[@]}"; do
     URL="github.com/${C}"
 
     if [ -z "$REV" ]; then
-	# get revision from engine/vendor.conf
-        REV=$( grep "${URL}" "${work_dir}"/*/engine/vendor.conf | head -1 | awk '{print $2}' )
+	# get revision from engine/vendor.mod
+        REV=$( grep "${URL}" "${work_dir}"/*/engine/vendor.mod | head -1 | awk '{print $2}' | cut -d- -f3 )
     fi
     if [ -z "${REV}" ]; then
         error "Could not find commit for ${C}"

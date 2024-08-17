@@ -1,21 +1,17 @@
----
-title: "service inspect"
-description: "The service inspect command description and usage"
-keywords: "service, inspect"
----
-
 # service inspect
 
-```Markdown
-Usage:  docker service inspect [OPTIONS] SERVICE [SERVICE...]
-
+<!---MARKER_GEN_START-->
 Display detailed information on one or more services
 
-Options:
-  -f, --format string   Format the output using the given Go template
-      --help            Print usage
-      --pretty          Print the information in a human friendly format
-```
+### Options
+
+| Name                                   | Type     | Default | Description                                                                                                                                                                                                                                                        |
+|:---------------------------------------|:---------|:--------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`-f`](#format), [`--format`](#format) | `string` |         | Format output using a custom template:<br>'json':             Print in JSON format<br>'TEMPLATE':         Print output using the given Go template.<br>Refer to https://docs.docker.com/go/formatting/ for more information about formatting output with templates |
+| [`--pretty`](#pretty)                  |          |         | Print the information in a human friendly format                                                                                                                                                                                                                   |
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
@@ -24,7 +20,7 @@ Inspects the specified service.
 By default, this renders all results in a JSON array. If a format is specified,
 the given template will be executed for each result.
 
-Go's [text/template](https://golang.org/pkg/text/template/) package
+Go's [text/template](https://pkg.go.dev/text/template) package
 describes all the details of the format.
 
 > **Note**

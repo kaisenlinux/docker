@@ -1,3 +1,6 @@
+// FIXME(thaJeztah): remove once we are a module; the go:build directive prevents go from downgrading language version to go1.16:
+//go:build go1.19
+
 package store
 
 import (
@@ -7,12 +10,16 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"path"
+	"path/filepath"
 	"testing"
 
+	"github.com/docker/docker/errdefs"
 	"gotest.tools/v3/assert"
+	is "gotest.tools/v3/assert/cmp"
 )
 
 type endpoint struct {
@@ -23,16 +30,16 @@ type context struct {
 	Bar string `json:"another_very_recognizable_field_name"`
 }
 
-var testCfg = NewConfig(func() interface{} { return &context{} },
-	EndpointTypeGetter("ep1", func() interface{} { return &endpoint{} }),
-	EndpointTypeGetter("ep2", func() interface{} { return &endpoint{} }),
+var testCfg = NewConfig(func() any { return &context{} },
+	EndpointTypeGetter("ep1", func() any { return &endpoint{} }),
+	EndpointTypeGetter("ep2", func() any { return &endpoint{} }),
 )
 
 func TestExportImport(t *testing.T) {
 	s := New(t.TempDir(), testCfg)
 	err := s.CreateOrUpdate(
 		Metadata{
-			Endpoints: map[string]interface{}{
+			Endpoints: map[string]any{
 				"ep1": endpoint{Foo: "bar"},
 			},
 			Metadata: context{Bar: "baz"},
@@ -86,7 +93,7 @@ func TestRemove(t *testing.T) {
 	s := New(t.TempDir(), testCfg)
 	err := s.CreateOrUpdate(
 		Metadata{
-			Endpoints: map[string]interface{}{
+			Endpoints: map[string]any{
 				"ep1": endpoint{Foo: "bar"},
 			},
 			Metadata: context{Bar: "baz"},
@@ -100,7 +107,7 @@ func TestRemove(t *testing.T) {
 	}))
 	assert.NilError(t, s.Remove("source"))
 	_, err = s.GetMetadata("source")
-	assert.Check(t, IsErrContextDoesNotExist(err))
+	assert.Check(t, is.ErrorType(err, errdefs.IsNotFound))
 	f, err := s.ListTLSFiles("source")
 	assert.NilError(t, err)
 	assert.Equal(t, 0, len(f))
@@ -115,7 +122,7 @@ func TestListEmptyStore(t *testing.T) {
 func TestErrHasCorrectContext(t *testing.T) {
 	_, err := New(t.TempDir(), testCfg).GetMetadata("no-exists")
 	assert.ErrorContains(t, err, "no-exists")
-	assert.Check(t, IsErrContextDoesNotExist(err))
+	assert.Check(t, is.ErrorType(err, errdefs.IsNotFound))
 }
 
 func TestDetectImportContentType(t *testing.T) {
@@ -137,7 +144,7 @@ func TestImportTarInvalid(t *testing.T) {
 	tw := tar.NewWriter(f)
 	hdr := &tar.Header{
 		Name: "dummy-file",
-		Mode: 0600,
+		Mode: 0o600,
 		Size: int64(len("hello world")),
 	}
 	err = tw.WriteHeader(hdr)
@@ -166,14 +173,14 @@ func TestImportZip(t *testing.T) {
 	w := zip.NewWriter(f)
 
 	meta, err := json.Marshal(Metadata{
-		Endpoints: map[string]interface{}{
+		Endpoints: map[string]any{
 			"ep1": endpoint{Foo: "bar"},
 		},
 		Metadata: context{Bar: "baz"},
 		Name:     "source",
 	})
 	assert.NilError(t, err)
-	var files = []struct {
+	files := []struct {
 		Name, Body string
 	}{
 		{"meta.json", string(meta)},
@@ -227,4 +234,29 @@ func TestImportZipInvalid(t *testing.T) {
 	s := New(testDir, testCfg)
 	err = Import("zipInvalid", s, r)
 	assert.ErrorContains(t, err, "unexpected context file")
+}
+
+func TestCorruptMetadata(t *testing.T) {
+	tempDir := t.TempDir()
+	s := New(tempDir, testCfg)
+	err := s.CreateOrUpdate(
+		Metadata{
+			Endpoints: map[string]any{
+				"ep1": endpoint{Foo: "bar"},
+			},
+			Metadata: context{Bar: "baz"},
+			Name:     "source",
+		})
+	assert.NilError(t, err)
+
+	// Simulate the meta.json file getting corrupted
+	// by some external process.
+	contextDir := s.meta.contextDir(contextdirOf("source"))
+	contextFile := filepath.Join(contextDir, metaFile)
+	err = os.WriteFile(contextFile, nil, 0o600)
+	assert.NilError(t, err)
+
+	// Assert that the error message gives the user some clue where to look.
+	_, err = s.GetMetadata("source")
+	assert.ErrorContains(t, err, fmt.Sprintf("parsing %s: unexpected end of JSON input", contextFile))
 }

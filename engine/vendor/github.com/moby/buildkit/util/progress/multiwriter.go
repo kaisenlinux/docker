@@ -18,6 +18,8 @@ type MultiWriter struct {
 	meta    map[string]interface{}
 }
 
+var _ rawProgressWriter = &MultiWriter{}
+
 func NewMultiWriter(opts ...WriterOption) *MultiWriter {
 	mw := &MultiWriter{
 		writers: map[rawProgressWriter]struct{}{},
@@ -34,11 +36,18 @@ func (ps *MultiWriter) Add(pw Writer) {
 	if !ok {
 		return
 	}
+	if pws, ok := rw.(*MultiWriter); ok {
+		if pws.contains(ps) {
+			// this would cause a deadlock, so we should panic instead
+			// NOTE: this can be caused by a cycle in the scheduler states,
+			// which is created by a series of unfortunate edge merges
+			panic("multiwriter loop detected")
+		}
+	}
+
 	ps.mu.Lock()
 	plist := make([]*Progress, 0, len(ps.items))
-	for _, p := range ps.items {
-		plist = append(plist, p)
-	}
+	plist = append(plist, ps.items...)
 	sort.Slice(plist, func(i, j int) bool {
 		return plist[i].Timestamp.Before(plist[j].Timestamp)
 	})
@@ -67,7 +76,7 @@ func (ps *MultiWriter) Write(id string, v interface{}) error {
 		Sys:       v,
 		meta:      ps.meta,
 	}
-	return ps.WriteRawProgress(p)
+	return ps.writeRawProgress(p)
 }
 
 func (ps *MultiWriter) WriteRawProgress(p *Progress) error {
@@ -101,4 +110,25 @@ func (ps *MultiWriter) writeRawProgress(p *Progress) error {
 
 func (ps *MultiWriter) Close() error {
 	return nil
+}
+
+func (ps *MultiWriter) contains(pw rawProgressWriter) bool {
+	ps.mu.Lock()
+	defer ps.mu.Unlock()
+	_, ok := ps.writers[pw]
+	if ok {
+		return true
+	}
+
+	for w := range ps.writers {
+		w, ok := w.(*MultiWriter)
+		if !ok {
+			continue
+		}
+		if w.contains(pw) {
+			return true
+		}
+	}
+
+	return false
 }

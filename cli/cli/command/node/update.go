@@ -13,9 +13,7 @@ import (
 	"github.com/spf13/pflag"
 )
 
-var (
-	errNoRoleChange = errors.New("role was already set to the requested value")
-)
+var errNoRoleChange = errors.New("role was already set to the requested value")
 
 func newUpdateCommand(dockerCli command.Cli) *cobra.Command {
 	options := newNodeOptions()
@@ -25,29 +23,28 @@ func newUpdateCommand(dockerCli command.Cli) *cobra.Command {
 		Short: "Update a node",
 		Args:  cli.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runUpdate(dockerCli, cmd.Flags(), args[0])
+			return runUpdate(cmd.Context(), dockerCli, cmd.Flags(), args[0])
 		},
 	}
 
 	flags := cmd.Flags()
-	flags.StringVar(&options.role, flagRole, "", `Role of the node ("worker"|"manager")`)
-	flags.StringVar(&options.availability, flagAvailability, "", `Availability of the node ("active"|"pause"|"drain")`)
-	flags.Var(&options.annotations.labels, flagLabelAdd, "Add or update a node label (key=value)")
+	flags.StringVar(&options.role, flagRole, "", `Role of the node ("worker", "manager")`)
+	flags.StringVar(&options.availability, flagAvailability, "", `Availability of the node ("active", "pause", "drain")`)
+	flags.Var(&options.annotations.labels, flagLabelAdd, `Add or update a node label ("key=value")`)
 	labelKeys := opts.NewListOpts(nil)
 	flags.Var(&labelKeys, flagLabelRemove, "Remove a node label if exists")
 	return cmd
 }
 
-func runUpdate(dockerCli command.Cli, flags *pflag.FlagSet, nodeID string) error {
+func runUpdate(ctx context.Context, dockerCli command.Cli, flags *pflag.FlagSet, nodeID string) error {
 	success := func(_ string) {
 		fmt.Fprintln(dockerCli.Out(), nodeID)
 	}
-	return updateNodes(dockerCli, []string{nodeID}, mergeNodeUpdate(flags), success)
+	return updateNodes(ctx, dockerCli, []string{nodeID}, mergeNodeUpdate(flags), success)
 }
 
-func updateNodes(dockerCli command.Cli, nodes []string, mergeNode func(node *swarm.Node) error, success func(nodeID string)) error {
+func updateNodes(ctx context.Context, dockerCli command.Cli, nodes []string, mergeNode func(node *swarm.Node) error, success func(nodeID string)) error {
 	client := dockerCli.Client()
-	ctx := context.Background()
 
 	for _, nodeID := range nodes {
 		node, _, err := client.NodeInspectWithRaw(ctx, nodeID)

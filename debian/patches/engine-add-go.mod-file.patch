@@ -10,9 +10,9 @@ Fix build issue with
  1 file changed, 1 insertion(+)
  create mode 100644 go.mod
 
-Index: docker/engine/go.mod
+Index: docker.io/engine/go.mod
 ===================================================================
 --- /dev/null
-+++ docker/engine/go.mod
++++ docker.io/engine/go.mod
 @@ -0,0 +1 @@
 +module github.com/docker/docker

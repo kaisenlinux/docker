@@ -139,9 +139,9 @@ func TestNetworkCreateErrors(t *testing.T) {
 		}
 		cmd.SetOut(io.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
-
 	}
 }
+
 func TestNetworkCreateWithFlags(t *testing.T) {
 	expectedDriver := "foo"
 	expectedOpts := []network.IPAMConfig{

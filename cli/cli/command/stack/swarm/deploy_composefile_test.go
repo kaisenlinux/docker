@@ -14,12 +14,10 @@ type notFound struct {
 	error
 }
 
-func (n notFound) NotFound() bool {
-	return true
-}
+func (n notFound) NotFound() {}
 
 func TestValidateExternalNetworks(t *testing.T) {
-	var testcases = []struct {
+	testcases := []struct {
 		inspectResponse types.NetworkResource
 		inspectError    error
 		expectedMsg     string

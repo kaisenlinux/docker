@@ -1,23 +1,19 @@
----
-title: "node update"
-description: "The node update command description and usage"
-keywords: "resources, update, dynamically"
----
-
 # update
 
-```markdown
-Usage:  docker node update [OPTIONS] NODE
-
+<!---MARKER_GEN_START-->
 Update a node
 
-Options:
-      --availability string   Availability of the node ("active"|"pause"|"drain")
-      --help                  Print usage
-      --label-add value       Add or update a node label (key=value) (default [])
-      --label-rm value        Remove a node label if exists (default [])
-      --role string           Role of the node ("worker"|"manager")
-```
+### Options
+
+| Name                        | Type     | Default | Description                                           |
+|:----------------------------|:---------|:--------|:------------------------------------------------------|
+| `--availability`            | `string` |         | Availability of the node (`active`, `pause`, `drain`) |
+| [`--label-add`](#label-add) | `list`   |         | Add or update a node label (`key=value`)              |
+| `--label-rm`                | `list`   |         | Remove a node label if exists                         |
+| `--role`                    | `string` |         | Role of the node (`worker`, `manager`)                |
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
@@ -60,7 +56,7 @@ $ docker node update --label-add type=queue worker1
 
 The labels you set for nodes using `docker node update` apply only to the node
 entity within the swarm. Do not confuse them with the docker daemon labels for
-[dockerd](dockerd.md).
+[dockerd](https://docs.docker.com/reference/cli/dockerd/).
 
 For more information about labels, refer to [apply custom
 metadata](https://docs.docker.com/engine/userguide/labels-custom-metadata/).

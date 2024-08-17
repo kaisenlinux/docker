@@ -1,3 +1,6 @@
+// FIXME(thaJeztah): remove once we are a module; the go:build directive prevents go from downgrading language version to go1.16:
+//go:build go1.19
+
 package network
 
 import (
@@ -5,7 +8,9 @@ import (
 
 	"github.com/docker/cli/cli"
 	"github.com/docker/cli/cli/command"
+	"github.com/docker/cli/cli/command/completion"
 	"github.com/docker/cli/cli/command/inspect"
+	flagsHelper "github.com/docker/cli/cli/flags"
 	"github.com/docker/docker/api/types"
 	"github.com/spf13/cobra"
 )
@@ -25,22 +30,21 @@ func newInspectCommand(dockerCli command.Cli) *cobra.Command {
 		Args:  cli.RequiresMinArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts.names = args
-			return runInspect(dockerCli, opts)
+			return runInspect(cmd.Context(), dockerCli, opts)
 		},
+		ValidArgsFunction: completion.NetworkNames(dockerCli),
 	}
 
-	cmd.Flags().StringVarP(&opts.format, "format", "f", "", "Format the output using the given Go template")
+	cmd.Flags().StringVarP(&opts.format, "format", "f", "", flagsHelper.InspectFormatHelp)
 	cmd.Flags().BoolVarP(&opts.verbose, "verbose", "v", false, "Verbose output for diagnostics")
 
 	return cmd
 }
 
-func runInspect(dockerCli command.Cli, opts inspectOptions) error {
+func runInspect(ctx context.Context, dockerCli command.Cli, opts inspectOptions) error {
 	client := dockerCli.Client()
 
-	ctx := context.Background()
-
-	getNetFunc := func(name string) (interface{}, []byte, error) {
+	getNetFunc := func(name string) (any, []byte, error) {
 		return client.NetworkInspectWithRaw(ctx, name, types.NetworkInspectOptions{Verbose: opts.verbose})
 	}
 

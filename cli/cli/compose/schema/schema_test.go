@@ -1,3 +1,6 @@
+// FIXME(thaJeztah): remove once we are a module; the go:build directive prevents go from downgrading language version to go1.16:
+//go:build go1.19
+
 package schema
 
 import (
@@ -7,7 +10,7 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-type dict map[string]interface{}
+type dict map[string]any
 
 func TestValidate(t *testing.T) {
 	config := dict{
@@ -20,6 +23,10 @@ func TestValidate(t *testing.T) {
 	}
 
 	assert.NilError(t, Validate(config, "3.0"))
+	assert.NilError(t, Validate(config, "3"))
+	assert.NilError(t, Validate(config, ""))
+	assert.ErrorContains(t, Validate(config, "1.0"), "unsupported Compose file version: 1.0")
+	assert.ErrorContains(t, Validate(config, "12345"), "unsupported Compose file version: 12345")
 }
 
 func TestValidateUndefinedTopLevelOption(t *testing.T) {
@@ -94,6 +101,11 @@ func TestValidateCredentialSpecs(t *testing.T) {
 		{version: "3.7", expectedErr: "config"},
 		{version: "3.8"},
 		{version: "3.9"},
+		{version: "3.10"},
+		{version: "3.11"},
+		{version: "3.12"},
+		{version: "3"},
+		{version: ""},
 	}
 
 	for _, tc := range tests {
@@ -153,7 +165,7 @@ func TestValidateInvalidVersion(t *testing.T) {
 	assert.ErrorContains(t, err, "unsupported Compose file version: 2.1")
 }
 
-type array []interface{}
+type array []any
 
 func TestValidatePlacement(t *testing.T) {
 	config := dict{

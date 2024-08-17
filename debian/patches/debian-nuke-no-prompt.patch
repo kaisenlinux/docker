@@ -4,10 +4,10 @@ Forwarded: not-needed
 Author: Dmitry Smirnov <onlyjob@debian.org>
 Description: remove prompt and delay
 
-Index: docker/engine/contrib/nuke-graph-directory.sh
+Index: docker.io/engine/contrib/nuke-graph-directory.sh
 ===================================================================
---- docker.orig/engine/contrib/nuke-graph-directory.sh
-+++ docker/engine/contrib/nuke-graph-directory.sh
+--- docker.io.orig/engine/contrib/nuke-graph-directory.sh
++++ docker.io/engine/contrib/nuke-graph-directory.sh
 @@ -28,13 +28,6 @@ dir="$(readlink -f "$dir")"
  
  echo

@@ -10,9 +10,6 @@ case "$1" in
 		if [ -x /var/lib/docker/nuke-graph-directory.sh ]; then
 			/var/lib/docker/nuke-graph-directory.sh /var/lib/docker
 		fi
-		if getent group docker >/dev/null 2>&1 ; then
-			groupdel --force docker || true
-		fi
 		;;
 
 	*)

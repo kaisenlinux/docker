@@ -1,33 +1,29 @@
----
-title: "login"
-description: "The login command description and usage"
-keywords: "registry, login, image"
----
-
 # login
 
-```markdown
-Usage:  docker login [OPTIONS] [SERVER]
-
-Log in to a Docker registry.
+<!---MARKER_GEN_START-->
+Log in to a registry.
 If no server is specified, the default is defined by the daemon.
 
-Options:
-      --help                    Print usage
-  -p, --password       string   Password
-      --password-stdin          Read password from stdin
-  -u, --username       string   Username
-```
+### Options
+
+| Name                                  | Type     | Default | Description                  |
+|:--------------------------------------|:---------|:--------|:-----------------------------|
+| `-p`, `--password`                    | `string` |         | Password                     |
+| [`--password-stdin`](#password-stdin) |          |         | Take the password from stdin |
+| `-u`, `--username`                    | `string` |         | Username                     |
+
+
+<!---MARKER_GEN_END-->
 
 ## Description
 
-Login to a registry.
+Log in to a registry.
 
 ## Examples
 
 ### Login to a self-hosted registry
 
-If you want to login to a self-hosted registry you can specify this by
+If you want to log in to a self-hosted registry you can specify this by
 adding the server name.
 
 ```console
@@ -50,38 +46,39 @@ $ cat ~/my_password.txt | docker login --username foo --password-stdin
 
 ### Privileged user requirement
 
-`docker login` requires user to use `sudo` or be `root`, except when:
+`docker login` requires you to use `sudo` or be `root`, except when:
 
-1.  connecting to a remote daemon, such as a `docker-machine` provisioned `docker engine`.
-2.  user is added to the `docker` group.  This will impact the security of your system; the `docker` group is `root` equivalent.  See [Docker Daemon Attack Surface](https://docs.docker.com/engine/security/#docker-daemon-attack-surface) for details.
+- Connecting to a remote daemon, such as a `docker-machine` provisioned `docker engine`.
+- The user is added to the `docker` group. This will impact the security of your system; the `docker` group is `root` equivalent.  See [Docker Daemon Attack Surface](https://docs.docker.com/engine/security/#docker-daemon-attack-surface) for details.
 
-You can log into any public or private repository for which you have
+You can log in to any public or private repository for which you have
 credentials.  When you log in, the command stores credentials in
 `$HOME/.docker/config.json` on Linux or `%USERPROFILE%/.docker/config.json` on
 Windows, via the procedure described below.
 
-### Credentials store
+### Credential stores
 
-The Docker Engine can keep user credentials in an external credentials store,
+The Docker Engine can keep user credentials in an external credential store,
 such as the native keychain of the operating system. Using an external store
 is more secure than storing credentials in the Docker configuration file.
 
-To use a credentials store, you need an external helper program to interact
+To use a credential store, you need an external helper program to interact
 with a specific keychain or external store. Docker requires the helper
 program to be in the client's host `$PATH`.
 
-This is the list of currently available credentials helpers and where
-you can download them from:
+You can download the helpers from the `docker-credential-helpers`
+[releases page](https://github.com/docker/docker-credential-helpers/releases).
+Helpers are available for the following credential stores:
 
-- D-Bus Secret Service: https://github.com/docker/docker-credential-helpers/releases
-- Apple macOS keychain: https://github.com/docker/docker-credential-helpers/releases
-- Microsoft Windows Credential Manager: https://github.com/docker/docker-credential-helpers/releases
-- [pass](https://www.passwordstore.org/): https://github.com/docker/docker-credential-helpers/releases
+- D-Bus Secret Service
+- Apple macOS keychain
+- Microsoft Windows Credential Manager
+- [pass](https://www.passwordstore.org/)
 
-#### Configure the credentials store
+#### Configure the credential store
 
-You need to specify the credentials store in `$HOME/.docker/config.json`
-to tell the docker engine to use it. The value of the config property should be
+You need to specify the credential store in `$HOME/.docker/config.json`
+to tell the Docker Engine to use it. The value of the config property should be
 the suffix of the program to use (i.e. everything after `docker-credential-`).
 For example, to use `docker-credential-osxkeychain`:
 
@@ -126,11 +123,11 @@ or an identity token.
 If the secret being stored is an identity token, the Username should be set to
 `<token>`.
 
-The `store` command can write error messages to `STDOUT` that the docker engine
+The `store` command can write error messages to `STDOUT` that the Docker Engine
 will show if there was an issue.
 
 The `get` command takes a string payload from the standard input. That payload carries
-the server address that the docker engine needs credentials for. This is
+the server address that the Docker Engine needs credentials for. This is
 an example of that payload: `https://index.docker.io/v1`.
 
 The `get` command writes a JSON payload to `STDOUT`. Docker reads the user name
@@ -144,16 +141,16 @@ and password from this payload:
 ```
 
 The `erase` command takes a string payload from `STDIN`. That payload carries
-the server address that the docker engine wants to remove credentials for. This is
+the server address that the Docker Engine wants to remove credentials for. This is
 an example of that payload: `https://index.docker.io/v1`.
 
-The `erase` command can write error messages to `STDOUT` that the docker engine
+The `erase` command can write error messages to `STDOUT` that the Docker Engine
 will show if there was an issue.
 
 ### Credential helpers
 
 Credential helpers are similar to the credential store above, but act as the
-designated programs to handle credentials for *specific registries*. The default
+designated programs to handle credentials for specific registries. The default
 credential store (`credsStore` or the config file itself) will not be used for
 operations concerning credentials of the specified registries.
 

@@ -15,41 +15,46 @@ Comment:
  .
  armon/go-radix v1 causes libnetwork to segfault, cf. #918375
  .
- Temperory vendor etcd library, to upgrade etcd to 3.4 in unstable.
+ Temperory vendor etcd library, to upgrade etcd to 3.5 in unstable.
 Files-Excluded:
     .github
     .gitignore
-    vendor/archive
     vendor/cloud.google.com
    ~vendor/code.cloudfoundry.org
+    vendor/github.com/agext/levenshtein
     vendor/github.com/armon/circbuf
     vendor/github.com/armon/go-metrics
  ~B~vendor/github.com/armon/go-radix
-    vendor/github.com/aws/aws-sdk-go
+    vendor/github.com/aws/aws-sdk-go-v2
+    vendor/github.com/aws/smithy-go
+    vendor/github.com/AdaLogics/go-fuzz-headers
     vendor/github.com/Azure/go-ansiterm
     vendor/github.com/beorn7/perks
-    vendor/github.com/bsphere/le_go
-    vendor/github.com/BurntSushi/toml
+    vendor/github.com/cenkalti/backoff
     vendor/github.com/cespare/xxhash
     vendor/github.com/cilium/ebpf
     vendor/github.com/cloudflare/cfssl
     vendor/github.com/containerd/cgroups
+    vendor/github.com/containerd/errdefs
+    vendor/github.com/containerd/log
     vendor/github.com/containerd/console
     vendor/github.com/containerd/containerd
     vendor/github.com/containerd/continuity
     vendor/github.com/containerd/fifo
+    vendor/github.com/containerd/go-cni
     vendor/github.com/containerd/go-runc
+ ~C~vendor/github.com/containerd/stargz-snapshotter
     vendor/github.com/containerd/ttrpc
     vendor/github.com/containerd/typeurl
+    vendor/github.com/containernetworking/cni
   ~~vendor/github.com/coreos/etcd
-    vendor/github.com/coreos/go-semver
     vendor/github.com/coreos/go-systemd
-    vendor/github.com/coreos/pkg
-    vendor/github.com/cpuguy83/go-md2man
     vendor/github.com/creack/pty
     vendor/github.com/cyphar/filepath-securejoin
     vendor/github.com/davecgh/go-spew
     vendor/github.com/deckarep/golang-set
+    vendor/github.com/dimchansky/utfbom
+    vendor/github.com/distribution/reference
    ~vendor/github.com/docker/compose-on-kubernetes
     vendor/github.com/docker/distribution
     vendor/github.com/docker/docker
@@ -59,13 +64,10 @@ Files-Excluded:
     vendor/github.com/docker/go-events
     vendor/github.com/docker/go-metrics
     vendor/github.com/docker/go-units
-    vendor/github.com/docker/libkv
-    vendor/github.com/docker/libnetwork
     vendor/github.com/docker/libtrust
-    vendor/github.com/docker/swarmkit
     vendor/github.com/dustin/go-humanize
-    vendor/github.com/evanphx/json-patch
     vendor/github.com/fernet/fernet-go
+    vendor/github.com/felixge/httpsnoop
     vendor/github.com/fluent/fluent-logger-golang
     vendor/github.com/fsnotify/fsnotify
     vendor/github.com/fvbommel/sortorder
@@ -77,11 +79,9 @@ Files-Excluded:
     vendor/github.com/golang/groupcache
     vendor/github.com/golang/protobuf
     vendor/github.com/googleapis/gax-go
-    vendor/github.com/googleapis/gnostic
     vendor/github.com/google/btree
     vendor/github.com/google/certificate-transparency-go
     vendor/github.com/google/go-cmp
-    vendor/github.com/google/gofuzz
     vendor/github.com/google/shlex
     vendor/github.com/google/uuid
     vendor/github.com/gorilla/mux
@@ -89,92 +89,86 @@ Files-Excluded:
     vendor/github.com/grpc-ecosystem/go-grpc-middleware
     vendor/github.com/grpc-ecosystem/go-grpc-prometheus
     vendor/github.com/grpc-ecosystem/grpc-gateway
-    vendor/github.com/grpc-ecosystem/grpc-opentracing
-    vendor/github.com/hashicorp/consul
     vendor/github.com/hashicorp/errwrap
  ~F~vendor/github.com/hashicorp/go-immutable-radix
     vendor/github.com/hashicorp/golang-lru
+    vendor/github.com/hashicorp/go-immutable-radix
     vendor/github.com/hashicorp/go-memdb
     vendor/github.com/hashicorp/go-msgpack
     vendor/github.com/hashicorp/go-multierror
     vendor/github.com/hashicorp/go-sockaddr
     vendor/github.com/hashicorp/memberlist
     vendor/github.com/hashicorp/serf
-    vendor/github.com/hpcloud/tail
-    vendor/github.com/imdario/mergo
+    vendor/github.com/in-toto/in-toto-golang
     vendor/github.com/inconshreveable/mousetrap
     vendor/github.com/ishidawataru/sctp
  ~F~vendor/github.com/jaguilar/vt100
-    vendor/github.com/jmespath/go-jmespath
-    vendor/github.com/json-iterator/go
-    vendor/github.com/konsorten/go-windows-terminal-sequences
+    vendor/github.com/klauspost/compress
+    vendor/github.com/golang-jwt/jwt 
+    vendor/github.com/go-logr/logr
+    vendor/github.com/go-logr/stdr
+    vendor/github.com/mattn/go-runewidth
     vendor/github.com/matttproud/golang_protobuf_extensions
     vendor/github.com/Microsoft/go-winio
     vendor/github.com/Microsoft/hcsshim
-    vendor/github.com/Microsoft/opengcs
     vendor/github.com/miekg/dns
     vendor/github.com/miekg/pkcs11
     vendor/github.com/mistifyio/go-zfs
     vendor/github.com/mitchellh/hashstructure
     vendor/github.com/mitchellh/mapstructure
    ~vendor/github.com/moby/buildkit
+    vendor/github.com/moby/docker-image-spec
    ~vendor/github.com/moby/ipvs
     vendor/github.com/moby/locker
+    vendor/github.com/moby/patternmatcher
+    vendor/github.com/moby/pubsub
+   ~vendor/github.com/moby/swarmkit
     vendor/github.com/moby/sys
     vendor/github.com/moby/term
-    vendor/github.com/modern-go/concurrent
-    vendor/github.com/modern-go/reflect2
     vendor/github.com/morikuni/aec
-    vendor/github.com/onsi/ginkgo
-    vendor/github.com/onsi/gomega
     vendor/github.com/opencontainers/go-digest
     vendor/github.com/opencontainers/image-spec
     vendor/github.com/opencontainers/runc
     vendor/github.com/opencontainers/runtime-spec
     vendor/github.com/opencontainers/selinux
-    vendor/github.com/opentracing-contrib/go-stdlib
-    vendor/github.com/opentracing/opentracing-go
+    vendor/github.com/pelletier/go-toml
    ~vendor/github.com/phayes/permbits
     vendor/github.com/philhofer/fwd
     vendor/github.com/pkg/errors
-    vendor/github.com/pmezard/go-difflib
     vendor/github.com/prometheus/client_golang
     vendor/github.com/prometheus/client_model
     vendor/github.com/prometheus/common
     vendor/github.com/prometheus/procfs
     vendor/github.com/RackSec/srslog
-    vendor/github.com/rcrowley/go-metrics
-    vendor/github.com/russross/blackfriday
-    vendor/github.com/samuel/go-zookeeper
+    vendor/github.com/rivo/uniseg
+    vendor/github.com/rootless-containers/rootlesskit
+    vendor/github.com/secure-systems-lab/go-securesystemslib
     vendor/github.com/sean-/seed
+    vendor/github.com/shibumi/go-pathspec
     vendor/github.com/sirupsen/logrus
     vendor/github.com/spf13/cobra
     vendor/github.com/spf13/pflag
     vendor/github.com/stretchr/testify
-    vendor/github.com/syndtr/gocapability
-    vendor/github.com/tchap/go-patricia
     vendor/github.com/theupdateframework/notary
     vendor/github.com/tinylib/msgp
  ~C~vendor/github.com/tonistiigi/fsutil
    ~vendor/github.com/tonistiigi/go-rosetta
     vendor/github.com/tonistiigi/units
-    vendor/github.com/ugorji/go
-    vendor/github.com/urfave/cli
     vendor/github.com/vbatts/tar-split
     vendor/github.com/vishvananda/netlink
     vendor/github.com/vishvananda/netns
-    vendor/github.com/willf/bitset
     vendor/github.com/xeipuuv/gojsonpointer
     vendor/github.com/xeipuuv/gojsonreference
     vendor/github.com/xeipuuv/gojsonschema
-    vendor/go.etcd.io
+    vendor/go.etcd.io/bbolt
+  ~~vendor/go.etcd.io/etcd
+    vendor/go.opencensus.io
+    vendor/go.opentelemetry.io
     vendor/golang.org
     vendor/google.golang.org
-    vendor/go.opencensus.io
     vendor/gopkg.in
     vendor/gotest.tools
-   ~vendor/k8s.io
-    vendor/sigs.k8s.io
+    vendor/k8s.io
 Files-Excluded-distribution:
     */docs
 

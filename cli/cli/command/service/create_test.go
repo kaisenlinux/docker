@@ -96,8 +96,10 @@ func TestSetConfigsWithCredSpecAndConfigs(t *testing.T) {
 		}, nil
 	}
 
+	ctx := context.Background()
+
 	// now call setConfigs
-	err := setConfigs(fakeClient, service, opts)
+	err := setConfigs(ctx, fakeClient, service, opts)
 	// verify no error is returned
 	assert.NilError(t, err)
 
@@ -118,7 +120,7 @@ func TestSetConfigsWithCredSpecAndConfigs(t *testing.T) {
 			// these are the default field values
 			UID:  "0",
 			GID:  "0",
-			Mode: 0444,
+			Mode: 0o444,
 		},
 	}), "expected configRefs to contain bar config")
 }
@@ -166,7 +168,8 @@ func TestSetConfigsOnlyCredSpec(t *testing.T) {
 	}
 
 	// now call setConfigs
-	err := setConfigs(fakeClient, service, opts)
+	ctx := context.Background()
+	err := setConfigs(ctx, fakeClient, service, opts)
 	// verify no error is returned
 	assert.NilError(t, err)
 
@@ -216,7 +219,8 @@ func TestSetConfigsOnlyConfigs(t *testing.T) {
 	}
 
 	// now call setConfigs
-	err := setConfigs(fakeClient, service, opts)
+	ctx := context.Background()
+	err := setConfigs(ctx, fakeClient, service, opts)
 	// verify no error is returned
 	assert.NilError(t, err)
 
@@ -229,7 +233,7 @@ func TestSetConfigsOnlyConfigs(t *testing.T) {
 			// these are the default field values
 			UID:  "0",
 			GID:  "0",
-			Mode: 0444,
+			Mode: 0o444,
 		},
 	}))
 }
@@ -262,7 +266,8 @@ func TestSetConfigsNoConfigs(t *testing.T) {
 		return nil, nil
 	}
 
-	err := setConfigs(fakeClient, service, opts)
+	ctx := context.Background()
+	err := setConfigs(ctx, fakeClient, service, opts)
 	assert.NilError(t, err)
 
 	// ensure that the value of the credentialspec has not changed

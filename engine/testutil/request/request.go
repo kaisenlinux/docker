@@ -14,12 +14,12 @@ import (
 	"time"
 
 	"github.com/docker/docker/client"
-	"github.com/docker/docker/opts"
 	"github.com/docker/docker/pkg/ioutils"
 	"github.com/docker/docker/testutil/environment"
 	"github.com/docker/go-connections/sockets"
 	"github.com/docker/go-connections/tlsconfig"
 	"github.com/pkg/errors"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"gotest.tools/v3/assert"
 )
 
@@ -56,27 +56,27 @@ func DaemonUnixTime(ctx context.Context, t testing.TB, client client.APIClient, 
 }
 
 // Post creates and execute a POST request on the specified host and endpoint, with the specified request modifiers
-func Post(endpoint string, modifiers ...func(*Options)) (*http.Response, io.ReadCloser, error) {
-	return Do(endpoint, append(modifiers, Method(http.MethodPost))...)
+func Post(ctx context.Context, endpoint string, modifiers ...func(*Options)) (*http.Response, io.ReadCloser, error) {
+	return Do(ctx, endpoint, append(modifiers, Method(http.MethodPost))...)
 }
 
 // Delete creates and execute a DELETE request on the specified host and endpoint, with the specified request modifiers
-func Delete(endpoint string, modifiers ...func(*Options)) (*http.Response, io.ReadCloser, error) {
-	return Do(endpoint, append(modifiers, Method(http.MethodDelete))...)
+func Delete(ctx context.Context, endpoint string, modifiers ...func(*Options)) (*http.Response, io.ReadCloser, error) {
+	return Do(ctx, endpoint, append(modifiers, Method(http.MethodDelete))...)
 }
 
 // Get creates and execute a GET request on the specified host and endpoint, with the specified request modifiers
-func Get(endpoint string, modifiers ...func(*Options)) (*http.Response, io.ReadCloser, error) {
-	return Do(endpoint, modifiers...)
+func Get(ctx context.Context, endpoint string, modifiers ...func(*Options)) (*http.Response, io.ReadCloser, error) {
+	return Do(ctx, endpoint, modifiers...)
 }
 
 // Head creates and execute a HEAD request on the specified host and endpoint, with the specified request modifiers
-func Head(endpoint string, modifiers ...func(*Options)) (*http.Response, io.ReadCloser, error) {
-	return Do(endpoint, append(modifiers, Method(http.MethodHead))...)
+func Head(ctx context.Context, endpoint string, modifiers ...func(*Options)) (*http.Response, io.ReadCloser, error) {
+	return Do(ctx, endpoint, append(modifiers, Method(http.MethodHead))...)
 }
 
 // Do creates and execute a request on the specified endpoint, with the specified request modifiers
-func Do(endpoint string, modifiers ...func(*Options)) (*http.Response, io.ReadCloser, error) {
+func Do(ctx context.Context, endpoint string, modifiers ...func(*Options)) (*http.Response, io.ReadCloser, error) {
 	opts := &Options{
 		host: DaemonHost(),
 	}
@@ -87,11 +87,14 @@ func Do(endpoint string, modifiers ...func(*Options)) (*http.Response, io.ReadCl
 	if err != nil {
 		return nil, nil, err
 	}
-	client, err := newHTTPClient(opts.host)
+	req = req.WithContext(ctx)
+
+	httpClient, err := newHTTPClient(opts.host)
 	if err != nil {
 		return nil, nil, err
 	}
-	resp, err := client.Do(req)
+
+	resp, err := httpClient.Do(req)
 	var body io.ReadCloser
 	if resp != nil {
 		body = ioutils.NewReadCloserWrapper(resp.Body, func() error {
@@ -126,6 +129,11 @@ func newRequest(endpoint string, opts *Options) (*http.Request, error) {
 	}
 	req.URL.Host = hostURL.Host
 
+	if hostURL.Scheme == "unix" || hostURL.Scheme == "npipe" {
+		// Override host header for non-tcp connections.
+		req.Host = client.DummyHost
+	}
+
 	for _, config := range opts.requestModifiers {
 		if err := config(req); err != nil {
 			return nil, err
@@ -154,7 +162,7 @@ func newHTTPClient(host string) (*http.Client, error) {
 	}
 	transport.DisableKeepAlives = true
 	err = sockets.ConfigureTransport(transport, hostURL.Scheme, hostURL.Host)
-	return &http.Client{Transport: transport}, err
+	return &http.Client{Transport: otelhttp.NewTransport(transport)}, err
 }
 
 func getTLSConfig() (*tls.Config, error) {
@@ -179,7 +187,7 @@ func getTLSConfig() (*tls.Config, error) {
 
 // DaemonHost return the daemon host string for this test execution
 func DaemonHost() string {
-	daemonURLStr := "unix://" + opts.DefaultUnixSocket
+	daemonURLStr := client.DefaultDockerHost
 	if daemonHostVar := os.Getenv("DOCKER_HOST"); daemonHostVar != "" {
 		daemonURLStr = daemonHostVar
 	}

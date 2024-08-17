@@ -25,14 +25,16 @@ func newSecretRemoveCommand(dockerCli command.Cli) *cobra.Command {
 			opts := removeOptions{
 				names: args,
 			}
-			return runSecretRemove(dockerCli, opts)
+			return runSecretRemove(cmd.Context(), dockerCli, opts)
+		},
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return completeNames(dockerCli)(cmd, args, toComplete)
 		},
 	}
 }
 
-func runSecretRemove(dockerCli command.Cli, opts removeOptions) error {
+func runSecretRemove(ctx context.Context, dockerCli command.Cli, opts removeOptions) error {
 	client := dockerCli.Client()
-	ctx := context.Background()
 
 	var errs []string
 

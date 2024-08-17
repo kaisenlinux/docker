@@ -26,8 +26,6 @@ export DH_GOLANG_EXCLUDES := \
 # Package names
 CLI_PKG        := github.com/docker/cli
 ENGINE_PKG     := github.com/docker/docker
-LIBNETWORK_PKG := github.com/docker/libnetwork
-SWARMKIT_PKG   := github.com/docker/swarmkit
 
 # Version and commits
 DOCKER_VERSION := $(DEB_VERSION_UPSTREAM)
@@ -50,12 +48,21 @@ ifeq (,$(filter $(DEB_BUILD_ARCH), mipsel mips64el))
 CLI_BUILDMODE := -buildmode=pie
 endif
 
-# engine: have "make.sh" keep "bundle/$(DOCKER_VERSION)" around between runs
-# (we clean it up appropriately ourselves)
-ENGINE_KEEPBUNDLE := 1
-
-ENGINE_BUILDTAGS := apparmor seccomp
+# Cf. hack/make.sh hack/make/.binary
+ENGINE_BUILDTIME := $(shell date -u -d "@$(SOURCE_DATE_EPOCH)" --rfc-3339 ns | sed -e 's/ /T/')
+ENGINE_BUILDTAGS := apparmor seccomp journald
 ENGINE_TESTFLAGS := -test.short
+ENGINE_LDFLAGS   := -w
+ENGINE_LDFLAGS   += -X $(ENGINE_PKG)/dockerversion.Version=$(DOCKER_VERSION)
+ENGINE_LDFLAGS   += -X $(ENGINE_PKG)/dockerversion.GitCommit=$(ENGINE_GITCOMMIT)
+ENGINE_LDFLAGS   += -X $(ENGINE_PKG)/dockerversion.BuildTime=$(ENGINE_BUILDTIME)
+ENGINE_LDFLAGS   += -X $(ENGINE_PKG)/dockerversion.PlatformName=
+ENGINE_LDFLAGS   += -X $(ENGINE_PKG)/dockerversion.ProductName=docker
+ENGINE_LDFLAGS   += -X $(ENGINE_PKG)/dockerversion.DefaultProductLicense=
+
+ifeq (,$(filter $(DEB_BUILD_ARCH), mipsel mips64el))
+ENGINE_BUILDMODE := -buildmode=pie
+endif
 
 BUILT_LIBC := $(shell dpkg-query -f '$${source:Package} (= $${source:Version})' -W libc-dev-bin)
 
@@ -64,12 +71,12 @@ BUILT_LIBC := $(shell dpkg-query -f '$${source:Package} (= $${source:Version})' 
 
 override_dh_golang:
 ## Set DH_GOLANG_BUILDPKG so that Built-Using is properly generated.
-	DH_GOLANG_BUILDPKG="$(CLI_PKG)/... $(ENGINE_PKG)/... $(LIBNETWORK_PKG)/... $(SWARMKIT_PKG)/..." \
+	DH_GOLANG_BUILDPKG="$(CLI_PKG)/... $(ENGINE_PKG)/..." \
 	  dh_golang -O--buildsystem=golang -O--builddirectory=_build
 
 override_dh_clean:
 	dh_clean
-	$(RM) -v -r autogen bundles man/man*/
+	$(RM) -v -r autogen bundles man/man*/ debian/tmphome
 #	-find . -type f -name '*.pb.go' -delete -printf 'removed %p\n'            ## delete generated .pb.go files
 	## Remove Files-Excluded (when built from checkout or non-DFSG tarball):
 	$(RM) -rv `perl -0nE 'say grep { $$_=q{ */}.$$_ } split(/\s+/,$$1) if m{^Files\-Excluded:\s*(.*?)(?:\n\n|^Files|^Comment:)}sm;' debian/copyright`
@@ -83,8 +90,6 @@ override_dh_auto_configure:
 ## even if they are provided by already installed package.
 	mkdir -pv $(GOPATH)/src/$(CLI_PKG)
 	mkdir -pv $(GOPATH)/src/$(ENGINE_PKG)
-	mkdir -pv $(GOPATH)/src/$(LIBNETWORK_PKG)
-	mkdir -pv $(GOPATH)/src/$(SWARMKIT_PKG)
 
 ## Prepare builddirectory but throw away sourcedirectory.
 	DH_GOPKG="__IGNORE__" dh_auto_configure
@@ -101,36 +106,37 @@ override_dh_auto_configure:
 	cp -ra  cli           $(GOPATH)/src/$(CLI_PKG)
 	$(RM) -r              $(GOPATH)/src/$(ENGINE_PKG)
 	cp -ra  engine        $(GOPATH)/src/$(ENGINE_PKG)
-	$(RM) -r              $(GOPATH)/src/$(LIBNETWORK_PKG)
-	cp -ra  libnetwork    $(GOPATH)/src/$(LIBNETWORK_PKG)
-	$(RM) -r              $(GOPATH)/src/$(SWARMKIT_PKG)
-	cp -ra  swarmkit      $(GOPATH)/src/$(SWARMKIT_PKG)
 
 override_dh_auto_build:
 ## Order is important:
+	DH_GOPKG=$(ENGINE_PKG) DH_GOLANG_BUILDPKG=$(ENGINE_PKG)/cmd/dockerd \
+	  dh_auto_build -v -- -tags '$(ENGINE_BUILDTAGS)' $(ENGINE_BUILDMODE) -ldflags '$(ENGINE_LDFLAGS)'
 
-	DH_GOPKG=$(LIBNETWORK_PKG) dh_auto_build -v
-
-##	## FIXME: DH_GOLANG_BUILDPKG --> DH_GOPKG
-	DH_GOLANG_BUILDPKG=$(SWARMKIT_PKG) dh_auto_build -v
-
-##	build ("cd" first to ensure we build from within GOPATH)
-	cd $(GOPATH)/src/$(ENGINE_PKG) \
-	&& KEEPBUNDLE=$(ENGINE_KEEPBUNDLE) VERSION=$(DOCKER_VERSION) DOCKER_BUILDTAGS='$(ENGINE_BUILDTAGS)' \
-	   DOCKER_GITCOMMIT=$(ENGINE_GITCOMMIT) PRODUCT=docker ./hack/make.sh dynbinary
+	DH_GOPKG=$(ENGINE_PKG) DH_GOLANG_BUILDPKG=$(ENGINE_PKG)/cmd/docker-proxy \
+	  dh_auto_build -v -- -tags '$(ENGINE_BUILDTAGS)' $(ENGINE_BUILDMODE) -ldflags '$(ENGINE_LDFLAGS)'
 
 	DH_GOPKG=$(CLI_PKG) DH_GOLANG_BUILDPKG=$(CLI_PKG)/cmd/docker \
 	  dh_auto_build -v -- -tags '$(CLI_BUILDTAGS)' -ldflags '$(CLI_LDFLAGS)' $(CLI_BUILDMODE)
 	cd $(GOPATH)/src/$(CLI_PKG) && ./scripts/docs/generate-man.sh
 
 override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	# basic smoke test -- these must pass
+	_build/bin/docker --version
+	_build/bin/dockerd --version
+
+	## Test engine:
+	-cd $(GOPATH)/src/$(ENGINE_PKG) && PATH=$(GOPATH)/bin:$(PATH) TESTFLAGS='$(ENGINE_TESTFLAGS)' ./hack/test/unit
+
+	# Unit tests -- these are notoriously flaky and not written with the intend
+	# to be run outside of a tightly controlled container image. Therefore,
+	# ignore failures
+	## Test CLI:
+	mkdir -p $(CURDIR)/debian/tmphome/tmp
+	-cd $(GOPATH)/src/$(CLI_PKG) && HOME=$(CURDIR)/debian/tmphome TMPDIR=$(CURDIR)/debian/tmphome/tmp PATH=$(GOPATH)/bin:$(PATH) DISABLE_WARN_OUTSIDE_CONTAINER=1 $(MAKE) test-unit GO111MODULE=off
+endif
 
 override_dh_install:
-	## Rename binaries
-	cd $(GOPATH)/src/$(ENGINE_PKG)/bundles/dynbinary-daemon \
-	&& mv dockerd-$(DOCKER_VERSION) dockerd
-	cd $(GOPATH)/bin \
-	&& mv proxy docker-proxy
 	## Do not install extra license files:
 	dh_install -XLICENSE
 	## Apparmor thing, not sure it's needed, we don't install a profile

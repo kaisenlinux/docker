@@ -3,10 +3,10 @@ package manifest
 import (
 	"context"
 
+	"github.com/distribution/reference"
 	"github.com/docker/cli/cli/command"
 	"github.com/docker/cli/cli/manifest/store"
 	"github.com/docker/cli/cli/manifest/types"
-	"github.com/docker/distribution/reference"
 )
 
 type osArch struct {
@@ -16,7 +16,7 @@ type osArch struct {
 
 // Remove any unsupported os/arch combo
 // list of valid os/arch values (see "Optional Environment Variables" section
-// of https://golang.org/doc/install/source
+// of https://go.dev/doc/install/source
 // Added linux/s390x as we know System z support already exists
 // Keep in sync with _docker_manifest_annotate in contrib/completion/bash/docker
 var validOSArches = map[osArch]bool{
@@ -76,6 +76,8 @@ func getManifest(ctx context.Context, dockerCli command.Cli, listRef, namedRef r
 		return dockerCli.RegistryClient(insecure).GetManifest(ctx, namedRef)
 	case err != nil:
 		return types.ImageManifest{}, err
+	case len(data.Raw) == 0:
+		return dockerCli.RegistryClient(insecure).GetManifest(ctx, namedRef)
 	default:
 		return data, nil
 	}

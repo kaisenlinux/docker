@@ -10,7 +10,7 @@ import (
 )
 
 // Helper function to set static slices
-func getCIDR(ip net.IP, cidr *net.IPNet, err error) net.IPNet {
+func getCIDR(_ net.IP, cidr *net.IPNet, _ error) net.IPNet {
 	return *cidr
 }
 
@@ -20,7 +20,7 @@ func equalCIDR(c1 net.IPNet, c2 net.IPNet) bool {
 
 func setUpIPNetFlagSet(ipsp *[]net.IPNet) *pflag.FlagSet {
 	f := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	f.VarP(newIPNetSliceValue([]net.IPNet{}, ipsp), "cidrs", "", "Command separated list!")
+	f.Var(newIPNetSliceValue([]net.IPNet{}, ipsp), "cidrs", "Command separated list!")
 	return f
 }
 
@@ -69,7 +69,6 @@ func TestIPNetCalledTwice(t *testing.T) {
 }
 
 func TestIPNetBadQuoting(t *testing.T) {
-
 	tests := []struct {
 		Want    []net.IPNet
 		FlagArg []string
@@ -126,12 +125,12 @@ func TestIPNetBadQuoting(t *testing.T) {
 			},
 			FlagArg: []string{
 				`"2e5e:66b2:6441:848:5b74:76ea:574c:3a7b/128,        2e5e:66b2:6441:848:5b74:76ea:574c:3a7b/128,2e5e:66b2:6441:848:5b74:76ea:574c:3a7b/128     "`,
-				" 2e5e:66b2:6441:848:5b74:76ea:574c:3a7b/128"},
+				" 2e5e:66b2:6441:848:5b74:76ea:574c:3a7b/128",
+			},
 		},
 	}
 
 	for i, test := range tests {
-
 		var cidrs []net.IPNet
 		f := setUpIPNetFlagSet(&cidrs)
 

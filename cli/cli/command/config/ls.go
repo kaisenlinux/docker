@@ -6,7 +6,9 @@ import (
 
 	"github.com/docker/cli/cli"
 	"github.com/docker/cli/cli/command"
+	"github.com/docker/cli/cli/command/completion"
 	"github.com/docker/cli/cli/command/formatter"
+	flagsHelper "github.com/docker/cli/cli/flags"
 	"github.com/docker/cli/opts"
 	"github.com/docker/docker/api/types"
 	"github.com/fvbommel/sortorder"
@@ -29,22 +31,22 @@ func newConfigListCommand(dockerCli command.Cli) *cobra.Command {
 		Short:   "List configs",
 		Args:    cli.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return RunConfigList(dockerCli, listOpts)
+			return RunConfigList(cmd.Context(), dockerCli, listOpts)
 		},
+		ValidArgsFunction: completion.NoComplete,
 	}
 
 	flags := cmd.Flags()
 	flags.BoolVarP(&listOpts.Quiet, "quiet", "q", false, "Only display IDs")
-	flags.StringVarP(&listOpts.Format, "format", "", "", "Pretty-print configs using a Go template")
+	flags.StringVar(&listOpts.Format, "format", "", flagsHelper.FormatHelp)
 	flags.VarP(&listOpts.Filter, "filter", "f", "Filter output based on conditions provided")
 
 	return cmd
 }
 
 // RunConfigList lists Swarm configs.
-func RunConfigList(dockerCli command.Cli, options ListOptions) error {
+func RunConfigList(ctx context.Context, dockerCli command.Cli, options ListOptions) error {
 	client := dockerCli.Client()
-	ctx := context.Background()
 
 	configs, err := client.ConfigList(ctx, types.ConfigListOptions{Filters: options.Filter.Value()})
 	if err != nil {
