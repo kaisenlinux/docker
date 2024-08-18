@@ -1,11 +1,6 @@
 package main
 
 import (
-<<<<<<< HEAD
-=======
-	"fmt"
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"net/http"
 	"os"
 	"regexp"
@@ -88,7 +83,7 @@ func (s *DockerRegistrySuite) TestUserAgentPassThrough(c *testing.T) {
 
 	s.d.StartWithBusybox(ctx, c, "--insecure-registry", reg.URL())
 
-	tmp, err := ioutil.TempDir("", "integration-cli-")
+	tmp, err := os.MkdirTemp("", "integration-cli-")
 	assert.NilError(c, err)
 	defer os.RemoveAll(tmp)
 

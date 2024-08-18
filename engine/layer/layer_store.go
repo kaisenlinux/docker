@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -252,7 +251,7 @@ func (ls *layerStore) applyTar(tx *fileMetadataTransaction, ts io.Reader, parent
 	// discard trailing data but ensure metadata is picked up to reconstruct stream
 	// unconditionally call io.Copy here before checking err to ensure the resources
 	// allocated by NewInputTarStream above are always released
-	io.Copy(ioutil.Discard, rdr) // ignore error as reader may be closed
+	io.Copy(io.Discard, rdr) // ignore error as reader may be closed
 	if err != nil {
 		return err
 	}

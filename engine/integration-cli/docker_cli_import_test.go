@@ -3,11 +3,7 @@ package main
 import (
 	"bufio"
 	"compress/gzip"
-<<<<<<< HEAD
 	"context"
-=======
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"os/exec"
 	"regexp"
@@ -64,7 +60,7 @@ func (s *DockerCLIImportSuite) TestImportFile(c *testing.T) {
 	testRequires(c, DaemonIsLinux)
 	cli.DockerCmd(c, "run", "--name", "test-import", "busybox", "true")
 
-	temporaryFile, err := ioutil.TempFile("", "exportImportTest")
+	temporaryFile, err := os.CreateTemp("", "exportImportTest")
 	assert.Assert(c, err == nil, "failed to create temporary file")
 	defer os.Remove(temporaryFile.Name())
 
@@ -85,7 +81,7 @@ func (s *DockerCLIImportSuite) TestImportGzipped(c *testing.T) {
 	testRequires(c, DaemonIsLinux)
 	cli.DockerCmd(c, "run", "--name", "test-import", "busybox", "true")
 
-	temporaryFile, err := ioutil.TempFile("", "exportImportTest")
+	temporaryFile, err := os.CreateTemp("", "exportImportTest")
 	assert.Assert(c, err == nil, "failed to create temporary file")
 	defer os.Remove(temporaryFile.Name())
 
@@ -108,7 +104,7 @@ func (s *DockerCLIImportSuite) TestImportFileWithMessage(c *testing.T) {
 	testRequires(c, DaemonIsLinux)
 	cli.DockerCmd(c, "run", "--name", "test-import", "busybox", "true")
 
-	temporaryFile, err := ioutil.TempFile("", "exportImportTest")
+	temporaryFile, err := os.CreateTemp("", "exportImportTest")
 	assert.Assert(c, err == nil, "failed to create temporary file")
 	defer os.Remove(temporaryFile.Name())
 
@@ -144,7 +140,7 @@ func (s *DockerCLIImportSuite) TestImportWithQuotedChanges(c *testing.T) {
 	testRequires(c, DaemonIsLinux)
 	cli.DockerCmd(c, "run", "--name", "test-import", "busybox", "true")
 
-	temporaryFile, err := ioutil.TempFile("", "exportImportTest")
+	temporaryFile, err := os.CreateTemp("", "exportImportTest")
 	assert.Assert(c, err == nil, "failed to create temporary file")
 	defer os.Remove(temporaryFile.Name())
 

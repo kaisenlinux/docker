@@ -4,7 +4,6 @@ package plugins // import "github.com/docker/docker/pkg/plugins"
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
@@ -89,11 +88,7 @@ func TestScan(t *testing.T) {
 		t.Fatal(err)
 	}
 
-<<<<<<< HEAD
 	err = os.WriteFile(path, []byte(addr), 0o644)
-=======
-	err = ioutil.WriteFile(path, []byte(addr), 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		t.Fatal(err)
 	}

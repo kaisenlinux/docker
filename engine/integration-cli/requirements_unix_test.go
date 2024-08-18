@@ -3,13 +3,7 @@
 package main
 
 import (
-<<<<<<< HEAD
 	"os"
-=======
-	"bytes"
-	"io/ioutil"
-	"os/exec"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"strings"
 
 	"github.com/docker/docker/pkg/sysinfo"
@@ -74,6 +68,6 @@ func bridgeNfIptables() bool {
 }
 
 func unprivilegedUsernsClone() bool {
-	content, err := ioutil.ReadFile("/proc/sys/kernel/unprivileged_userns_clone")
+	content, err := os.ReadFile("/proc/sys/kernel/unprivileged_userns_clone")
 	return err != nil || !strings.Contains(string(content), "0")
 }

@@ -1,11 +1,6 @@
 package volumes
 
 import (
-<<<<<<< HEAD
-=======
-	"context"
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"testing"
 
@@ -33,7 +28,7 @@ func TestPluginWithDevMounts(t *testing.T) {
 
 	c := d.NewClientT(t)
 
-	testDir, err := ioutil.TempDir("", "test-dir")
+	testDir, err := os.MkdirTemp("", "test-dir")
 	assert.NilError(t, err)
 	defer os.RemoveAll(testDir)
 

@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -63,7 +62,7 @@ func InstallDefault(name string) error {
 	}
 
 	// Figure out the daemon profile.
-	currentProfile, err := ioutil.ReadFile("/proc/self/attr/current")
+	currentProfile, err := os.ReadFile("/proc/self/attr/current")
 	if err != nil {
 		// If we couldn't get the daemon profile, assume we are running
 		// unconfined which is generally the default.
@@ -82,7 +81,7 @@ func InstallDefault(name string) error {
 	p.DaemonProfile = daemonProfile
 
 	// Install to a temporary directory.
-	f, err := ioutil.TempFile("", name)
+	f, err := os.CreateTemp("", name)
 	if err != nil {
 		return err
 	}

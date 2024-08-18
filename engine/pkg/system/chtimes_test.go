@@ -1,14 +1,12 @@
 package system // import "github.com/docker/docker/pkg/system"
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
 )
 
-<<<<<<< HEAD
 // TestChtimesModTime tests Chtimes on a tempfile. Test only mTime, because
 // aTime is OS dependent.
 func TestChtimesModTime(t *testing.T) {
@@ -19,31 +17,6 @@ func TestChtimesModTime(t *testing.T) {
 
 	beforeUnixEpochTime := unixEpochTime.Add(-100 * time.Second)
 	afterUnixEpochTime := unixEpochTime.Add(100 * time.Second)
-=======
-// prepareTempFile creates a temporary file in a temporary directory.
-func prepareTempFile(t *testing.T) (string, string) {
-	dir, err := ioutil.TempDir("", "docker-system-test")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	file := filepath.Join(dir, "exist")
-	if err := ioutil.WriteFile(file, []byte("hello"), 0644); err != nil {
-		t.Fatal(err)
-	}
-	return file, dir
-}
-
-// TestChtimes tests Chtimes on a tempfile. Test only mTime, because aTime is OS dependent
-func TestChtimes(t *testing.T) {
-	file, dir := prepareTempFile(t)
-	defer os.RemoveAll(dir)
-
-	beforeUnixEpochTime := time.Unix(0, 0).Add(-100 * time.Second)
-	unixEpochTime := time.Unix(0, 0)
-	afterUnixEpochTime := time.Unix(100, 0)
-	unixMaxTime := maxTime
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	// Test both aTime and mTime set to Unix Epoch
 	t.Run("both aTime and mTime set to Unix Epoch", func(t *testing.T) {

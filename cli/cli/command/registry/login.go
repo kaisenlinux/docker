@@ -3,7 +3,7 @@ package registry
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"strings"
 
 	"github.com/docker/cli/cli"
@@ -89,7 +89,7 @@ func verifyloginOptions(dockerCli command.Cli, opts *loginOptions) error {
 			return errors.New("Must provide --username with --password-stdin")
 		}
 
-		contents, err := ioutil.ReadAll(dockerCli.In())
+		contents, err := io.ReadAll(dockerCli.In())
 		if err != nil {
 			return err
 		}
@@ -100,12 +100,7 @@ func verifyloginOptions(dockerCli command.Cli, opts *loginOptions) error {
 	return nil
 }
 
-<<<<<<< HEAD
 func runLogin(ctx context.Context, dockerCli command.Cli, opts loginOptions) error { //nolint:gocyclo
-=======
-func runLogin(dockerCli command.Cli, opts loginOptions) error { //nolint: gocyclo
-	ctx := context.Background()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	clnt := dockerCli.Client()
 	if err := verifyloginOptions(dockerCli, &opts); err != nil {
 		return err

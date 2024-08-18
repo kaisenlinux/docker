@@ -4,7 +4,7 @@ Package client is a Go client for the Docker Engine API.
 For more information about the Engine API, see the documentation:
 https://docs.docker.com/engine/api/
 
-Usage
+# Usage
 
 You use the library by constructing a client object using [NewClientWithOpts]
 and calling methods on it. The client can be configured from environment
@@ -38,7 +38,6 @@ For example, to list running containers (the equivalent of "docker ps"):
 			fmt.Printf("%s %s\n", ctr.ID, ctr.Image)
 		}
 	}
-
 */
 package client // import "github.com/docker/docker/client"
 

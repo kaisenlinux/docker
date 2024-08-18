@@ -97,18 +97,11 @@ func (s *DockerCLICpSuite) TestCpToSymlinkDestination(c *testing.T) {
 //   J   |  yes     |  yes            |  yes      |  yes     |  -       |  copy dir contents
 //
 
-<<<<<<< HEAD
 // A. SRC specifies a file and DST (no trailing path separator) doesn't	exist.
 //
 // This should create a file with the name DST and copy the	contents of the
 // source file into it.
 func (s *DockerCLICpSuite) TestCpToCaseA(c *testing.T) {
-=======
-// A. SRC specifies a file and DST (no trailing path separator) doesn't
-//    exist. This should create a file with the name DST and copy the
-//    contents of the source file into it.
-func (s *DockerSuite) TestCpToCaseA(c *testing.T) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	containerID := makeTestContainer(c, testContainerOptions{
 		workDir: "/root", command: makeCatFileCommand("itWorks.txt"),
 	})
@@ -125,18 +118,11 @@ func (s *DockerSuite) TestCpToCaseA(c *testing.T) {
 	assert.NilError(c, containerStartOutputEquals(c, containerID, "file1\n"))
 }
 
-<<<<<<< HEAD
 // B. SRC specifies a file and DST (with trailing path separator) doesn't exist.
 //
 // This should cause an error because the copy operation cannot	create a
 // directory when copying a single file.
 func (s *DockerCLICpSuite) TestCpToCaseB(c *testing.T) {
-=======
-// B. SRC specifies a file and DST (with trailing path separator) doesn't
-//    exist. This should cause an error because the copy operation cannot
-//    create a directory when copying a single file.
-func (s *DockerSuite) TestCpToCaseB(c *testing.T) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	containerID := makeTestContainer(c, testContainerOptions{
 		command: makeCatFileCommand("testDir/file1"),
 	})
@@ -154,16 +140,10 @@ func (s *DockerSuite) TestCpToCaseB(c *testing.T) {
 	assert.Assert(c, isCpDirNotExist(err), "expected DirNotExists error, but got %T: %s", err, err)
 }
 
-<<<<<<< HEAD
 // C. SRC specifies a file and DST exists as a file.
 //
 // This should overwrite the file at DST with the contents of the source file.
 func (s *DockerCLICpSuite) TestCpToCaseC(c *testing.T) {
-=======
-// C. SRC specifies a file and DST exists as a file. This should overwrite
-//    the file at DST with the contents of the source file.
-func (s *DockerSuite) TestCpToCaseC(c *testing.T) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	testRequires(c, DaemonIsLinux)
 	containerID := makeTestContainer(c, testContainerOptions{
 		addContent: true, workDir: "/root",
@@ -184,18 +164,11 @@ func (s *DockerSuite) TestCpToCaseC(c *testing.T) {
 	assert.NilError(c, containerStartOutputEquals(c, containerID, "file1\n"), "Should now contain file1's contents")
 }
 
-<<<<<<< HEAD
 // D. SRC specifies a file and DST exists as a directory.
 //
 // This should place a copy of the source file inside it using the basename from
 // SRC. Ensure this works whether DST has a trailing path separator or not.
 func (s *DockerCLICpSuite) TestCpToCaseD(c *testing.T) {
-=======
-// D. SRC specifies a file and DST exists as a directory. This should place
-//    a copy of the source file inside it using the basename from SRC. Ensure
-//    this works whether DST has a trailing path separator or not.
-func (s *DockerSuite) TestCpToCaseD(c *testing.T) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	testRequires(c, DaemonIsLinux)
 	containerID := makeTestContainer(c, testContainerOptions{
 		addContent: true,
@@ -229,20 +202,12 @@ func (s *DockerSuite) TestCpToCaseD(c *testing.T) {
 	assert.NilError(c, containerStartOutputEquals(c, containerID, "file1\n"), "Should now contain file1's contents")
 }
 
-<<<<<<< HEAD
 // E. SRC specifies a directory and DST does not exist.
 //
 // This should create a	directory at DST and copy the contents of the SRC
 // directory into the DST directory. Ensure this works whether DST has a
 // trailing path separator or not.
 func (s *DockerCLICpSuite) TestCpToCaseE(c *testing.T) {
-=======
-// E. SRC specifies a directory and DST does not exist. This should create a
-//    directory at DST and copy the contents of the SRC directory into the DST
-//    directory. Ensure this works whether DST has a trailing path separator or
-//    not.
-func (s *DockerSuite) TestCpToCaseE(c *testing.T) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	containerID := makeTestContainer(c, testContainerOptions{
 		command: makeCatFileCommand("/testDir/file1-1"),
 	})
@@ -271,17 +236,11 @@ func (s *DockerSuite) TestCpToCaseE(c *testing.T) {
 	assert.NilError(c, containerStartOutputEquals(c, containerID, "file1-1\n"), "Should now contain file1-1's contents")
 }
 
-<<<<<<< HEAD
 // F. SRC specifies a directory and DST exists as a file.
 //
 // This should cause an error as it is not possible to overwrite a file with a
 // directory.
 func (s *DockerCLICpSuite) TestCpToCaseF(c *testing.T) {
-=======
-// F. SRC specifies a directory and DST exists as a file. This should cause an
-//    error as it is not possible to overwrite a file with a directory.
-func (s *DockerSuite) TestCpToCaseF(c *testing.T) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	testRequires(c, DaemonIsLinux)
 	containerID := makeTestContainer(c, testContainerOptions{
 		addContent: true, workDir: "/root",
@@ -300,18 +259,11 @@ func (s *DockerSuite) TestCpToCaseF(c *testing.T) {
 	assert.Assert(c, isCpCannotCopyDir(err), "expected ErrCannotCopyDir error, but got %T: %s", err, err)
 }
 
-<<<<<<< HEAD
 // G. SRC specifies a directory and DST exists as a directory.
 //
 // This should copy the SRC directory and all its contents to the DST directory.
 // Ensure this works whether DST has a trailing path separator or not.
 func (s *DockerCLICpSuite) TestCpToCaseG(c *testing.T) {
-=======
-// G. SRC specifies a directory and DST exists as a directory. This should copy
-//    the SRC directory and all its contents to the DST directory. Ensure this
-//    works whether DST has a trailing path separator or not.
-func (s *DockerSuite) TestCpToCaseG(c *testing.T) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	testRequires(c, DaemonIsLinux)
 	containerID := makeTestContainer(c, testContainerOptions{
 		addContent: true, workDir: "/root",
@@ -345,20 +297,12 @@ func (s *DockerSuite) TestCpToCaseG(c *testing.T) {
 	assert.NilError(c, containerStartOutputEquals(c, containerID, "file1-1\n"), "Should now contain file1-1's contents")
 }
 
-<<<<<<< HEAD
 // H. SRC specifies a directory's contents only and DST does not exist.
 //
 // This should create a directory at DST and copy the contents of the SRC
 // directory (but not the directory itself) into the DST directory. Ensure
 // this works whether DST has a trailing path separator or not.
 func (s *DockerCLICpSuite) TestCpToCaseH(c *testing.T) {
-=======
-// H. SRC specifies a directory's contents only and DST does not exist. This
-//    should create a directory at DST and copy the contents of the SRC
-//    directory (but not the directory itself) into the DST directory. Ensure
-//    this works whether DST has a trailing path separator or not.
-func (s *DockerSuite) TestCpToCaseH(c *testing.T) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	containerID := makeTestContainer(c, testContainerOptions{
 		command: makeCatFileCommand("/testDir/file1-1"),
 	})
@@ -387,18 +331,11 @@ func (s *DockerSuite) TestCpToCaseH(c *testing.T) {
 	assert.NilError(c, containerStartOutputEquals(c, containerID, "file1-1\n"), "Should now contain file1-1's contents")
 }
 
-<<<<<<< HEAD
 // I. SRC specifies a directory's contents only and DST exists as a file.
 //
 // This	should cause an error as it is not possible to overwrite a file with a
 // directory.
 func (s *DockerCLICpSuite) TestCpToCaseI(c *testing.T) {
-=======
-// I. SRC specifies a directory's contents only and DST exists as a file. This
-//    should cause an error as it is not possible to overwrite a file with a
-//    directory.
-func (s *DockerSuite) TestCpToCaseI(c *testing.T) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	testRequires(c, DaemonIsLinux)
 	containerID := makeTestContainer(c, testContainerOptions{
 		addContent: true, workDir: "/root",
@@ -418,18 +355,11 @@ func (s *DockerSuite) TestCpToCaseI(c *testing.T) {
 }
 
 // J. SRC specifies a directory's contents only and DST exists as a directory.
-<<<<<<< HEAD
 //
 // This should copy the contents of the SRC directory (but not the directory
 // itself) into the DST directory. Ensure this works whether DST has a
 // trailing path separator or not.
 func (s *DockerCLICpSuite) TestCpToCaseJ(c *testing.T) {
-=======
-//    This should copy the contents of the SRC directory (but not the directory
-//    itself) into the DST directory. Ensure this works whether DST has a
-//    trailing path separator or not.
-func (s *DockerSuite) TestCpToCaseJ(c *testing.T) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	testRequires(c, DaemonIsLinux)
 	containerID := makeTestContainer(c, testContainerOptions{
 		addContent: true, workDir: "/root",

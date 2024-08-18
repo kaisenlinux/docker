@@ -2,13 +2,8 @@ package ioutils // import "github.com/docker/docker/pkg/ioutils"
 
 import (
 	"context"
-<<<<<<< HEAD
 	"errors"
 	"io"
-=======
-	"fmt"
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"strings"
 	"testing"
 	"testing/iotest"
@@ -77,11 +72,7 @@ func (p *perpetualReader) Read(buf []byte) (n int, err error) {
 func TestCancelReadCloser(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
-<<<<<<< HEAD
 	crc := NewCancelReadCloser(ctx, io.NopCloser(&perpetualReader{}))
-=======
-	cancelReadCloser := NewCancelReadCloser(ctx, ioutil.NopCloser(&perpetualReader{}))
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	for {
 		var buf [128]byte
 		_, err := crc.Read(buf[:])

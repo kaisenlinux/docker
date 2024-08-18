@@ -2,7 +2,7 @@ package container
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"testing"
 
 	"github.com/docker/cli/cli/config/configfile"
@@ -162,7 +162,7 @@ func TestContainerListErrors(t *testing.T) {
 		for key, value := range tc.flags {
 			assert.Check(t, cmd.Flags().Set(key, value))
 		}
-		cmd.SetOut(ioutil.Discard)
+		cmd.SetOut(io.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }

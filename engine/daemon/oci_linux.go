@@ -3,7 +3,6 @@ package daemon // import "github.com/docker/docker/daemon"
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -96,17 +95,12 @@ func withRootless(daemon *Daemon, daemonCfg *dconfig.Config) coci.SpecOpts {
 			if rootlesskitParentEUID == "" {
 				return errors.New("$ROOTLESSKIT_PARENT_EUID is not set (requires RootlessKit v0.8.0)")
 			}
-<<<<<<< HEAD
 			euid, err := strconv.Atoi(rootlesskitParentEUID)
 			if err != nil {
 				return errors.Wrap(err, "invalid $ROOTLESSKIT_PARENT_EUID: must be a numeric value")
 			}
 			controllersPath := fmt.Sprintf("/sys/fs/cgroup/user.slice/user-%d.slice/cgroup.controllers", euid)
 			controllersFile, err := os.ReadFile(controllersPath)
-=======
-			controllersPath := fmt.Sprintf("/sys/fs/cgroup/user.slice/user-%s.slice/cgroup.controllers", rootlesskitParentEUID)
-			controllersFile, err := ioutil.ReadFile(controllersPath)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			if err != nil {
 				return err
 			}

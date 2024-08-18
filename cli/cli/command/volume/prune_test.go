@@ -3,7 +3,7 @@ package volume
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"runtime"
 	"strings"
 	"testing"
@@ -52,7 +52,6 @@ func TestVolumePruneErrors(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-<<<<<<< HEAD
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := NewPruneCommand(
@@ -118,19 +117,6 @@ func TestVolumePruneSuccess(t *testing.T) {
 			assert.NilError(t, err)
 			golden.Assert(t, cli.OutBuffer().String(), fmt.Sprintf("volume-prune-success.%s.golden", tc.name))
 		})
-=======
-		cmd := NewPruneCommand(
-			test.NewFakeCli(&fakeClient{
-				volumePruneFunc: tc.volumePruneFunc,
-			}),
-		)
-		cmd.SetArgs(tc.args)
-		for key, value := range tc.flags {
-			cmd.Flags().Set(key, value)
-		}
-		cmd.SetOut(ioutil.Discard)
-		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	}
 }
 
@@ -167,7 +153,7 @@ func TestVolumePrunePromptYes(t *testing.T) {
 			volumePruneFunc: simplePruneFunc,
 		})
 
-		cli.SetIn(streams.NewIn(ioutil.NopCloser(strings.NewReader(input))))
+		cli.SetIn(streams.NewIn(io.NopCloser(strings.NewReader(input))))
 		cmd := NewPruneCommand(cli)
 		cmd.SetArgs([]string{})
 		assert.NilError(t, cmd.Execute())
@@ -184,7 +170,7 @@ func TestVolumePrunePromptNo(t *testing.T) {
 			volumePruneFunc: simplePruneFunc,
 		})
 
-		cli.SetIn(streams.NewIn(ioutil.NopCloser(strings.NewReader(input))))
+		cli.SetIn(streams.NewIn(io.NopCloser(strings.NewReader(input))))
 		cmd := NewPruneCommand(cli)
 		cmd.SetArgs([]string{})
 		assert.ErrorContains(t, cmd.Execute(), "volume prune has been cancelled")

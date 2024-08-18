@@ -2,7 +2,7 @@ package stack
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"strings"
 	"testing"
 
@@ -44,7 +44,7 @@ func fakeClientForRemoveStackTest(version string) *fakeClient {
 func TestRemoveWithEmptyName(t *testing.T) {
 	cmd := newRemoveCommand(test.NewFakeCli(&fakeClient{}))
 	cmd.SetArgs([]string{"good", "'   '", "alsogood"})
-	cmd.SetOut(ioutil.Discard)
+	cmd.SetOut(io.Discard)
 
 	assert.ErrorContains(t, cmd.Execute(), `invalid stack name: "'   '"`)
 }
@@ -155,13 +155,8 @@ func TestRemoveContinueAfterError(t *testing.T) {
 			return nil
 		},
 	}
-<<<<<<< HEAD
 	cmd := newRemoveCommand(test.NewFakeCli(cli))
 	cmd.SetOut(io.Discard)
-=======
-	cmd := newRemoveCommand(test.NewFakeCli(cli), &orchestrator)
-	cmd.SetOut(ioutil.Discard)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	cmd.SetArgs([]string{"foo", "bar"})
 
 	assert.Error(t, cmd.Execute(), "Failed to remove some resources from stack: foo")

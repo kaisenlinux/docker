@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
@@ -84,7 +84,7 @@ func TestImagePullWithPrivilegedFuncNoError(t *testing.T) {
 			if auth == "NotValid" {
 				return &http.Response{
 					StatusCode: http.StatusUnauthorized,
-					Body:       ioutil.NopCloser(bytes.NewReader([]byte("Invalid credentials"))),
+					Body:       io.NopCloser(bytes.NewReader([]byte("Invalid credentials"))),
 				}, nil
 			}
 			if auth != "IAmValid" {
@@ -101,7 +101,7 @@ func TestImagePullWithPrivilegedFuncNoError(t *testing.T) {
 			}
 			return &http.Response{
 				StatusCode: http.StatusOK,
-				Body:       ioutil.NopCloser(bytes.NewReader([]byte("hello world"))),
+				Body:       io.NopCloser(bytes.NewReader([]byte("hello world"))),
 			}, nil
 		}),
 	}
@@ -115,7 +115,7 @@ func TestImagePullWithPrivilegedFuncNoError(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	body, err := ioutil.ReadAll(resp)
+	body, err := io.ReadAll(resp)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -175,7 +175,7 @@ func TestImagePullWithoutErrors(t *testing.T) {
 				}
 				return &http.Response{
 					StatusCode: http.StatusOK,
-					Body:       ioutil.NopCloser(bytes.NewReader([]byte(expectedOutput))),
+					Body:       io.NopCloser(bytes.NewReader([]byte(expectedOutput))),
 				}, nil
 			}),
 		}
@@ -185,7 +185,7 @@ func TestImagePullWithoutErrors(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		body, err := ioutil.ReadAll(resp)
+		body, err := io.ReadAll(resp)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -7,7 +7,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -292,11 +291,7 @@ func NewAPIClientFromFlags(opts *cliflags.ClientOptions, configFile *configfile.
 	contextStore := &ContextStoreWithDefault{
 		Store: store.New(config.ContextStoreDir(), storeConfig),
 		Resolver: func() (*DefaultContext, error) {
-<<<<<<< HEAD
 			return ResolveDefaultContext(opts, storeConfig)
-=======
-			return ResolveDefaultContext(opts, configFile, storeConfig, ioutil.Discard)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		},
 	}
 	endpoint, err := resolveDockerEndpoint(contextStore, resolveContextName(opts, configFile))

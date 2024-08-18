@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -47,7 +46,7 @@ func newVFSGraphDriver(td string) (graphdriver.Driver, error) {
 }
 
 func newTestGraphDriver(t *testing.T) (graphdriver.Driver, func()) {
-	td, err := ioutil.TempDir("", "graph-")
+	td, err := os.MkdirTemp("", "graph-")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,7 +62,7 @@ func newTestGraphDriver(t *testing.T) (graphdriver.Driver, func()) {
 }
 
 func newTestStore(t *testing.T) (Store, string, func()) {
-	td, err := ioutil.TempDir("", "layerstore-")
+	td, err := os.MkdirTemp("", "layerstore-")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -543,7 +542,7 @@ func assertLayerDiff(t *testing.T, expected []byte, layer Layer) {
 	}
 	defer ts.Close()
 
-	actual, err := ioutil.ReadAll(ts)
+	actual, err := io.ReadAll(ts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -591,7 +590,7 @@ func byteDiff(b1, b2 []byte) ([]byte, []byte) {
 }
 
 func tarFromFiles(files ...FileApplier) ([]byte, error) {
-	td, err := ioutil.TempDir("", "tar-")
+	td, err := os.MkdirTemp("", "tar-")
 	if err != nil {
 		return nil, err
 	}
@@ -742,7 +741,7 @@ func TestTarStreamVerification(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = io.Copy(ioutil.Discard, ts)
+	_, err = io.Copy(io.Discard, ts)
 	if err == nil {
 		t.Fatal("expected data verification to fail")
 	}

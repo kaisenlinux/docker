@@ -2,7 +2,7 @@ package volume
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"testing"
 
 	"github.com/docker/cli/internal/test"
@@ -61,12 +61,8 @@ func TestVolumeInspectErrors(t *testing.T) {
 		for key, value := range tc.flags {
 			assert.Check(t, cmd.Flags().Set(key, value))
 		}
-<<<<<<< HEAD
 		cmd.SetOut(io.Discard)
 		cmd.SetErr(io.Discard)
-=======
-		cmd.SetOut(ioutil.Discard)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }

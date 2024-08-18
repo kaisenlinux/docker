@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strings"
@@ -227,13 +226,9 @@ func (s *DockerAPISuite) TestBuildAPIUnnormalizedTarPaths(c *testing.T) {
 
 		assert.NilError(c, tw.Close(), "failed to close tar archive")
 
-<<<<<<< HEAD
 		ctx := testutil.GetContext(c)
 
 		res, body, err := request.Post(ctx, "/build", request.RawContent(io.NopCloser(buffer)), request.ContentType("application/x-tar"))
-=======
-		res, body, err := request.Post("/build", request.RawContent(ioutil.NopCloser(buffer)), request.ContentType("application/x-tar"))
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		assert.NilError(c, err)
 		assert.Equal(c, res.StatusCode, http.StatusOK)
 
@@ -343,7 +338,7 @@ func (s *DockerRegistrySuite) TestBuildCopyFromForcePull(c *testing.T) {
 	// push the image to the registry
 	rc, err := client.ImagePush(ctx, repoName, image.PushOptions{RegistryAuth: "{}"})
 	assert.Check(c, err)
-	_, err = io.Copy(ioutil.Discard, rc)
+	_, err = io.Copy(io.Discard, rc)
 	assert.Check(c, err)
 
 	dockerfile := fmt.Sprintf(`

@@ -1,7 +1,6 @@
 package remotecontext // import "github.com/docker/docker/builder/remotecontext"
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -26,7 +25,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestCloseRootDirectory(t *testing.T) {
-	contextDir, err := ioutil.TempDir("", "builder-tarsum-test")
+	contextDir, err := os.MkdirTemp("", "builder-tarsum-test")
 	defer os.RemoveAll(contextDir)
 	if err != nil {
 		t.Fatalf("Error with creating temporary directory: %s", err)

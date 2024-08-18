@@ -3,7 +3,7 @@ package context
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -15,21 +15,11 @@ import (
 )
 
 func TestExportImportWithFile(t *testing.T) {
-<<<<<<< HEAD
 	contextFile := filepath.Join(t.TempDir(), "exported")
 	cli := makeFakeCli(t)
 	createTestContext(t, cli, "test", map[string]any{
 		"MyCustomMetadata": t.Name(),
 	})
-=======
-	contextDir, err := ioutil.TempDir("", t.Name()+"context")
-	assert.NilError(t, err)
-	defer os.RemoveAll(contextDir)
-	contextFile := filepath.Join(contextDir, "exported")
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
-	createTestContextWithKube(t, cli)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	cli.ErrBuffer().Reset()
 	assert.NilError(t, RunExport(cli, &ExportOptions{
 		ContextName: "test",
@@ -59,16 +49,10 @@ func TestExportImportWithFile(t *testing.T) {
 }
 
 func TestExportImportPipe(t *testing.T) {
-<<<<<<< HEAD
 	cli := makeFakeCli(t)
 	createTestContext(t, cli, "test", map[string]any{
 		"MyCustomMetadata": t.Name(),
 	})
-=======
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
-	createTestContextWithKube(t, cli)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	cli.ErrBuffer().Reset()
 	cli.OutBuffer().Reset()
 	assert.NilError(t, RunExport(cli, &ExportOptions{
@@ -76,7 +60,7 @@ func TestExportImportPipe(t *testing.T) {
 		Dest:        "-",
 	}))
 	assert.Equal(t, cli.ErrBuffer().String(), "")
-	cli.SetIn(streams.NewIn(ioutil.NopCloser(bytes.NewBuffer(cli.OutBuffer().Bytes()))))
+	cli.SetIn(streams.NewIn(io.NopCloser(bytes.NewBuffer(cli.OutBuffer().Bytes()))))
 	cli.OutBuffer().Reset()
 	cli.ErrBuffer().Reset()
 	assert.NilError(t, RunImport(cli, "test2", "-"))
@@ -90,7 +74,6 @@ func TestExportImportPipe(t *testing.T) {
 		AdditionalFields: map[string]any{"MyCustomMetadata": t.Name()},
 	}))
 
-<<<<<<< HEAD
 	assert.Check(t, is.DeepEqual(context1.Endpoints, context2.Endpoints))
 	assert.Check(t, is.DeepEqual(context1.Metadata, context2.Metadata))
 	assert.Check(t, is.Equal("test", context1.Name))
@@ -106,43 +89,5 @@ func TestExportExistingFile(t *testing.T) {
 	cli.ErrBuffer().Reset()
 	assert.NilError(t, os.WriteFile(contextFile, []byte{}, 0o644))
 	err := RunExport(cli, &ExportOptions{ContextName: "test", Dest: contextFile})
-=======
-func TestExportKubeconfig(t *testing.T) {
-	contextDir, err := ioutil.TempDir("", t.Name()+"context")
-	assert.NilError(t, err)
-	defer os.RemoveAll(contextDir)
-	contextFile := filepath.Join(contextDir, "exported")
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
-	createTestContextWithKube(t, cli)
-	cli.ErrBuffer().Reset()
-	assert.NilError(t, RunExport(cli, &ExportOptions{
-		ContextName: "test",
-		Dest:        contextFile,
-		Kubeconfig:  true,
-	}))
-	assert.Equal(t, cli.ErrBuffer().String(), fmt.Sprintf("Written file %q\n", contextFile))
-	assert.NilError(t, RunCreate(cli, &CreateOptions{
-		Name: "test2",
-		Kubernetes: map[string]string{
-			keyKubeconfig: contextFile,
-		},
-		Docker: map[string]string{},
-	}))
-	validateTestKubeEndpoint(t, cli.ContextStore(), "test2")
-}
-
-func TestExportExistingFile(t *testing.T) {
-	contextDir, err := ioutil.TempDir("", t.Name()+"context")
-	assert.NilError(t, err)
-	defer os.RemoveAll(contextDir)
-	contextFile := filepath.Join(contextDir, "exported")
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
-	createTestContextWithKube(t, cli)
-	cli.ErrBuffer().Reset()
-	assert.NilError(t, ioutil.WriteFile(contextFile, []byte{}, 0644))
-	err = RunExport(cli, &ExportOptions{ContextName: "test", Dest: contextFile})
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.Assert(t, os.IsExist(err))
 }

@@ -3,7 +3,6 @@ package distribution
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
@@ -134,13 +133,8 @@ func TestManifestStore(t *testing.T) {
 	assert.NilError(t, err)
 	dgst := digest.Canonical.FromBytes(serialized)
 
-<<<<<<< HEAD
 	setupTest := func(t *testing.T) (reference.Named, ocispec.Descriptor, *mockManifestGetter, *manifestStore, content.Store, func(*testing.T)) {
 		root, err := os.MkdirTemp("", strings.ReplaceAll(t.Name(), "/", "_"))
-=======
-	setupTest := func(t *testing.T) (reference.Named, specs.Descriptor, *mockManifestGetter, *manifestStore, content.Store, func(*testing.T)) {
-		root, err := ioutil.TempDir("", strings.Replace(t.Name(), "/", "_", -1))
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		assert.NilError(t, err)
 		defer func() {
 			if t.Failed() {

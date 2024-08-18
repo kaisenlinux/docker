@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"sort"
 	"strings"
 	"text/template"
@@ -107,15 +106,9 @@ func makeTemplate(format string) (*template.Template, error) {
 	if err != nil {
 		return tmpl, err
 	}
-<<<<<<< HEAD
 	// execute the template on an empty message to validate a bad
 	// template like "{{.badFieldString}}"
 	return tmpl, tmpl.Execute(io.Discard, &events.Message{})
-=======
-	// we execute the template for an empty message, so as to validate
-	// a bad template like "{{.badFieldString}}"
-	return tmpl, tmpl.Execute(ioutil.Discard, &eventtypes.Message{})
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 }
 
 // rfc3339NanoFixed is similar to time.RFC3339Nano, except it pads nanoseconds

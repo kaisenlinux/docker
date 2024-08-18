@@ -2,7 +2,7 @@ package image
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"testing"
 
 	"github.com/docker/cli/internal/test"
@@ -26,7 +26,7 @@ func TestNewInspectCommandErrors(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		cmd := newInspectCommand(test.NewFakeCli(&fakeClient{}))
-		cmd.SetOut(ioutil.Discard)
+		cmd.SetOut(io.Discard)
 		cmd.SetArgs(tc.args)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
@@ -75,7 +75,6 @@ func TestNewInspectCommandSuccess(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-<<<<<<< HEAD
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			imageInspectInvocationCount = 0
@@ -88,16 +87,5 @@ func TestNewInspectCommandSuccess(t *testing.T) {
 			golden.Assert(t, cli.OutBuffer().String(), fmt.Sprintf("inspect-command-success.%s.golden", tc.name))
 			assert.Check(t, is.Equal(imageInspectInvocationCount, tc.imageCount))
 		})
-=======
-		imageInspectInvocationCount = 0
-		cli := test.NewFakeCli(&fakeClient{imageInspectFunc: tc.imageInspectFunc})
-		cmd := newInspectCommand(cli)
-		cmd.SetOut(ioutil.Discard)
-		cmd.SetArgs(tc.args)
-		err := cmd.Execute()
-		assert.NilError(t, err)
-		golden.Assert(t, cli.OutBuffer().String(), fmt.Sprintf("inspect-command-success.%s.golden", tc.name))
-		assert.Check(t, is.Equal(imageInspectInvocationCount, tc.imageCount))
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	}
 }

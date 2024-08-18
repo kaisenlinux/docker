@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"reflect"
 	"strings"
@@ -57,7 +57,7 @@ func TestImageImport(t *testing.T) {
 
 			return &http.Response{
 				StatusCode: http.StatusOK,
-				Body:       ioutil.NopCloser(bytes.NewReader([]byte("response"))),
+				Body:       io.NopCloser(bytes.NewReader([]byte("response"))),
 			}, nil
 		}),
 	}
@@ -72,7 +72,7 @@ func TestImageImport(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	response, err := ioutil.ReadAll(importResponse)
+	response, err := io.ReadAll(importResponse)
 	if err != nil {
 		t.Fatal(err)
 	}

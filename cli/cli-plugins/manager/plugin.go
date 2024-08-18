@@ -33,13 +33,7 @@ type Plugin struct {
 // is set, and is always a `pluginError`, but the `Plugin` is still
 // returned with no error. An error is only returned due to a
 // non-recoverable error.
-<<<<<<< HEAD
 func newPlugin(c Candidate, cmds []*cobra.Command) (Plugin, error) {
-=======
-//
-// nolint: gocyclo
-func newPlugin(c Candidate, rootcmd *cobra.Command) (Plugin, error) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	path := c.Path()
 	if path == "" {
 		return Plugin{}, errors.New("plugin candidate path cannot be empty")

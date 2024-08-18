@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"os"
 	"os/exec"
@@ -204,80 +203,6 @@ func (s *DockerDaemonSuite) TestDaemonStartIptablesFalse(c *testing.T) {
 	s.d.Start(c, "--iptables=false")
 }
 
-<<<<<<< HEAD
-=======
-// Make sure we cannot shrink base device at daemon restart.
-func (s *DockerDaemonSuite) TestDaemonRestartWithInvalidBasesize(c *testing.T) {
-	testRequires(c, Devicemapper)
-	s.d.Start(c)
-
-	oldBasesizeBytes := getBaseDeviceSize(c, s.d)
-	var newBasesizeBytes int64 = 1073741824 // 1GB in bytes
-
-	if newBasesizeBytes < oldBasesizeBytes {
-		err := s.d.RestartWithError("--storage-opt", fmt.Sprintf("dm.basesize=%d", newBasesizeBytes))
-		assert.Assert(c, err != nil, "daemon should not have started as new base device size is less than existing base device size: %v", err)
-		// 'err != nil' is expected behaviour, no new daemon started,
-		// so no need to stop daemon.
-		if err != nil {
-			return
-		}
-	}
-	s.d.Stop(c)
-}
-
-// Make sure we can grow base device at daemon restart.
-func (s *DockerDaemonSuite) TestDaemonRestartWithIncreasedBasesize(c *testing.T) {
-	testRequires(c, Devicemapper)
-	s.d.Start(c)
-
-	oldBasesizeBytes := getBaseDeviceSize(c, s.d)
-
-	var newBasesizeBytes int64 = 53687091200 // 50GB in bytes
-
-	if newBasesizeBytes < oldBasesizeBytes {
-		c.Skip(fmt.Sprintf("New base device size (%v) must be greater than (%s)", units.HumanSize(float64(newBasesizeBytes)), units.HumanSize(float64(oldBasesizeBytes))))
-	}
-
-	err := s.d.RestartWithError("--storage-opt", fmt.Sprintf("dm.basesize=%d", newBasesizeBytes))
-	assert.Assert(c, err == nil, "we should have been able to start the daemon with increased base device size: %v", err)
-
-	basesizeAfterRestart := getBaseDeviceSize(c, s.d)
-	newBasesize, err := convertBasesize(newBasesizeBytes)
-	assert.Assert(c, err == nil, "Error in converting base device size: %v", err)
-	assert.Equal(c, newBasesize, basesizeAfterRestart, "Basesize passed is not equal to Basesize set")
-	s.d.Stop(c)
-}
-
-func getBaseDeviceSize(c *testing.T, d *daemon.Daemon) int64 {
-	info := d.Info(c)
-	for _, statusLine := range info.DriverStatus {
-		key, value := statusLine[0], statusLine[1]
-		if key == "Base Device Size" {
-			return parseDeviceSize(c, value)
-		}
-	}
-	c.Fatal("failed to parse Base Device Size from info")
-	return int64(0)
-}
-
-func parseDeviceSize(c *testing.T, raw string) int64 {
-	size, err := units.RAMInBytes(strings.TrimSpace(raw))
-	assert.NilError(c, err)
-	return size
-}
-
-func convertBasesize(basesizeBytes int64) (int64, error) {
-	basesize := units.HumanSize(float64(basesizeBytes))
-	basesize = strings.Trim(basesize, " ")[:len(basesize)-3]
-	basesizeFloat, err := strconv.ParseFloat(strings.Trim(basesize, " "), 64)
-	if err != nil {
-		return 0, err
-	}
-	return int64(basesizeFloat) * 1024 * 1024 * 1024, nil
-}
-
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 // Issue #8444: If docker0 bridge is modified (intentionally or unintentionally) and
 // no longer has an IP associated, we should gracefully handle that case and associate
 // an IP with it rather than fail daemon start
@@ -541,7 +466,7 @@ func (s *DockerDaemonSuite) TestDaemonAllocatesListeningPort(c *testing.T) {
 
 	cmdArgs := make([]string, 0, len(listeningPorts)*2)
 	for _, l := range listeningPorts {
-		cmdArgs = append(cmdArgs, "--tls=false", "--host", fmt.Sprintf("tcp://%s:%s", l.daemon, l.port))
+		cmdArgs = append(cmdArgs, "--tls=false", "--host", "tcp://"+net.JoinHostPort(l.daemon, l.port))
 	}
 
 	s.d.StartWithBusybox(testutil.GetContext(c), c, cmdArgs...)
@@ -1189,7 +1114,7 @@ func (s *DockerDaemonSuite) TestDaemonLoggingDriverShouldBeIgnoredForBuild(c *te
 }
 
 func (s *DockerDaemonSuite) TestDaemonUnixSockCleanedUp(c *testing.T) {
-	dir, err := ioutil.TempDir("", "socket-cleanup-test")
+	dir, err := os.MkdirTemp("", "socket-cleanup-test")
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -1209,62 +1134,6 @@ func (s *DockerDaemonSuite) TestDaemonUnixSockCleanedUp(c *testing.T) {
 	}
 }
 
-<<<<<<< HEAD
-=======
-func (s *DockerDaemonSuite) TestDaemonWithWrongkey(c *testing.T) {
-	type Config struct {
-		Crv string `json:"crv"`
-		D   string `json:"d"`
-		Kid string `json:"kid"`
-		Kty string `json:"kty"`
-		X   string `json:"x"`
-		Y   string `json:"y"`
-	}
-
-	os.Remove("/etc/docker/key.json")
-	s.d.Start(c)
-	s.d.Stop(c)
-
-	config := &Config{}
-	bytes, err := ioutil.ReadFile("/etc/docker/key.json")
-	if err != nil {
-		c.Fatalf("Error reading key.json file: %s", err)
-	}
-
-	// byte[] to Data-Struct
-	if err := json.Unmarshal(bytes, &config); err != nil {
-		c.Fatalf("Error Unmarshal: %s", err)
-	}
-
-	// replace config.Kid with the fake value
-	config.Kid = "VSAJ:FUYR:X3H2:B2VZ:KZ6U:CJD5:K7BX:ZXHY:UZXT:P4FT:MJWG:HRJ4"
-
-	// NEW Data-Struct to byte[]
-	newBytes, err := json.Marshal(&config)
-	if err != nil {
-		c.Fatalf("Error Marshal: %s", err)
-	}
-
-	// write back
-	if err := ioutil.WriteFile("/etc/docker/key.json", newBytes, 0400); err != nil {
-		c.Fatalf("Error ioutil.WriteFile: %s", err)
-	}
-
-	defer os.Remove("/etc/docker/key.json")
-
-	if err := s.d.StartWithError(); err == nil {
-		c.Fatalf("It should not be successful to start daemon with wrong key: %v", err)
-	}
-
-	content, err := s.d.ReadLogFile()
-	assert.Assert(c, err == nil)
-
-	if !strings.Contains(string(content), "Public Key ID does not match") {
-		c.Fatalf("Missing KeyID message from daemon logs: %s", string(content))
-	}
-}
-
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 func (s *DockerDaemonSuite) TestDaemonRestartKillWait(c *testing.T) {
 	s.d.StartWithBusybox(testutil.GetContext(c), c)
 
@@ -1465,7 +1334,7 @@ func (s *DockerDaemonSuite) TestCleanupMountsAfterDaemonAndContainerKill(c *test
 	// If there are no mounts with container id visible from the host
 	// (as those are in container's own mount ns), there is nothing
 	// to check here and the test should be skipped.
-	mountOut, err := ioutil.ReadFile("/proc/self/mountinfo")
+	mountOut, err := os.ReadFile("/proc/self/mountinfo")
 	assert.NilError(c, err, "Output: %s", mountOut)
 	if !strings.Contains(string(mountOut), id) {
 		d.Stop(c)
@@ -1483,7 +1352,7 @@ func (s *DockerDaemonSuite) TestCleanupMountsAfterDaemonAndContainerKill(c *test
 	d.Restart(c)
 
 	// Now, container mounts should be gone.
-	mountOut, err = ioutil.ReadFile("/proc/self/mountinfo")
+	mountOut, err = os.ReadFile("/proc/self/mountinfo")
 	assert.NilError(c, err, "Output: %s", mountOut)
 	assert.Assert(c, !strings.Contains(string(mountOut), id), "%s is still mounted from older daemon start:\nDaemon root repository %s\n%s", id, d.Root, mountOut)
 
@@ -1504,7 +1373,7 @@ func (s *DockerDaemonSuite) TestCleanupMountsAfterGracefulShutdown(c *testing.T)
 	// Wait for the daemon to stop.
 	assert.NilError(c, <-d.Wait)
 
-	mountOut, err := ioutil.ReadFile("/proc/self/mountinfo")
+	mountOut, err := os.ReadFile("/proc/self/mountinfo")
 	assert.NilError(c, err, "Output: %s", mountOut)
 
 	assert.Assert(c, !strings.Contains(string(mountOut), id), "%s is still mounted from older daemon start:\nDaemon root repository %s\n%s", id, d.Root, mountOut)
@@ -1718,7 +1587,7 @@ func (s *DockerDaemonSuite) TestDaemonStartWithDefaultTLSHost(c *testing.T) {
 	}
 
 	// ensure when connecting to the server that only a single acceptable CA is requested
-	contents, err := ioutil.ReadFile("fixtures/https/ca.pem")
+	contents, err := os.ReadFile("fixtures/https/ca.pem")
 	assert.NilError(c, err)
 	rootCert, err := helpers.ParseCertificatePEM(contents)
 	assert.NilError(c, err)
@@ -1775,7 +1644,7 @@ func (s *DockerDaemonSuite) TestBridgeIPIsExcludedFromAllocatorPool(c *testing.T
 func (s *DockerDaemonSuite) TestDaemonNoSpaceLeftOnDeviceError(c *testing.T) {
 	testRequires(c, testEnv.IsLocalDaemon, DaemonIsLinux, Network)
 
-	testDir, err := ioutil.TempDir("", "no-space-left-on-device-test")
+	testDir, err := os.MkdirTemp("", "no-space-left-on-device-test")
 	assert.NilError(c, err)
 	defer os.RemoveAll(testDir)
 	assert.Assert(c, mount.MakeRShared(testDir) == nil)
@@ -1866,7 +1735,7 @@ func (s *DockerDaemonSuite) TestDaemonRestartContainerLinksRestart(c *testing.T)
 		out, err := s.d.Cmd("inspect", "-f", "{{ .State.Running }}", "parent"+num)
 		assert.NilError(c, err)
 		if strings.TrimSpace(out) != "true" {
-			log, _ := ioutil.ReadFile(s.d.LogFileName())
+			log, _ := os.ReadFile(s.d.LogFileName())
 			c.Fatalf("parent container is not running\n%s", string(log))
 		}
 	}
@@ -2034,7 +1903,7 @@ func (s *DockerDaemonSuite) TestCleanupMountsAfterDaemonCrash(c *testing.T) {
 	// If not, those mounts exist in container's own mount ns, and so
 	// the following check for mounts being cleared is pointless.
 	skipMountCheck := false
-	mountOut, err := ioutil.ReadFile("/proc/self/mountinfo")
+	mountOut, err := os.ReadFile("/proc/self/mountinfo")
 	assert.Assert(c, err == nil, "Output: %s", mountOut)
 	if !strings.Contains(string(mountOut), id) {
 		skipMountCheck = true
@@ -2059,7 +1928,7 @@ func (s *DockerDaemonSuite) TestCleanupMountsAfterDaemonCrash(c *testing.T) {
 		return
 	}
 	// Now, container mounts should be gone.
-	mountOut, err = ioutil.ReadFile("/proc/self/mountinfo")
+	mountOut, err = os.ReadFile("/proc/self/mountinfo")
 	assert.Assert(c, err == nil, "Output: %s", mountOut)
 	comment := fmt.Sprintf("%s is still mounted from older daemon start:\nDaemon root repository %s\n%s", id, s.d.Root, mountOut)
 	assert.Equal(c, strings.Contains(string(mountOut), id), false, comment)
@@ -2216,54 +2085,6 @@ func (s *DockerDaemonSuite) TestDaemonDebugLog(c *testing.T) {
 	assert.Assert(c, strings.Contains(b.String(), debugLog))
 }
 
-<<<<<<< HEAD
-=======
-func (s *DockerDaemonSuite) TestDaemonDiscoveryBackendConfigReload(c *testing.T) {
-	testRequires(c, testEnv.IsLocalDaemon, DaemonIsLinux)
-
-	// daemon config file
-	daemonConfig := `{ "debug" : false }`
-	configFile, err := ioutil.TempFile("", "test-daemon-discovery-backend-config-reload-config")
-	assert.Assert(c, err == nil, "could not create temp file for config reload")
-	configFilePath := configFile.Name()
-	defer func() {
-		configFile.Close()
-		os.RemoveAll(configFile.Name())
-	}()
-
-	_, err = configFile.Write([]byte(daemonConfig))
-	assert.NilError(c, err)
-
-	// --log-level needs to be set so that d.Start() doesn't add --debug causing
-	// a conflict with the config
-	s.d.Start(c, "--config-file", configFilePath, "--log-level=info")
-
-	// daemon config file
-	daemonConfig = `{
-	      "cluster-store": "consul://consuladdr:consulport/some/path",
-	      "cluster-advertise": "192.168.56.100:0",
-	      "debug" : false
-	}`
-
-	err = configFile.Truncate(0)
-	assert.NilError(c, err)
-	_, err = configFile.Seek(0, io.SeekStart)
-	assert.NilError(c, err)
-
-	_, err = configFile.Write([]byte(daemonConfig))
-	assert.NilError(c, err)
-
-	err = s.d.ReloadConfig()
-	assert.Assert(c, err == nil, "error reloading daemon config")
-
-	out, err := s.d.Cmd("info")
-	assert.NilError(c, err)
-
-	assert.Assert(c, strings.Contains(out, "Cluster Store: consul://consuladdr:consulport/some/path"))
-	assert.Assert(c, strings.Contains(out, "Cluster Advertise: 192.168.56.100:0"))
-}
-
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 // Test for #21956
 func (s *DockerDaemonSuite) TestDaemonLogOptions(c *testing.T) {
 	s.d.StartWithBusybox(testutil.GetContext(c), c, "--log-driver=syslog", "--log-opt=syslog-address=udp://127.0.0.1:514")
@@ -2404,7 +2225,7 @@ func (s *DockerDaemonSuite) TestDaemonDNSFlagsInHostMode(c *testing.T) {
 }
 
 func (s *DockerDaemonSuite) TestRunWithRuntimeFromConfigFile(c *testing.T) {
-	conf, err := ioutil.TempFile("", "config-file-")
+	conf, err := os.CreateTemp("", "config-file-")
 	assert.NilError(c, err)
 	configName := conf.Name()
 	conf.Close()
@@ -2425,13 +2246,8 @@ func (s *DockerDaemonSuite) TestRunWithRuntimeFromConfigFile(c *testing.T) {
     }
 }
 `
-<<<<<<< HEAD
 	os.WriteFile(configName, []byte(config), 0o644)
 	s.d.StartWithBusybox(testutil.GetContext(c), c, "--config-file", configName)
-=======
-	ioutil.WriteFile(configName, []byte(config), 0644)
-	s.d.StartWithBusybox(c, "--config-file", configName)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	// Run with default runtime
 	out, err := s.d.Cmd("run", "--rm", "busybox", "ls")
@@ -2456,11 +2272,7 @@ func (s *DockerDaemonSuite) TestRunWithRuntimeFromConfigFile(c *testing.T) {
     }
 }
 `
-<<<<<<< HEAD
 	os.WriteFile(configName, []byte(config), 0o644)
-=======
-	ioutil.WriteFile(configName, []byte(config), 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.Assert(c, s.d.Signal(unix.SIGHUP) == nil)
 	// Give daemon time to reload config
 	<-time.After(1 * time.Second)
@@ -2487,11 +2299,7 @@ func (s *DockerDaemonSuite) TestRunWithRuntimeFromConfigFile(c *testing.T) {
     }
 }
 `
-<<<<<<< HEAD
 	os.WriteFile(configName, []byte(config), 0o644)
-=======
-	ioutil.WriteFile(configName, []byte(config), 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.Assert(c, s.d.Signal(unix.SIGHUP) == nil)
 	// Give daemon time to reload config
 	<-time.After(1 * time.Second)
@@ -2516,11 +2324,7 @@ func (s *DockerDaemonSuite) TestRunWithRuntimeFromConfigFile(c *testing.T) {
     }
 }
 `
-<<<<<<< HEAD
 	os.WriteFile(configName, []byte(config), 0o644)
-=======
-	ioutil.WriteFile(configName, []byte(config), 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.Assert(c, s.d.Signal(unix.SIGHUP) == nil)
 	// Give daemon time to reload config
 	<-time.After(1 * time.Second)
@@ -2656,7 +2460,7 @@ func (s *DockerDaemonSuite) TestDaemonWithUserlandProxyPath(c *testing.T) {
 
 	dockerProxyPath, err := exec.LookPath("docker-proxy")
 	assert.NilError(c, err)
-	tmpDir, err := ioutil.TempDir("", "test-docker-proxy")
+	tmpDir, err := os.MkdirTemp("", "test-docker-proxy")
 	assert.NilError(c, err)
 
 	newProxyPath := filepath.Join(tmpDir, "docker-proxy")
@@ -2878,18 +2682,14 @@ func (s *DockerDaemonSuite) TestShmSize(c *testing.T) {
 func (s *DockerDaemonSuite) TestShmSizeReload(c *testing.T) {
 	testRequires(c, DaemonIsLinux)
 
-	configPath, err := ioutil.TempDir("", "test-daemon-shm-size-reload-config")
+	configPath, err := os.MkdirTemp("", "test-daemon-shm-size-reload-config")
 	assert.Assert(c, err == nil, "could not create temp file for config reload")
 	defer os.RemoveAll(configPath) // clean up
 	configFile := filepath.Join(configPath, "config.json")
 
 	size := 67108864 * 2
 	configData := []byte(fmt.Sprintf(`{"default-shm-size": "%dM"}`, size/1024/1024))
-<<<<<<< HEAD
 	assert.Assert(c, os.WriteFile(configFile, configData, 0o666) == nil, "could not write temp file for config reload")
-=======
-	assert.Assert(c, ioutil.WriteFile(configFile, configData, 0666) == nil, "could not write temp file for config reload")
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	pattern := regexp.MustCompile(fmt.Sprintf("shm on /dev/shm type tmpfs(.*)size=%dk", size/1024))
 
 	s.d.StartWithBusybox(testutil.GetContext(c), c, "--config-file", configFile)
@@ -2904,11 +2704,7 @@ func (s *DockerDaemonSuite) TestShmSizeReload(c *testing.T) {
 
 	size = 67108864 * 3
 	configData = []byte(fmt.Sprintf(`{"default-shm-size": "%dM"}`, size/1024/1024))
-<<<<<<< HEAD
 	assert.Assert(c, os.WriteFile(configFile, configData, 0o666) == nil, "could not write temp file for config reload")
-=======
-	assert.Assert(c, ioutil.WriteFile(configFile, configData, 0666) == nil, "could not write temp file for config reload")
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	pattern = regexp.MustCompile(fmt.Sprintf("shm on /dev/shm type tmpfs(.*)size=%dk", size/1024))
 
 	err = s.d.ReloadConfig()
@@ -2929,7 +2725,7 @@ func testDaemonStartIpcMode(c *testing.T, from, mode string, valid bool) {
 	var serr error
 	switch from {
 	case "config":
-		f, err := ioutil.TempFile("", "test-daemon-ipc-config")
+		f, err := os.CreateTemp("", "test-daemon-ipc-config")
 		assert.NilError(c, err)
 		defer os.Remove(f.Name())
 		config := `{"default-ipc-mode": "` + mode + `"}`
@@ -2999,7 +2795,7 @@ func (s *DockerDaemonSuite) TestFailedPluginRemove(c *testing.T) {
 	})
 	assert.NilError(c, err)
 	defer out.Close()
-	io.Copy(ioutil.Discard, out)
+	io.Copy(io.Discard, out)
 
 	ctx, cancel = context.WithTimeout(testutil.GetContext(c), 30*time.Second)
 	defer cancel()

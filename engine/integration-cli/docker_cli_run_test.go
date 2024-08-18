@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"os"
 	"os/exec"
@@ -386,7 +385,7 @@ func (s *DockerCLIRunSuite) TestRunCreateVolumesInSymlinkDir(c *testing.T) {
 	testRequires(c, testEnv.IsLocalDaemon, DaemonIsLinux)
 	name := "test-volume-symlink"
 
-	dir, err := ioutil.TempDir("", name)
+	dir, err := os.MkdirTemp("", name)
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -622,7 +621,7 @@ func (s *DockerCLIRunSuite) TestRunCreateVolume(c *testing.T) {
 func (s *DockerCLIRunSuite) TestRunCreateVolumeWithSymlink(c *testing.T) {
 	// Cannot run on Windows as relies on Linux-specific functionality (sh -c mount...)
 	testRequires(c, DaemonIsLinux)
-	workingDirectory, err := ioutil.TempDir("", "TestRunCreateVolumeWithSymlink")
+	workingDirectory, err := os.MkdirTemp("", "TestRunCreateVolumeWithSymlink")
 	assert.NilError(c, err)
 	const imgName = "docker-test-createvolumewithsymlink"
 
@@ -660,7 +659,7 @@ func (s *DockerCLIRunSuite) TestRunVolumesFromSymlinkPath(c *testing.T) {
 	// Windows does not support symlinks inside a volume path
 	testRequires(c, DaemonIsLinux)
 
-	workingDirectory, err := ioutil.TempDir("", "TestRunVolumesFromSymlinkPath")
+	workingDirectory, err := os.MkdirTemp("", "TestRunVolumesFromSymlinkPath")
 	assert.NilError(c, err)
 	name := "docker-test-volumesfromsymlinkpath"
 	prefix := ""
@@ -1256,17 +1255,13 @@ func (s *DockerCLIRunSuite) TestRunDNSDefaultOptions(c *testing.T) {
 	testRequires(c, testEnv.IsLocalDaemon, DaemonIsLinux)
 
 	// preserve original resolv.conf for restoring after test
-	origResolvConf, err := ioutil.ReadFile("/etc/resolv.conf")
+	origResolvConf, err := os.ReadFile("/etc/resolv.conf")
 	if os.IsNotExist(err) {
 		c.Fatalf("/etc/resolv.conf does not exist")
 	}
 	// defer restored original conf
 	defer func() {
-<<<<<<< HEAD
 		if err := os.WriteFile("/etc/resolv.conf", origResolvConf, 0o644); err != nil {
-=======
-		if err := ioutil.WriteFile("/etc/resolv.conf", origResolvConf, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			c.Fatal(err)
 		}
 	}()
@@ -1275,11 +1270,7 @@ func (s *DockerCLIRunSuite) TestRunDNSDefaultOptions(c *testing.T) {
 	// 2 are removed from the file at container start, and the 3rd (commented out) one is ignored by
 	// GetNameservers(), leading to a replacement of nameservers with the default set
 	tmpResolvConf := []byte("nameserver 127.0.0.1\n#nameserver 127.0.2.1\nnameserver ::1")
-<<<<<<< HEAD
 	if err := os.WriteFile("/etc/resolv.conf", tmpResolvConf, 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile("/etc/resolv.conf", tmpResolvConf, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		c.Fatal(err)
 	}
 
@@ -1335,7 +1326,7 @@ func (s *DockerCLIRunSuite) TestRunDNSOptionsBasedOnHostResolvConf(c *testing.T)
 	// Not applicable on Windows as testing Unix specific functionality
 	testRequires(c, testEnv.IsLocalDaemon, DaemonIsLinux)
 
-	origResolvConf, err := ioutil.ReadFile("/etc/resolv.conf")
+	origResolvConf, err := os.ReadFile("/etc/resolv.conf")
 	if os.IsNotExist(err) {
 		c.Fatalf("/etc/resolv.conf does not exist")
 	}
@@ -1377,25 +1368,17 @@ func (s *DockerCLIRunSuite) TestRunDNSOptionsBasedOnHostResolvConf(c *testing.T)
 
 	// test with file
 	tmpResolvConf := []byte("search example.com\nnameserver 12.34.56.78\nnameserver 127.0.0.1")
-<<<<<<< HEAD
 	if err := os.WriteFile("/etc/resolv.conf", tmpResolvConf, 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile("/etc/resolv.conf", tmpResolvConf, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		c.Fatal(err)
 	}
 	// put the old resolvconf back
 	defer func() {
-<<<<<<< HEAD
 		if err := os.WriteFile("/etc/resolv.conf", origResolvConf, 0o644); err != nil {
-=======
-		if err := ioutil.WriteFile("/etc/resolv.conf", origResolvConf, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			c.Fatal(err)
 		}
 	}()
 
-	resolvConf, err := ioutil.ReadFile("/etc/resolv.conf")
+	resolvConf, err := os.ReadFile("/etc/resolv.conf")
 	if os.IsNotExist(err) {
 		c.Fatalf("/etc/resolv.conf does not exist")
 	}
@@ -1451,7 +1434,7 @@ func (s *DockerCLIRunSuite) TestRunResolvconfUpdate(c *testing.T) {
 	tmpLocalhostResolvConf := []byte("nameserver 127.0.0.1")
 
 	// take a copy of resolv.conf for restoring after test completes
-	resolvConfSystem, err := ioutil.ReadFile("/etc/resolv.conf")
+	resolvConfSystem, err := os.ReadFile("/etc/resolv.conf")
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -1469,11 +1452,7 @@ func (s *DockerCLIRunSuite) TestRunResolvconfUpdate(c *testing.T) {
 
 	// cleanup
 	defer func() {
-<<<<<<< HEAD
 		if err := os.WriteFile("/etc/resolv.conf", resolvConfSystem, 0o644); err != nil {
-=======
-		if err := ioutil.WriteFile("/etc/resolv.conf", resolvConfSystem, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			c.Fatal(err)
 		}
 	}()
@@ -1483,11 +1462,7 @@ func (s *DockerCLIRunSuite) TestRunResolvconfUpdate(c *testing.T) {
 	containerID1 := getIDByName(c, "first")
 
 	// replace resolv.conf with our temporary copy
-<<<<<<< HEAD
 	if err := os.WriteFile("/etc/resolv.conf", tmpResolvConf, 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile("/etc/resolv.conf", tmpResolvConf, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		c.Fatal(err)
 	}
 
@@ -1501,7 +1476,7 @@ func (s *DockerCLIRunSuite) TestRunResolvconfUpdate(c *testing.T) {
 	}
 
 	/*	// make a change to resolv.conf (in this case replacing our tmp copy with orig copy)
-		if err := ioutil.WriteFile("/etc/resolv.conf", resolvConfSystem, 0644); err != nil {
+		if err := os.WriteFile("/etc/resolv.conf", resolvConfSystem, 0644); err != nil {
 						c.Fatal(err)
 								} */
 	// 2. test that a restarting container does not receive resolv.conf updates
@@ -1510,11 +1485,7 @@ func (s *DockerCLIRunSuite) TestRunResolvconfUpdate(c *testing.T) {
 	containerID2 := getIDByName(c, "second")
 
 	// make a change to resolv.conf (in this case replacing our tmp copy with orig copy)
-<<<<<<< HEAD
 	if err := os.WriteFile("/etc/resolv.conf", resolvConfSystem, 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile("/etc/resolv.conf", resolvConfSystem, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		c.Fatal(err)
 	}
 
@@ -1532,11 +1503,7 @@ func (s *DockerCLIRunSuite) TestRunResolvconfUpdate(c *testing.T) {
 	runningContainerID = strings.TrimSpace(runningContainerID)
 
 	// replace resolv.conf
-<<<<<<< HEAD
 	if err := os.WriteFile("/etc/resolv.conf", tmpResolvConf, 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile("/etc/resolv.conf", tmpResolvConf, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		c.Fatal(err)
 	}
 
@@ -1560,11 +1527,7 @@ func (s *DockerCLIRunSuite) TestRunResolvconfUpdate(c *testing.T) {
 	//   host resolv.conf before updating container's resolv.conf copies
 
 	// replace resolv.conf with a localhost-only nameserver copy
-<<<<<<< HEAD
 	if err = os.WriteFile("/etc/resolv.conf", tmpLocalhostResolvConf, 0o644); err != nil {
-=======
-	if err = ioutil.WriteFile("/etc/resolv.conf", tmpLocalhostResolvConf, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		c.Fatal(err)
 	}
 
@@ -1583,11 +1546,7 @@ func (s *DockerCLIRunSuite) TestRunResolvconfUpdate(c *testing.T) {
 	//   of containers' resolv.conf.
 
 	// Restore the original resolv.conf
-<<<<<<< HEAD
 	if err := os.WriteFile("/etc/resolv.conf", resolvConfSystem, 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile("/etc/resolv.conf", resolvConfSystem, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		c.Fatal(err)
 	}
 
@@ -1596,11 +1555,7 @@ func (s *DockerCLIRunSuite) TestRunResolvconfUpdate(c *testing.T) {
 	containerID3 := getIDByName(c, "third")
 
 	// Create a modified resolv.conf.aside and override resolv.conf with it
-<<<<<<< HEAD
 	if err := os.WriteFile("/etc/resolv.conf.aside", tmpResolvConf, 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile("/etc/resolv.conf.aside", tmpResolvConf, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		c.Fatal(err)
 	}
 
@@ -1928,7 +1883,7 @@ func (s *DockerCLIRunSuite) TestRunBindMounts(c *testing.T) {
 
 	prefix, _ := getPrefixAndSlashFromDaemonPlatform()
 
-	tmpDir, err := ioutil.TempDir("", "docker-test-container")
+	tmpDir, err := os.MkdirTemp("", "docker-test-container")
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -1975,7 +1930,7 @@ func (s *DockerCLIRunSuite) TestRunCidFileCleanupIfEmpty(c *testing.T) {
 	// Skip on Windows. Base image on Windows has a CMD set in the image.
 	testRequires(c, DaemonIsLinux)
 
-	tmpDir, err := ioutil.TempDir("", "TestRunCidFile")
+	tmpDir, err := os.MkdirTemp("", "TestRunCidFile")
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -2000,29 +1955,17 @@ func (s *DockerCLIRunSuite) TestRunCidFileCleanupIfEmpty(c *testing.T) {
 // #2098 - Docker cidFiles only contain short version of the containerId
 // sudo docker run --cidfile /tmp/docker_tesc.cid ubuntu echo "test"
 // TestRunCidFile tests that run --cidfile returns the longid
-<<<<<<< HEAD
 func (s *DockerCLIRunSuite) TestRunCidFileCheckIDLength(c *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "TestRunCidFile")
-=======
-func (s *DockerSuite) TestRunCidFileCheckIDLength(c *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "TestRunCidFile")
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		c.Fatal(err)
 	}
 	tmpCidFile := path.Join(tmpDir, "cid")
 	defer os.RemoveAll(tmpDir)
 
-<<<<<<< HEAD
 	id := cli.DockerCmd(c, "run", "-d", "--cidfile", tmpCidFile, "busybox", "true").Stdout()
 	id = strings.TrimSpace(id)
 	buffer, err := os.ReadFile(tmpCidFile)
-=======
-	out, _ := dockerCmd(c, "run", "-d", "--cidfile", tmpCidFile, "busybox", "true")
-
-	id := strings.TrimSpace(out)
-	buffer, err := ioutil.ReadFile(tmpCidFile)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -2134,13 +2077,13 @@ func (s *DockerCLIRunSuite) TestRunMountOrdering(c *testing.T) {
 	testRequires(c, testEnv.IsLocalDaemon, DaemonIsLinux, NotUserNamespace)
 	prefix, _ := getPrefixAndSlashFromDaemonPlatform()
 
-	tmpDir, err := ioutil.TempDir("", "docker_nested_mount_test")
+	tmpDir, err := os.MkdirTemp("", "docker_nested_mount_test")
 	if err != nil {
 		c.Fatal(err)
 	}
 	defer os.RemoveAll(tmpDir)
 
-	tmpDir2, err := ioutil.TempDir("", "docker_nested_mount_test2")
+	tmpDir2, err := os.MkdirTemp("", "docker_nested_mount_test2")
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -2152,7 +2095,6 @@ func (s *DockerCLIRunSuite) TestRunMountOrdering(c *testing.T) {
 		c.Fatalf("failed to mkdir at %s - %s", fooDir, err)
 	}
 
-<<<<<<< HEAD
 	if err := os.WriteFile(fmt.Sprintf("%s/touch-me", fooDir), []byte{}, 0o644); err != nil {
 		c.Fatal(err)
 	}
@@ -2162,17 +2104,6 @@ func (s *DockerCLIRunSuite) TestRunMountOrdering(c *testing.T) {
 	}
 
 	if err := os.WriteFile(fmt.Sprintf("%s/touch-me", tmpDir2), []byte{}, 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile(fmt.Sprintf("%s/touch-me", fooDir), []byte{}, 0644); err != nil {
-		c.Fatal(err)
-	}
-
-	if err := ioutil.WriteFile(fmt.Sprintf("%s/touch-me", tmpDir), []byte{}, 0644); err != nil {
-		c.Fatal(err)
-	}
-
-	if err := ioutil.WriteFile(fmt.Sprintf("%s/touch-me", tmpDir2), []byte{}, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		c.Fatal(err)
 	}
 
@@ -2191,7 +2122,7 @@ func (s *DockerCLIRunSuite) TestRunReuseBindVolumeThatIsSymlink(c *testing.T) {
 	testRequires(c, testEnv.IsLocalDaemon, DaemonIsLinux, NotUserNamespace)
 	prefix, _ := getPrefixAndSlashFromDaemonPlatform()
 
-	tmpDir, err := ioutil.TempDir(os.TempDir(), "testlink")
+	tmpDir, err := os.MkdirTemp(os.TempDir(), "testlink")
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -4152,7 +4083,7 @@ func (s *DockerCLIRunSuite) TestRunCredentialSpecWellFormed(c *testing.T) {
 func (s *DockerCLIRunSuite) TestRunDuplicateMount(c *testing.T) {
 	testRequires(c, testEnv.IsLocalDaemon, DaemonIsLinux, NotUserNamespace)
 
-	tmpFile, err := ioutil.TempFile("", "touch-me")
+	tmpFile, err := os.CreateTemp("", "touch-me")
 	assert.NilError(c, err)
 	defer tmpFile.Close()
 
@@ -4291,7 +4222,7 @@ func (s *delayedReader) Read([]byte) (int, error) {
 // #28823 (originally #28639)
 func (s *DockerCLIRunSuite) TestRunMountReadOnlyDevShm(c *testing.T) {
 	testRequires(c, testEnv.IsLocalDaemon, DaemonIsLinux, NotUserNamespace)
-	emptyDir, err := ioutil.TempDir("", "test-read-only-dev-shm")
+	emptyDir, err := os.MkdirTemp("", "test-read-only-dev-shm")
 	assert.NilError(c, err)
 	defer os.RemoveAll(emptyDir)
 	out, _, err := dockerCmdWithError("run", "--rm", "--read-only",
@@ -4305,7 +4236,7 @@ func (s *DockerCLIRunSuite) TestRunMount(c *testing.T) {
 	testRequires(c, DaemonIsLinux, testEnv.IsLocalDaemon, NotUserNamespace)
 
 	// mnt1, mnt2, and testCatFooBar are commonly used in multiple test cases
-	tmpDir, err := ioutil.TempDir("", "mount")
+	tmpDir, err := os.MkdirTemp("", "mount")
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -4317,17 +4248,10 @@ func (s *DockerCLIRunSuite) TestRunMount(c *testing.T) {
 	if err := os.Mkdir(mnt2, 0o755); err != nil {
 		c.Fatal(err)
 	}
-<<<<<<< HEAD
 	if err := os.WriteFile(path.Join(mnt1, "test1"), []byte("test1"), 0o644); err != nil {
 		c.Fatal(err)
 	}
 	if err := os.WriteFile(path.Join(mnt2, "test2"), []byte("test2"), 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile(path.Join(mnt1, "test1"), []byte("test1"), 0644); err != nil {
-		c.Fatal(err)
-	}
-	if err := ioutil.WriteFile(path.Join(mnt2, "test2"), []byte("test2"), 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		c.Fatal(err)
 	}
 	testCatFooBar := func(cName string) error {

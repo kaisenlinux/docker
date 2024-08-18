@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -154,7 +153,7 @@ func setupPlugin(t *testing.T, ec map[string]*graphEventsCounter, ext string, mu
 		return nil
 	}
 
-	base, err := ioutil.TempDir("", name)
+	base, err := os.MkdirTemp("", name)
 	assert.NilError(t, err)
 	vfsProto, err := vfs.Init(base, []string{}, idtools.IdentityMapping{})
 	assert.NilError(t, err, "error initializing graph driver")
@@ -357,11 +356,7 @@ func setupPlugin(t *testing.T, ec map[string]*graphEventsCounter, ext string, mu
 	assert.NilError(t, err)
 
 	specFile := "/etc/docker/plugins/" + name + "." + ext
-<<<<<<< HEAD
 	err = os.WriteFile(specFile, b, 0o644)
-=======
-	err = ioutil.WriteFile(specFile, b, 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 }
 
@@ -406,7 +401,7 @@ func testGraphDriverPull(ctx context.Context, c client.APIClient, d *daemon.Daem
 
 		r, err := c.ImagePull(ctx, "busybox:latest@sha256:95cf004f559831017cdf4628aaf1bb30133677be8702a8c5f2994629f637a209", image.PullOptions{})
 		assert.NilError(t, err)
-		_, err = io.Copy(ioutil.Discard, r)
+		_, err = io.Copy(io.Discard, r)
 		assert.NilError(t, err)
 
 		container.Run(ctx, t, c, container.WithImage("busybox:latest@sha256:95cf004f559831017cdf4628aaf1bb30133677be8702a8c5f2994629f637a209"))
@@ -439,7 +434,7 @@ func TestGraphdriverPluginV2(t *testing.T) {
 	assert.NilError(t, err)
 	defer responseReader.Close()
 	// ensure it's done by waiting for EOF on the response
-	_, err = io.Copy(ioutil.Discard, responseReader)
+	_, err = io.Copy(io.Discard, responseReader)
 	assert.NilError(t, err)
 
 	// restart the daemon with the plugin set as the storage driver

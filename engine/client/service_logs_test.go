@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -103,7 +102,7 @@ func TestServiceLogs(t *testing.T) {
 				}
 				return &http.Response{
 					StatusCode: http.StatusOK,
-					Body:       ioutil.NopCloser(bytes.NewReader([]byte("response"))),
+					Body:       io.NopCloser(bytes.NewReader([]byte("response"))),
 				}, nil
 			}),
 		}
@@ -114,7 +113,7 @@ func TestServiceLogs(t *testing.T) {
 		}
 		assert.NilError(t, err)
 		defer body.Close()
-		content, err := ioutil.ReadAll(body)
+		content, err := io.ReadAll(body)
 		assert.NilError(t, err)
 		assert.Check(t, is.Contains(string(content), "response"))
 	}

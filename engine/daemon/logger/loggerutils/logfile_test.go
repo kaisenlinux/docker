@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -113,174 +112,12 @@ func (dummyDecoder) Decode() (*logger.Message, error) {
 func (dummyDecoder) Close()          {}
 func (dummyDecoder) Reset(io.Reader) {}
 
-<<<<<<< HEAD
 func TestCheckCapacityAndRotate(t *testing.T) {
 	dir := t.TempDir()
 
 	logPath := filepath.Join(dir, "log")
 	getTailReader := func(ctx context.Context, r SizeReaderAt, lines int) (io.Reader, int, error) {
 		return tailfile.NewTailReader(ctx, r, lines)
-=======
-func TestFollowLogsConsumerGone(t *testing.T) {
-	lw := logger.NewLogWatcher()
-
-	f, err := ioutil.TempFile("", t.Name())
-	assert.NilError(t, err)
-	defer func() {
-		f.Close()
-		os.Remove(f.Name())
-	}()
-
-	dec := dummyDecoder{}
-
-	followLogsDone := make(chan struct{})
-	var since, until time.Time
-	go func() {
-		followLogs(f, lw, make(chan interface{}), make(chan interface{}), dec, since, until)
-		close(followLogsDone)
-	}()
-
-	select {
-	case <-lw.Msg:
-	case err := <-lw.Err:
-		assert.NilError(t, err)
-	case <-followLogsDone:
-		t.Fatal("follow logs finished unexpectedly")
-	case <-time.After(10 * time.Second):
-		t.Fatal("timeout waiting for log message")
-	}
-
-	lw.ConsumerGone()
-	select {
-	case <-followLogsDone:
-	case <-time.After(20 * time.Second):
-		t.Fatal("timeout waiting for followLogs() to finish")
-	}
-}
-
-type dummyWrapper struct {
-	dummyDecoder
-	fn func() error
-}
-
-func (d *dummyWrapper) Decode() (*logger.Message, error) {
-	if err := d.fn(); err != nil {
-		return nil, err
-	}
-	return d.dummyDecoder.Decode()
-}
-
-func TestFollowLogsProducerGone(t *testing.T) {
-	lw := logger.NewLogWatcher()
-	defer lw.ConsumerGone()
-
-	f, err := ioutil.TempFile("", t.Name())
-	assert.NilError(t, err)
-	defer os.Remove(f.Name())
-
-	var sent, received, closed int32
-	dec := &dummyWrapper{fn: func() error {
-		switch atomic.LoadInt32(&closed) {
-		case 0:
-			atomic.AddInt32(&sent, 1)
-			return nil
-		case 1:
-			atomic.AddInt32(&closed, 1)
-			t.Logf("logDecode() closed after sending %d messages\n", sent)
-			return io.EOF
-		default:
-			t.Fatal("logDecode() called after closing!")
-			return io.EOF
-		}
-	}}
-	var since, until time.Time
-
-	followLogsDone := make(chan struct{})
-	go func() {
-		followLogs(f, lw, make(chan interface{}), make(chan interface{}), dec, since, until)
-		close(followLogsDone)
-	}()
-
-	// read 1 message
-	select {
-	case <-lw.Msg:
-		received++
-	case err := <-lw.Err:
-		assert.NilError(t, err)
-	case <-followLogsDone:
-		t.Fatal("followLogs() finished unexpectedly")
-	case <-time.After(10 * time.Second):
-		t.Fatal("timeout waiting for log message")
-	}
-
-	// "stop" the "container"
-	atomic.StoreInt32(&closed, 1)
-	lw.ProducerGone()
-
-	// should receive all the messages sent
-	readDone := make(chan struct{})
-	go func() {
-		defer close(readDone)
-		for {
-			select {
-			case <-lw.Msg:
-				received++
-				if received == atomic.LoadInt32(&sent) {
-					return
-				}
-			case err := <-lw.Err:
-				assert.NilError(t, err)
-			}
-		}
-	}()
-	select {
-	case <-readDone:
-	case <-time.After(30 * time.Second):
-		t.Fatalf("timeout waiting for log messages to be read (sent: %d, received: %d", sent, received)
-	}
-
-	t.Logf("messages sent: %d, received: %d", atomic.LoadInt32(&sent), received)
-
-	// followLogs() should be done by now
-	select {
-	case <-followLogsDone:
-	case <-time.After(30 * time.Second):
-		t.Fatal("timeout waiting for followLogs() to finish")
-	}
-
-	select {
-	case <-lw.WatchConsumerGone():
-		t.Fatal("consumer should not have exited")
-	default:
-	}
-}
-
-func TestCheckCapacityAndRotate(t *testing.T) {
-	dir, err := ioutil.TempDir("", t.Name())
-	assert.NilError(t, err)
-	defer os.RemoveAll(dir)
-
-	f, err := ioutil.TempFile(dir, "log")
-	assert.NilError(t, err)
-
-	l := &LogFile{
-		f:               f,
-		capacity:        5,
-		maxFiles:        3,
-		compress:        true,
-		notifyReaders:   pubsub.NewPublisher(0, 1),
-		perms:           0600,
-		filesRefCounter: refCounter{counter: make(map[string]int)},
-		getTailReader: func(ctx context.Context, r SizeReaderAt, lines int) (io.Reader, int, error) {
-			return tailfile.NewTailReader(ctx, r, lines)
-		},
-		createDecoder: func(io.Reader) Decoder {
-			return dummyDecoder{}
-		},
-		marshal: func(msg *logger.Message) ([]byte, error) {
-			return msg.Line, nil
-		},
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	}
 	createDecoder := func(io.Reader) Decoder {
 		return dummyDecoder{}
@@ -359,7 +196,7 @@ type dirStringer struct {
 }
 
 func (d dirStringer) String() string {
-	ls, err := ioutil.ReadDir(d.d)
+	ls, err := os.ReadDir(d.d)
 	if err != nil {
 		return ""
 	}
@@ -369,7 +206,12 @@ func (d dirStringer) String() string {
 
 	btw := bufio.NewWriter(tw)
 
-	for _, fi := range ls {
+	for _, entry := range ls {
+		fi, err := entry.Info()
+		if err != nil {
+			return ""
+		}
+
 		btw.WriteString(fmt.Sprintf("%s\t%s\t%dB\t%s\n", fi.Name(), fi.Mode(), fi.Size(), fi.ModTime()))
 	}
 	btw.Flush()

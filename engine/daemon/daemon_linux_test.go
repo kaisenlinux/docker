@@ -3,11 +3,7 @@
 package daemon // import "github.com/docker/docker/daemon"
 
 import (
-<<<<<<< HEAD
 	"net"
-=======
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path/filepath"
 	"strings"
@@ -252,7 +248,7 @@ func TestRootMountCleanup(t *testing.T) {
 
 	t.Parallel()
 
-	testRoot, err := ioutil.TempDir("", t.Name())
+	testRoot, err := os.MkdirTemp("", t.Name())
 	assert.NilError(t, err)
 	defer os.RemoveAll(testRoot)
 	cfg := &configStore{}
@@ -325,11 +321,7 @@ func TestRootMountCleanup(t *testing.T) {
 		err = mount.MakeShared(testRoot)
 		assert.NilError(t, err)
 		defer mount.MakePrivate(testRoot)
-<<<<<<< HEAD
 		err = os.WriteFile(unmountFile, nil, 0o644)
-=======
-		err = ioutil.WriteFile(unmountFile, nil, 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		assert.NilError(t, err)
 
 		err = setupDaemonRootPropagation(&cfg.Config)

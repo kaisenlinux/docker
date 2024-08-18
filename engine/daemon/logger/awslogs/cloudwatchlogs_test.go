@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -1690,91 +1689,9 @@ func TestNewAWSLogsClientCredentialEndpointDetect(t *testing.T) {
 
 	assert.Check(t, credsRetrieved)
 
-<<<<<<< HEAD
 	// sample header val:
 	// AWS4-HMAC-SHA256 Credential=test-access-key-id/20220915/us-west-2/logs/aws4_request, SignedHeaders=amz-sdk-invocation-id;amz-sdk-request;content-length;content-type;host;x-amz-date;x-amz-target, Signature=9cc0f8347e379ec77884616bb4b5a9d4a9a11f63cdc4c765e2f0131f45fe06d3
 	assert.Check(t, is.Contains(actualAuthHeader, "AWS4-HMAC-SHA256 Credential=test-access-key-id/"))
 	assert.Check(t, is.Contains(actualAuthHeader, "us-west-2"))
 	assert.Check(t, is.Contains(actualAuthHeader, "Signature="))
-=======
-	assert.Check(t, is.Equal(expectedAccessKeyID, creds.AccessKeyID))
-	assert.Check(t, is.Equal(expectedSecretAccessKey, creds.SecretAccessKey))
-}
-
-func TestNewAWSLogsClientCredentialEnvironmentVariable(t *testing.T) {
-	// required for the cloudwatchlogs client
-	os.Setenv("AWS_REGION", "us-west-2")
-	defer os.Unsetenv("AWS_REGION")
-
-	expectedAccessKeyID := "test-access-key-id"
-	expectedSecretAccessKey := "test-secret-access-key"
-
-	os.Setenv("AWS_ACCESS_KEY_ID", expectedAccessKeyID)
-	defer os.Unsetenv("AWS_ACCESS_KEY_ID")
-
-	os.Setenv("AWS_SECRET_ACCESS_KEY", expectedSecretAccessKey)
-	defer os.Unsetenv("AWS_SECRET_ACCESS_KEY")
-
-	info := logger.Info{
-		Config: map[string]string{},
-	}
-
-	c, err := newAWSLogsClient(info)
-	assert.Check(t, err)
-
-	client := c.(*cloudwatchlogs.CloudWatchLogs)
-
-	creds, err := client.Config.Credentials.Get()
-	assert.Check(t, err)
-
-	assert.Check(t, is.Equal(expectedAccessKeyID, creds.AccessKeyID))
-	assert.Check(t, is.Equal(expectedSecretAccessKey, creds.SecretAccessKey))
-}
-
-func TestNewAWSLogsClientCredentialSharedFile(t *testing.T) {
-	// required for the cloudwatchlogs client
-	os.Setenv("AWS_REGION", "us-west-2")
-	defer os.Unsetenv("AWS_REGION")
-
-	expectedAccessKeyID := "test-access-key-id"
-	expectedSecretAccessKey := "test-secret-access-key"
-
-	contentStr := `
-	[default]
-	aws_access_key_id = "test-access-key-id"
-	aws_secret_access_key =  "test-secret-access-key"
-	`
-	content := []byte(contentStr)
-
-	tmpfile, err := ioutil.TempFile("", "example")
-	defer os.Remove(tmpfile.Name()) // clean up
-	assert.Check(t, err)
-
-	_, err = tmpfile.Write(content)
-	assert.Check(t, err)
-
-	err = tmpfile.Close()
-	assert.Check(t, err)
-
-	os.Unsetenv("AWS_ACCESS_KEY_ID")
-	os.Unsetenv("AWS_SECRET_ACCESS_KEY")
-
-	os.Setenv("AWS_SHARED_CREDENTIALS_FILE", tmpfile.Name())
-	defer os.Unsetenv("AWS_SHARED_CREDENTIALS_FILE")
-
-	info := logger.Info{
-		Config: map[string]string{},
-	}
-
-	c, err := newAWSLogsClient(info)
-	assert.Check(t, err)
-
-	client := c.(*cloudwatchlogs.CloudWatchLogs)
-
-	creds, err := client.Config.Credentials.Get()
-	assert.Check(t, err)
-
-	assert.Check(t, is.Equal(expectedAccessKeyID, creds.AccessKeyID))
-	assert.Check(t, is.Equal(expectedSecretAccessKey, creds.SecretAccessKey))
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 }

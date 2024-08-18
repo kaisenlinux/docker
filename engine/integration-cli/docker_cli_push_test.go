@@ -4,7 +4,6 @@ import (
 	"archive/tar"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -106,17 +105,7 @@ func (s *DockerRegistrySuite) TestPushMultipleTags(c *testing.T) {
 func (s *DockerRegistrySuite) TestPushEmptyLayer(c *testing.T) {
 	const imgRepo = privateRegistryURL + "/dockercli/emptylayer"
 
-<<<<<<< HEAD
 	emptyTarball, err := os.CreateTemp("", "empty_tarball")
-=======
-func (s *DockerSchema1RegistrySuite) TestPushMultipleTags(c *testing.T) {
-	testPushMultipleTags(c)
-}
-
-func testPushEmptyLayer(c *testing.T) {
-	repoName := fmt.Sprintf("%v/dockercli/emptylayer", privateRegistryURL)
-	emptyTarball, err := ioutil.TempFile("", "empty_tarball")
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err, "Unable to create test file")
 
 	tw := tar.NewWriter(emptyTarball)

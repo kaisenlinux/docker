@@ -1,7 +1,6 @@
 package store
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -33,19 +32,11 @@ func (s *tlsStore) createOrUpdate(name, endpointName, filename string, data []by
 	if err := os.MkdirAll(endpointDir, 0o700); err != nil {
 		return err
 	}
-<<<<<<< HEAD
 	return ioutils.AtomicWriteFile(filepath.Join(endpointDir, filename), data, 0o600)
 }
 
 func (s *tlsStore) getData(name, endpointName, filename string) ([]byte, error) {
 	data, err := os.ReadFile(filepath.Join(s.endpointDir(name, endpointName), filename))
-=======
-	return ioutil.WriteFile(s.filePath(contextID, endpointName, filename), data, 0600)
-}
-
-func (s *tlsStore) getData(contextID contextdir, endpointName, filename string) ([]byte, error) {
-	data, err := ioutil.ReadFile(s.filePath(contextID, endpointName, filename))
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil, errdefs.NotFound(errors.Errorf("TLS data for %s/%s/%s does not exist", name, endpointName, filename))
@@ -70,18 +61,9 @@ func (s *tlsStore) removeEndpoint(name, endpointName string) error {
 	return nil
 }
 
-<<<<<<< HEAD
 func (s *tlsStore) listContextData(name string) (map[string]EndpointFiles, error) {
 	contextDir := s.contextDir(name)
 	epFSs, err := os.ReadDir(contextDir)
-=======
-func (s *tlsStore) removeAllContextData(contextID contextdir) error {
-	return os.RemoveAll(s.contextDir(contextID))
-}
-
-func (s *tlsStore) listContextData(contextID contextdir) (map[string]EndpointFiles, error) {
-	epFSs, err := ioutil.ReadDir(s.contextDir(contextID))
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return map[string]EndpointFiles{}, nil
@@ -91,15 +73,10 @@ func (s *tlsStore) listContextData(contextID contextdir) (map[string]EndpointFil
 	r := make(map[string]EndpointFiles)
 	for _, epFS := range epFSs {
 		if epFS.IsDir() {
-<<<<<<< HEAD
 			fss, err := os.ReadDir(filepath.Join(contextDir, epFS.Name()))
 			if os.IsNotExist(err) {
 				continue
 			}
-=======
-			epDir := s.endpointDir(contextID, epFS.Name())
-			fss, err := ioutil.ReadDir(epDir)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			if err != nil {
 				return nil, errors.Wrapf(err, "failed to list TLS files for endpoint %s", epFS.Name())
 			}

@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 
@@ -145,7 +145,7 @@ func buildContainerIdsFilter(buildOutput io.Reader) (filters.Args, error) {
 func TestBuildMultiStageCopy(t *testing.T) {
 	ctx := setupTest(t)
 
-	dockerfile, err := ioutil.ReadFile("testdata/Dockerfile." + t.Name())
+	dockerfile, err := os.ReadFile("testdata/Dockerfile." + t.Name())
 	assert.NilError(t, err)
 
 	source := fakecontext.New(t, "", fakecontext.WithDockerfile(string(dockerfile)))
@@ -215,13 +215,8 @@ func TestBuildMultiStageParentConfig(t *testing.T) {
 			Tags:        []string{imgName},
 		})
 	assert.NilError(t, err)
-<<<<<<< HEAD
 	_, err = io.Copy(io.Discard, resp.Body)
 	assert.Check(t, resp.Body.Close())
-=======
-	_, err = io.Copy(ioutil.Discard, resp.Body)
-	resp.Body.Close()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	img, _, err := apiclient.ImageInspectWithRaw(ctx, imgName)
@@ -269,13 +264,8 @@ func TestBuildLabelWithTargets(t *testing.T) {
 			Target:      "target-a",
 		})
 	assert.NilError(t, err)
-<<<<<<< HEAD
 	_, err = io.Copy(io.Discard, resp.Body)
 	assert.Check(t, resp.Body.Close())
-=======
-	_, err = io.Copy(ioutil.Discard, resp.Body)
-	resp.Body.Close()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	img, _, err := apiclient.ImageInspectWithRaw(ctx, imgName)
@@ -301,13 +291,8 @@ func TestBuildLabelWithTargets(t *testing.T) {
 			Target:      "target-b",
 		})
 	assert.NilError(t, err)
-<<<<<<< HEAD
 	_, err = io.Copy(io.Discard, resp.Body)
 	assert.Check(t, resp.Body.Close())
-=======
-	_, err = io.Copy(ioutil.Discard, resp.Body)
-	resp.Body.Close()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	img, _, err = apiclient.ImageInspectWithRaw(ctx, imgName)
@@ -344,13 +329,8 @@ COPY    3/ /target/
 			ForceRemove: true,
 		})
 	assert.NilError(t, err)
-<<<<<<< HEAD
 	_, err = io.Copy(io.Discard, resp.Body)
 	assert.Check(t, resp.Body.Close())
-=======
-	_, err = io.Copy(ioutil.Discard, resp.Body)
-	resp.Body.Close()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 }
 
@@ -613,9 +593,9 @@ func TestBuildWithEmptyDockerfile(t *testing.T) {
 		{
 			name: "empty-lines-dockerfile",
 			dockerfile: `
-			
-			
-			
+
+
+
 			`,
 			expectedErr: "file with no instructions",
 		},
@@ -656,7 +636,7 @@ func TestBuildPreserveOwnership(t *testing.T) {
 
 	ctx := setupTest(t)
 
-	dockerfile, err := ioutil.ReadFile("testdata/Dockerfile." + t.Name())
+	dockerfile, err := os.ReadFile("testdata/Dockerfile." + t.Name())
 	assert.NilError(t, err)
 
 	source := fakecontext.New(t, "", fakecontext.WithDockerfile(string(dockerfile)))

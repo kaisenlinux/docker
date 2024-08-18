@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"testing"
 
 	"github.com/docker/cli/cli"
@@ -72,7 +72,7 @@ func TestRunCommandWithContentTrustErrors(t *testing.T) {
 		fakeCLI.SetNotaryClient(tc.notaryFunc)
 		cmd := NewRunCommand(fakeCLI)
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(ioutil.Discard)
+		cmd.SetOut(io.Discard)
 		err := cmd.Execute()
 		assert.Assert(t, err != nil)
 		assert.Assert(t, is.Contains(fakeCLI.ErrBuffer().String(), tc.expectedError))

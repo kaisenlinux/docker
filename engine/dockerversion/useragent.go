@@ -15,23 +15,12 @@ type UAStringKey struct{}
 
 // DockerUserAgent is the User-Agent the Docker client uses to identify itself.
 // In accordance with RFC 7231 (5.5.3) is of the form:
-<<<<<<< HEAD
 //
 //	[docker client's UA] UpstreamClient([upstream client's UA])
 func DockerUserAgent(ctx context.Context, extraVersions ...useragent.VersionInfo) string {
 	ua := useragent.AppendVersions(getDaemonUserAgent(), extraVersions...)
 	if upstreamUA := getUpstreamUserAgent(ctx); upstreamUA != "" {
 		ua += " " + upstreamUA
-=======
-//    [docker client's UA] UpstreamClient([upstream client's UA])
-func DockerUserAgent(ctx context.Context) string {
-	httpVersion := make([]useragent.VersionInfo, 0, 6)
-	httpVersion = append(httpVersion, useragent.VersionInfo{Name: "docker", Version: Version})
-	httpVersion = append(httpVersion, useragent.VersionInfo{Name: "go", Version: runtime.Version()})
-	httpVersion = append(httpVersion, useragent.VersionInfo{Name: "git-commit", Version: GitCommit})
-	if kernelVersion, err := kernel.GetKernelVersion(); err == nil {
-		httpVersion = append(httpVersion, useragent.VersionInfo{Name: "kernel", Version: kernelVersion.String()})
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	}
 	return ua
 }
@@ -107,15 +96,3 @@ func escapeStr(s string) string {
 	}
 	return ret
 }
-<<<<<<< HEAD
-=======
-
-// insertUpstreamUserAgent adds the upstream client useragent to create a user-agent
-// string of the form:
-//   $dockerUA UpstreamClient($upstreamUA)
-func insertUpstreamUserAgent(upstreamUA string, dockerUA string) string {
-	charsToEscape := `();\`
-	upstreamUAEscaped := escapeStr(upstreamUA, charsToEscape)
-	return fmt.Sprintf("%s UpstreamClient(%s)", dockerUA, upstreamUAEscaped)
-}
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)

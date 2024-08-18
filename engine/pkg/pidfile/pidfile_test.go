@@ -1,11 +1,7 @@
 package pidfile // import "github.com/docker/docker/pkg/pidfile"
 
 import (
-<<<<<<< HEAD
 	"errors"
-=======
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,19 +10,12 @@ import (
 	"testing"
 )
 
-<<<<<<< HEAD
 func TestWrite(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "testfile")
 
 	err := Write(path, 0)
 	if err == nil {
 		t.Fatal("writing PID < 1 should fail")
-=======
-func TestNewAndRemove(t *testing.T) {
-	dir, err := ioutil.TempDir(os.TempDir(), "test-pidfile")
-	if err != nil {
-		t.Fatal("Could not create test directory")
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	}
 
 	err = Write(path, os.Getpid())

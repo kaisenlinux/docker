@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -66,7 +66,7 @@ func TestContainerWait(t *testing.T) {
 			}
 			return &http.Response{
 				StatusCode: http.StatusOK,
-				Body:       ioutil.NopCloser(bytes.NewReader(b)),
+				Body:       io.NopCloser(bytes.NewReader(b)),
 			}, nil
 		}),
 	}

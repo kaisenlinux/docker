@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -334,11 +333,7 @@ func (s *DockerRegistrySuite) TestPullManifestList(c *testing.T) {
 	err = os.MkdirAll(blobDir, 0o755)
 	assert.NilError(c, err, "error creating blob dir")
 	blobPath := filepath.Join(blobDir, "data")
-<<<<<<< HEAD
 	err = os.WriteFile(blobPath, manifestListJSON, 0o644)
-=======
-	err = ioutil.WriteFile(blobPath, manifestListJSON, 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err, "error writing manifest list")
 
 	// Add to revision store
@@ -346,20 +341,12 @@ func (s *DockerRegistrySuite) TestPullManifestList(c *testing.T) {
 	err = os.Mkdir(revisionDir, 0o755)
 	assert.Assert(c, err == nil, "error creating revision dir")
 	revisionPath := filepath.Join(revisionDir, "link")
-<<<<<<< HEAD
 	err = os.WriteFile(revisionPath, []byte(manifestListDigest.String()), 0o644)
-=======
-	err = ioutil.WriteFile(revisionPath, []byte(manifestListDigest.String()), 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.Assert(c, err == nil, "error writing revision link")
 
 	// Update tag
 	tagPath := filepath.Join(registryV2Path, "repositories", remoteRepoName, "_manifests", "tags", "latest", "current", "link")
-<<<<<<< HEAD
 	err = os.WriteFile(tagPath, []byte(manifestListDigest.String()), 0o644)
-=======
-	err = ioutil.WriteFile(tagPath, []byte(manifestListDigest.String()), 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err, "error writing tag link")
 
 	// Verify that the image can be pulled through the manifest list.
@@ -392,22 +379,18 @@ func (s *DockerRegistryAuthHtpasswdSuite) TestPullWithExternalAuthLoginWithSchem
 
 	const imgRepo = privateRegistryURL + "/dockercli/busybox:authtest"
 
-	tmp, err := ioutil.TempDir("", "integration-cli-")
+	tmp, err := os.MkdirTemp("", "integration-cli-")
 	assert.NilError(c, err)
 
 	externalAuthConfig := `{ "credsStore": "shell-test" }`
 
 	configPath := filepath.Join(tmp, "config.json")
-<<<<<<< HEAD
 	err = os.WriteFile(configPath, []byte(externalAuthConfig), 0o644)
-=======
-	err = ioutil.WriteFile(configPath, []byte(externalAuthConfig), 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	cli.DockerCmd(c, "--config", tmp, "login", "-u", s.reg.Username(), "-p", s.reg.Password(), privateRegistryURL)
 
-	b, err := ioutil.ReadFile(configPath)
+	b, err := os.ReadFile(configPath)
 	assert.NilError(c, err)
 	assert.Assert(c, !strings.Contains(string(b), `"auth":`))
 	cli.DockerCmd(c, "--config", tmp, "tag", "busybox", imgRepo)
@@ -438,22 +421,18 @@ func (s *DockerRegistryAuthHtpasswdSuite) TestPullWithExternalAuth(c *testing.T)
 
 	const imgRepo = privateRegistryURL + "/dockercli/busybox:authtest"
 
-	tmp, err := ioutil.TempDir("", "integration-cli-")
+	tmp, err := os.MkdirTemp("", "integration-cli-")
 	assert.NilError(c, err)
 
 	externalAuthConfig := `{ "credsStore": "shell-test" }`
 
 	configPath := filepath.Join(tmp, "config.json")
-<<<<<<< HEAD
 	err = os.WriteFile(configPath, []byte(externalAuthConfig), 0o644)
-=======
-	err = ioutil.WriteFile(configPath, []byte(externalAuthConfig), 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	cli.DockerCmd(c, "--config", tmp, "login", "-u", s.reg.Username(), "-p", s.reg.Password(), privateRegistryURL)
 
-	b, err := ioutil.ReadFile(configPath)
+	b, err := os.ReadFile(configPath)
 	assert.NilError(c, err)
 	assert.Assert(c, !strings.Contains(string(b), `"auth":`))
 	cli.DockerCmd(c, "--config", tmp, "tag", "busybox", imgRepo)

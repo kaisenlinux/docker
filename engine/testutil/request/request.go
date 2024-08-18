@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -109,7 +108,7 @@ func Do(ctx context.Context, endpoint string, modifiers ...func(*Options)) (*htt
 // ReadBody read the specified ReadCloser content and returns it
 func ReadBody(b io.ReadCloser) ([]byte, error) {
 	defer b.Close()
-	return ioutil.ReadAll(b)
+	return io.ReadAll(b)
 }
 
 // newRequest creates a new http Request to the specified host and endpoint, with the specified request modifiers

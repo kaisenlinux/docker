@@ -506,22 +506,19 @@ func (s *DockerCLIExecSuite) TestExecUlimits(c *testing.T) {
 }
 
 // #15750
-<<<<<<< HEAD
 func (s *DockerCLIExecSuite) TestExecStartFails(c *testing.T) {
 	const name = "exec-15750"
-=======
-func (s *DockerSuite) TestExecStartFails(c *testing.T) {
-	// TODO Windows CI. This test should be portable. Figure out why it fails
-	// currently.
-	testRequires(c, DaemonIsLinux)
-	name := "exec-15750"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	runSleepingContainer(c, "-d", "--name", name)
 	cli.WaitRun(c, name)
 
 	out, _, err := dockerCmdWithError("exec", name, "no-such-cmd")
 	assert.ErrorContains(c, err, "", out)
-	assert.Assert(c, strings.Contains(out, "executable file not found"))
+
+	expectedMsg := "executable file not found"
+	if DaemonIsWindows() {
+		expectedMsg = "The system cannot find the file specified"
+	}
+	assert.Assert(c, is.Contains(out, expectedMsg))
 }
 
 // Fix regression in https://github.com/docker/docker/pull/26461#issuecomment-250287297

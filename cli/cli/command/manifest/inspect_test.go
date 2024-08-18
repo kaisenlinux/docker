@@ -2,14 +2,12 @@ package manifest
 
 import (
 	"context"
-	"io/ioutil"
-	"os"
+	"io"
 	"testing"
 
 	"github.com/distribution/reference"
 	"github.com/docker/cli/cli/manifest/store"
 	"github.com/docker/cli/cli/manifest/types"
-	manifesttypes "github.com/docker/cli/cli/manifest/types"
 	"github.com/docker/cli/internal/test"
 	"github.com/docker/distribution"
 	"github.com/docker/distribution/manifest/schema2"
@@ -20,13 +18,6 @@ import (
 	is "gotest.tools/v3/assert/cmp"
 	"gotest.tools/v3/golden"
 )
-
-func newTempManifestStore(t *testing.T) (store.Store, func()) {
-	tmpdir, err := ioutil.TempDir("", "test-manifest-storage")
-	assert.NilError(t, err)
-
-	return store.NewStore(tmpdir), func() { os.RemoveAll(tmpdir) }
-}
 
 func ref(t *testing.T, name string) reference.Named {
 	t.Helper()
@@ -72,56 +63,41 @@ func fullImageManifest(t *testing.T, ref reference.Named) types.ImageManifest {
 }
 
 func TestInspectCommandLocalManifestNotFound(t *testing.T) {
-<<<<<<< HEAD
 	refStore := store.NewStore(t.TempDir())
-=======
-	store, cleanup := newTempManifestStore(t)
-	defer cleanup()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	cli := test.NewFakeCli(nil)
 	cli.SetManifestStore(refStore)
 
 	cmd := newInspectCommand(cli)
-	cmd.SetOut(ioutil.Discard)
+	cmd.SetOut(io.Discard)
 	cmd.SetArgs([]string{"example.com/list:v1", "example.com/alpine:3.0"})
 	err := cmd.Execute()
 	assert.Error(t, err, "No such manifest: example.com/alpine:3.0")
 }
 
 func TestInspectCommandNotFound(t *testing.T) {
-<<<<<<< HEAD
 	refStore := store.NewStore(t.TempDir())
-=======
-	store, cleanup := newTempManifestStore(t)
-	defer cleanup()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	cli := test.NewFakeCli(nil)
 	cli.SetManifestStore(refStore)
 	cli.SetRegistryClient(&fakeRegistryClient{
-		getManifestFunc: func(_ context.Context, _ reference.Named) (manifesttypes.ImageManifest, error) {
-			return manifesttypes.ImageManifest{}, errors.New("missing")
+		getManifestFunc: func(_ context.Context, _ reference.Named) (types.ImageManifest, error) {
+			return types.ImageManifest{}, errors.New("missing")
 		},
-		getManifestListFunc: func(ctx context.Context, ref reference.Named) ([]manifesttypes.ImageManifest, error) {
+		getManifestListFunc: func(ctx context.Context, ref reference.Named) ([]types.ImageManifest, error) {
 			return nil, errors.Errorf("No such manifest: %s", ref)
 		},
 	})
 
 	cmd := newInspectCommand(cli)
-	cmd.SetOut(ioutil.Discard)
+	cmd.SetOut(io.Discard)
 	cmd.SetArgs([]string{"example.com/alpine:3.0"})
 	err := cmd.Execute()
 	assert.Error(t, err, "No such manifest: example.com/alpine:3.0")
 }
 
 func TestInspectCommandLocalManifest(t *testing.T) {
-<<<<<<< HEAD
 	refStore := store.NewStore(t.TempDir())
-=======
-	store, cleanup := newTempManifestStore(t)
-	defer cleanup()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	cli := test.NewFakeCli(nil)
 	cli.SetManifestStore(refStore)
@@ -139,23 +115,18 @@ func TestInspectCommandLocalManifest(t *testing.T) {
 }
 
 func TestInspectcommandRemoteManifest(t *testing.T) {
-<<<<<<< HEAD
 	refStore := store.NewStore(t.TempDir())
-=======
-	store, cleanup := newTempManifestStore(t)
-	defer cleanup()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	cli := test.NewFakeCli(nil)
 	cli.SetManifestStore(refStore)
 	cli.SetRegistryClient(&fakeRegistryClient{
-		getManifestFunc: func(_ context.Context, ref reference.Named) (manifesttypes.ImageManifest, error) {
+		getManifestFunc: func(_ context.Context, ref reference.Named) (types.ImageManifest, error) {
 			return fullImageManifest(t, ref), nil
 		},
 	})
 
 	cmd := newInspectCommand(cli)
-	cmd.SetOut(ioutil.Discard)
+	cmd.SetOut(io.Discard)
 	cmd.SetArgs([]string{"example.com/alpine:3.0"})
 	assert.NilError(t, cmd.Execute())
 	actual := cli.OutBuffer()

@@ -1,7 +1,7 @@
 package volume
 
 import (
-	"io/ioutil"
+	"io"
 	"testing"
 
 	"github.com/docker/cli/internal/test"
@@ -32,12 +32,8 @@ func TestVolumeRemoveErrors(t *testing.T) {
 				volumeRemoveFunc: tc.volumeRemoveFunc,
 			}))
 		cmd.SetArgs(tc.args)
-<<<<<<< HEAD
 		cmd.SetOut(io.Discard)
 		cmd.SetErr(io.Discard)
-=======
-		cmd.SetOut(ioutil.Discard)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }

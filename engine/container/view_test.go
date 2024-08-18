@@ -1,11 +1,7 @@
 package container // import "github.com/docker/docker/container"
 
 import (
-<<<<<<< HEAD
 	"math/rand"
-=======
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path/filepath"
 	"testing"
@@ -22,7 +18,7 @@ var root string
 
 func TestMain(m *testing.M) {
 	var err error
-	root, err = ioutil.TempDir("", "docker-container-test-")
+	root, err = os.MkdirTemp("", "docker-container-test-")
 	if err != nil {
 		panic(err)
 	}

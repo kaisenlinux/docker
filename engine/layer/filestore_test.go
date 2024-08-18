@@ -2,7 +2,6 @@ package layer // import "github.com/docker/docker/layer"
 
 import (
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -21,7 +20,7 @@ func randomLayerID(seed int64) ChainID {
 }
 
 func newFileMetadataStore(t *testing.T) (*fileMetadataStore, string, func()) {
-	td, err := ioutil.TempDir("", "layers-")
+	td, err := os.MkdirTemp("", "layers-")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,11 +51,7 @@ func TestCommitFailure(t *testing.T) {
 	fms, td, cleanup := newFileMetadataStore(t)
 	defer cleanup()
 
-<<<<<<< HEAD
 	if err := os.WriteFile(filepath.Join(td, "sha256"), []byte("was here first!"), 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile(filepath.Join(td, "sha256"), []byte("was here first!"), 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 
@@ -80,11 +75,7 @@ func TestStartTransactionFailure(t *testing.T) {
 	fms, td, cleanup := newFileMetadataStore(t)
 	defer cleanup()
 
-<<<<<<< HEAD
 	if err := os.WriteFile(filepath.Join(td, "tmp"), []byte("was here first!"), 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile(filepath.Join(td, "tmp"), []byte("was here first!"), 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 
@@ -132,11 +123,7 @@ func TestGetOrphan(t *testing.T) {
 		t.Fatal(err)
 	}
 	layerPath := fms.getLayerDirectory(layerid)
-<<<<<<< HEAD
 	if err := os.WriteFile(filepath.Join(layerPath, "cache-id"), []byte(stringid.GenerateRandomID()), 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile(filepath.Join(layerPath, "cache-id"), []byte(stringid.GenerateRandomID()), 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 

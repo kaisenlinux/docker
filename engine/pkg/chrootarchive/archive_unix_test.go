@@ -6,7 +6,6 @@ import (
 	gotar "archive/tar"
 	"bytes"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -25,13 +24,7 @@ import (
 // container path that will actually overwrite data on the host
 func TestUntarWithMaliciousSymlinks(t *testing.T) {
 	skip.If(t, os.Getuid() != 0, "skipping test that requires root")
-<<<<<<< HEAD
 	dir := t.TempDir()
-=======
-	dir, err := ioutil.TempDir("", t.Name())
-	assert.NilError(t, err)
-	defer os.RemoveAll(dir)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	root := filepath.Join(dir, "root")
 
@@ -40,11 +33,7 @@ func TestUntarWithMaliciousSymlinks(t *testing.T) {
 
 	// Add a file into a directory above root
 	// Ensure that we can't access this file while tarring.
-<<<<<<< HEAD
 	err = os.WriteFile(filepath.Join(dir, "host-file"), []byte("I am a host file"), 0o644)
-=======
-	err = ioutil.WriteFile(filepath.Join(dir, "host-file"), []byte("I am a host file"), 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	// Create some data to copy into the "container" root into
@@ -54,11 +43,7 @@ func TestUntarWithMaliciousSymlinks(t *testing.T) {
 	data := filepath.Join(dir, "data")
 	err = os.Mkdir(data, 0o755)
 	assert.NilError(t, err)
-<<<<<<< HEAD
 	err = os.WriteFile(filepath.Join(data, "local-file"), []byte("pwn3d"), 0o644)
-=======
-	err = ioutil.WriteFile(filepath.Join(data, "local-file"), []byte("pwn3d"), 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	safe := filepath.Join(root, "safe")
@@ -78,7 +63,7 @@ func TestUntarWithMaliciousSymlinks(t *testing.T) {
 
 	// Make sure the "host" file is still in tact
 	// Before the fix the host file would be overwritten
-	hostData, err := ioutil.ReadFile(filepath.Join(dir, "host-file"))
+	hostData, err := os.ReadFile(filepath.Join(dir, "host-file"))
 	assert.NilError(t, err)
 	assert.Equal(t, string(hostData), "I am a host file")
 
@@ -88,7 +73,7 @@ func TestUntarWithMaliciousSymlinks(t *testing.T) {
 	err = UntarWithRoot(bufRdr, safe, nil, safe)
 	assert.NilError(t, err)
 
-	hostData, err = ioutil.ReadFile(filepath.Join(dir, "host-file"))
+	hostData, err = os.ReadFile(filepath.Join(dir, "host-file"))
 	assert.NilError(t, err)
 	assert.Equal(t, string(hostData), "pwn3d")
 }
@@ -99,7 +84,7 @@ func TestUntarWithMaliciousSymlinks(t *testing.T) {
 // host data into the archive.
 func TestTarWithMaliciousSymlinks(t *testing.T) {
 	skip.If(t, os.Getuid() != 0, "skipping test that requires root")
-	dir, err := ioutil.TempDir("", t.Name())
+	dir, err := os.MkdirTemp("", t.Name())
 	assert.NilError(t, err)
 	// defer os.RemoveAll(dir)
 	t.Log(dir)
@@ -113,11 +98,7 @@ func TestTarWithMaliciousSymlinks(t *testing.T) {
 
 	// Add a file into a directory above root
 	// Ensure that we can't access this file while tarring.
-<<<<<<< HEAD
 	err = os.WriteFile(filepath.Join(dir, "host-file"), hostFileData, 0o644)
-=======
-	err = ioutil.WriteFile(filepath.Join(dir, "host-file"), hostFileData, 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	safe := filepath.Join(root, "safe")

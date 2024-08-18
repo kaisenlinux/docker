@@ -5,8 +5,6 @@ package context
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/docker/cli/cli/command"
@@ -17,9 +15,9 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func makeFakeCli(t *testing.T, opts ...func(*test.FakeCli)) (*test.FakeCli, func()) {
-	dir, err := ioutil.TempDir("", t.Name())
-	assert.NilError(t, err)
+func makeFakeCli(t *testing.T, opts ...func(*test.FakeCli)) *test.FakeCli {
+	t.Helper()
+	dir := t.TempDir()
 	storeConfig := store.NewConfig(
 		func() any { return &command.DockerContext{} },
 		store.EndpointTypeGetter(docker.DockerEndpoint, func() any { return &docker.EndpointMeta{} }),
@@ -43,20 +41,12 @@ func makeFakeCli(t *testing.T, opts ...func(*test.FakeCli)) (*test.FakeCli, func
 			}, nil
 		},
 	}
-	cleanup := func() {
-		os.RemoveAll(dir)
-	}
 	result := test.NewFakeCli(nil, opts...)
 	for _, o := range opts {
 		o(result)
 	}
-<<<<<<< HEAD
 	result.SetContextStore(contextStore)
 	return result
-=======
-	result.SetContextStore(store)
-	return result, cleanup
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 }
 
 func withCliConfig(configFile *configfile.ConfigFile) func(*test.FakeCli) {
@@ -65,14 +55,8 @@ func withCliConfig(configFile *configfile.ConfigFile) func(*test.FakeCli) {
 	}
 }
 
-<<<<<<< HEAD
 func TestCreate(t *testing.T) {
 	cli := makeFakeCli(t)
-=======
-func TestCreateInvalids(t *testing.T) {
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, cli.ContextStore().CreateOrUpdate(store.Metadata{Name: "existing-context"}))
 	tests := []struct {
 		options     CreateOptions
@@ -128,25 +112,8 @@ func assertContextCreateLogging(t *testing.T, cli *test.FakeCli, n string) {
 	assert.Equal(t, fmt.Sprintf("Successfully created context %q\n", n), cli.ErrBuffer().String())
 }
 
-<<<<<<< HEAD
-=======
-func TestCreateOrchestratorSwarm(t *testing.T) {
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
-
-	err := RunCreate(cli, &CreateOptions{
-		Name:                     "test",
-		DefaultStackOrchestrator: "swarm",
-		Docker:                   map[string]string{},
-	})
-	assert.NilError(t, err)
-	assertContextCreateLogging(t, cli, "test")
-}
-
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 func TestCreateOrchestratorEmpty(t *testing.T) {
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
+	cli := makeFakeCli(t)
 
 	err := RunCreate(cli, &CreateOptions{
 		Name:   "test",
@@ -156,46 +123,6 @@ func TestCreateOrchestratorEmpty(t *testing.T) {
 	assertContextCreateLogging(t, cli, "test")
 }
 
-<<<<<<< HEAD
-=======
-func validateTestKubeEndpoint(t *testing.T, s store.Reader, name string) {
-	t.Helper()
-	ctxMetadata, err := s.GetMetadata(name)
-	assert.NilError(t, err)
-	kubeMeta := ctxMetadata.Endpoints[kubernetes.KubernetesEndpoint].(kubernetes.EndpointMeta)
-	kubeEP, err := kubeMeta.WithTLSData(s, name)
-	assert.NilError(t, err)
-	assert.Equal(t, "https://someserver.example.com", kubeEP.Host)
-	assert.Equal(t, "the-ca", string(kubeEP.TLSData.CA))
-	assert.Equal(t, "the-cert", string(kubeEP.TLSData.Cert))
-	assert.Equal(t, "the-key", string(kubeEP.TLSData.Key))
-}
-
-func createTestContextWithKube(t *testing.T, cli command.Cli) {
-	t.Helper()
-	revert := env.Patch(t, "KUBECONFIG", "./testdata/test-kubeconfig")
-	defer revert()
-
-	err := RunCreate(cli, &CreateOptions{
-		Name:                     "test",
-		DefaultStackOrchestrator: "all",
-		Kubernetes: map[string]string{
-			keyFrom: "default",
-		},
-		Docker: map[string]string{},
-	})
-	assert.NilError(t, err)
-}
-
-func TestCreateOrchestratorAllKubernetesEndpointFromCurrent(t *testing.T) {
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
-	createTestContextWithKube(t, cli)
-	assertContextCreateLogging(t, cli, "test")
-	validateTestKubeEndpoint(t, cli.ContextStore(), "test")
-}
-
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 func TestCreateFromContext(t *testing.T) {
 	cases := []struct {
 		name                string
@@ -214,14 +141,7 @@ func TestCreateFromContext(t *testing.T) {
 		},
 	}
 
-<<<<<<< HEAD
 	cli := makeFakeCli(t)
-=======
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
-	revert := env.Patch(t, "KUBECONFIG", "./testdata/test-kubeconfig")
-	defer revert()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	cli.ResetOutputBuffers()
 	assert.NilError(t, RunCreate(cli, &CreateOptions{
 		Name:        "original",
@@ -286,14 +206,7 @@ func TestCreateFromCurrent(t *testing.T) {
 		},
 	}
 
-<<<<<<< HEAD
 	cli := makeFakeCli(t)
-=======
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
-	revert := env.Patch(t, "KUBECONFIG", "./testdata/test-kubeconfig")
-	defer revert()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	cli.ResetOutputBuffers()
 	assert.NilError(t, RunCreate(cli, &CreateOptions{
 		Name:        "original",

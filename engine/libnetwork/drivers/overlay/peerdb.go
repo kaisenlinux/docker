@@ -318,13 +318,8 @@ func (d *driver) peerAddOp(nid, eid string, peerIP net.IP, peerIPMask net.IPMask
 		return fmt.Errorf("subnet sandbox join failed for %q: %v", s.subnetIP.String(), err)
 	}
 
-<<<<<<< HEAD:engine/libnetwork/drivers/overlay/peerdb.go
 	if err := d.checkEncryption(nid, vtep, false, true); err != nil {
 		log.G(context.TODO()).Warn(err)
-=======
-	if err := d.checkEncryption(nid, vtep, n.vxlanID(s), false, true); err != nil {
-		logrus.Warn(err)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):libnetwork/drivers/overlay/peerdb.go
 	}
 
 	// Add neighbor entry for the peer IP
@@ -376,13 +371,8 @@ func (d *driver) peerDeleteOp(nid, eid string, peerIP net.IP, peerIPMask net.IPM
 		return nil
 	}
 
-<<<<<<< HEAD:engine/libnetwork/drivers/overlay/peerdb.go
 	if err := d.checkEncryption(nid, vtep, localPeer, false); err != nil {
 		log.G(context.TODO()).Warn(err)
-=======
-	if err := d.checkEncryption(nid, vtep, 0, localPeer, false); err != nil {
-		logrus.Warn(err)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):libnetwork/drivers/overlay/peerdb.go
 	}
 
 	// Local peers do not have any local configuration to delete

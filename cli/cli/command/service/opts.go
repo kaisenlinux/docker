@@ -480,9 +480,13 @@ func (o *healthCheckOptions) toHealthConfig() (*container.HealthConfig, error) {
 }
 
 // convertExtraHostsToSwarmHosts converts an array of extra hosts in cli
-//     <host>:<ip>
+//
+//	<host>:<ip>
+//
 // into a swarmkit host format:
-//     IP_address canonical_hostname [aliases...]
+//
+//	IP_address canonical_hostname [aliases...]
+//
 // This assumes input value (<host>:<ip>) has already been validated
 func convertExtraHostsToSwarmHosts(extraHosts []string) []string {
 	hosts := make([]string, 0, len(extraHosts))

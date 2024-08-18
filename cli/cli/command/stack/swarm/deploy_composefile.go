@@ -14,12 +14,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/swarm"
 	apiclient "github.com/docker/docker/client"
-<<<<<<< HEAD
 	"github.com/docker/docker/errdefs"
-=======
-	dockerclient "github.com/docker/docker/client"
-	"github.com/pkg/errors"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 )
 
 func deployCompose(ctx context.Context, dockerCli command.Cli, opts *options.Deploy, config *composetypes.Config) error {
@@ -93,7 +88,7 @@ func getServicesDeclaredNetworks(serviceConfigs []composetypes.ServiceConfig) ma
 	return serviceNetworks
 }
 
-func validateExternalNetworks(ctx context.Context, client dockerclient.NetworkAPIClient, externalNetworks []string) error {
+func validateExternalNetworks(ctx context.Context, client apiclient.NetworkAPIClient, externalNetworks []string) error {
 	for _, networkName := range externalNetworks {
 		if !container.NetworkMode(networkName).IsUserDefined() {
 			// Networks that are not user defined always exist on all nodes as
@@ -102,13 +97,8 @@ func validateExternalNetworks(ctx context.Context, client dockerclient.NetworkAP
 		}
 		network, err := client.NetworkInspect(ctx, networkName, types.NetworkInspectOptions{})
 		switch {
-<<<<<<< HEAD
 		case errdefs.IsNotFound(err):
 			return fmt.Errorf("network %q is declared as external, but could not be found. You need to create a swarm-scoped network before the stack is deployed", networkName)
-=======
-		case dockerclient.IsErrNotFound(err):
-			return errors.Errorf("network %q is declared as external, but could not be found. You need to create a swarm-scoped network before the stack is deployed", networkName)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		case err != nil:
 			return err
 		case network.Scope != "swarm":
@@ -196,12 +186,7 @@ func createNetworks(ctx context.Context, dockerCli command.Cli, namespace conver
 	return nil
 }
 
-<<<<<<< HEAD
 func deployServices(ctx context.Context, dockerCli command.Cli, services map[string]swarm.ServiceSpec, namespace convert.Namespace, sendAuth bool, resolveImage string) ([]string, error) {
-=======
-// nolint: gocyclo
-func deployServices(ctx context.Context, dockerCli command.Cli, services map[string]swarm.ServiceSpec, namespace convert.Namespace, sendAuth bool, resolveImage string) error {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	apiClient := dockerCli.Client()
 	out := dockerCli.Out()
 

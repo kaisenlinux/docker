@@ -109,13 +109,8 @@ func (d *driver) Join(nid, eid string, sboxKey string, jinfo driverapi.JoinInfo,
 
 	d.peerAdd(nid, eid, ep.addr.IP, ep.addr.Mask, ep.mac, d.advertiseAddress, true)
 
-<<<<<<< HEAD:engine/libnetwork/drivers/overlay/joinleave.go
 	if err = d.checkEncryption(nid, nil, true, true); err != nil {
 		log.G(context.TODO()).Warn(err)
-=======
-	if err = d.checkEncryption(nid, nil, n.vxlanID(s), true, true); err != nil {
-		logrus.Warn(err)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):libnetwork/drivers/overlay/joinleave.go
 	}
 
 	buf, err := proto.Marshal(&PeerRecord{

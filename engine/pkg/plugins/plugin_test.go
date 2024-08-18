@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"runtime"
 	"sync"
@@ -141,14 +141,8 @@ func TestGetAll(t *testing.T) {
 	"Addr": "https://example.com/docker/plugin"
 }`
 
-<<<<<<< HEAD
 	err := os.WriteFile(p, []byte(spec), 0o644)
 	assert.NilError(t, err)
-=======
-	if err := ioutil.WriteFile(p, []byte(spec), 0644); err != nil {
-		t.Fatal(err)
-	}
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	plugin, err := r.Plugin("example")
 	assert.NilError(t, err)

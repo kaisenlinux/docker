@@ -2,7 +2,7 @@ package container
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
@@ -262,15 +262,9 @@ func TestNewExecCommandErrors(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-<<<<<<< HEAD
 		fakeCLI := test.NewFakeCli(&fakeClient{inspectFunc: tc.containerInspectFunc})
 		cmd := NewExecCommand(fakeCLI)
 		cmd.SetOut(io.Discard)
-=======
-		cli := test.NewFakeCli(&fakeClient{inspectFunc: tc.containerInspectFunc})
-		cmd := NewExecCommand(cli)
-		cmd.SetOut(ioutil.Discard)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		cmd.SetArgs(tc.args)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}

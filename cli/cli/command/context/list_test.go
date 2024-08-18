@@ -30,16 +30,8 @@ func createTestContext(t *testing.T, cli command.Cli, name string, metaData map[
 }
 
 func TestList(t *testing.T) {
-<<<<<<< HEAD
 	cli := makeFakeCli(t)
 	createTestContexts(t, cli, "current", "other", "unset")
-=======
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
-	createTestContextWithKubeAndSwarm(t, cli, "current", "all")
-	createTestContextWithKubeAndSwarm(t, cli, "other", "all")
-	createTestContextWithKubeAndSwarm(t, cli, "unset", "unset")
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	cli.SetCurrentContext("current")
 	cli.OutBuffer().Reset()
 	assert.NilError(t, runList(cli, &listOptions{}))
@@ -74,15 +66,8 @@ func TestListJSON(t *testing.T) {
 }
 
 func TestListQuiet(t *testing.T) {
-<<<<<<< HEAD
 	cli := makeFakeCli(t)
 	createTestContexts(t, cli, "current", "other")
-=======
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
-	createTestContextWithKubeAndSwarm(t, cli, "current", "all")
-	createTestContextWithKubeAndSwarm(t, cli, "other", "all")
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	cli.SetCurrentContext("current")
 	cli.OutBuffer().Reset()
 	assert.NilError(t, runList(cli, &listOptions{quiet: true}))

@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
@@ -52,7 +51,7 @@ func (s *DockerBenchmarkSuite) BenchmarkConcurrentContainerActions(c *testing.B)
 					}
 
 					id := strings.TrimSpace(out)
-					tmpDir, err := ioutil.TempDir("", "docker-concurrent-test-"+id)
+					tmpDir, err := os.MkdirTemp("", "docker-concurrent-test-"+id)
 					if err != nil {
 						chErr <- err
 						return

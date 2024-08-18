@@ -5,11 +5,6 @@ package operatingsystem // import "github.com/docker/docker/pkg/parsers/operatin
 import (
 	"bufio"
 	"bytes"
-<<<<<<< HEAD
-=======
-	"fmt"
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"strings"
 )
@@ -72,7 +67,7 @@ func getValueFromOsRelease(key string) (string, error) {
 
 // IsContainerized returns true if we are running inside a container.
 func IsContainerized() (bool, error) {
-	b, err := ioutil.ReadFile(proc1Cgroup)
+	b, err := os.ReadFile(proc1Cgroup)
 	if err != nil {
 		return false, err
 	}

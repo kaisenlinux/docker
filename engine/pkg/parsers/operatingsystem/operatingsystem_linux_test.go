@@ -3,7 +3,6 @@
 package operatingsystem // import "github.com/docker/docker/pkg/parsers/operatingsystem"
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -139,11 +138,7 @@ func runEtcReleaseParsingTests(t *testing.T, tests []EtcReleaseParsingTest, pars
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-<<<<<<< HEAD
 			if err := os.WriteFile(etcOsRelease, []byte(test.content), 0o600); err != nil {
-=======
-			if err := ioutil.WriteFile(etcOsRelease, []byte(test.content), 0600); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 				t.Fatalf("failed to write to %s: %v", etcOsRelease, err)
 			}
 			s, err := parsingFunc()
@@ -206,11 +201,7 @@ func TestIsContainerized(t *testing.T) {
 		proc1Cgroup = backup
 	}()
 
-<<<<<<< HEAD
 	if err := os.WriteFile(proc1Cgroup, nonContainerizedProc1Cgroup, 0o600); err != nil {
-=======
-	if err := ioutil.WriteFile(proc1Cgroup, nonContainerizedProc1Cgroup, 0600); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatalf("failed to write to %s: %v", proc1Cgroup, err)
 	}
 	inContainer, err := IsContainerized()
@@ -221,11 +212,7 @@ func TestIsContainerized(t *testing.T) {
 		t.Fatal("Wrongly assuming containerized")
 	}
 
-<<<<<<< HEAD
 	if err := os.WriteFile(proc1Cgroup, nonContainerizedProc1Cgroupsystemd226, 0o600); err != nil {
-=======
-	if err := ioutil.WriteFile(proc1Cgroup, nonContainerizedProc1Cgroupsystemd226, 0600); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatalf("failed to write to %s: %v", proc1Cgroup, err)
 	}
 	inContainer, err = IsContainerized()
@@ -236,11 +223,7 @@ func TestIsContainerized(t *testing.T) {
 		t.Fatal("Wrongly assuming containerized for systemd /init.scope cgroup layout")
 	}
 
-<<<<<<< HEAD
 	if err := os.WriteFile(proc1Cgroup, nonContainerizedProc1CgroupNotSystemd, 0o600); err != nil {
-=======
-	if err := ioutil.WriteFile(proc1Cgroup, nonContainerizedProc1CgroupNotSystemd, 0600); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatalf("failed to write to %s: %v", proc1Cgroup, err)
 	}
 	inContainer, err = IsContainerized()
@@ -251,11 +234,7 @@ func TestIsContainerized(t *testing.T) {
 		t.Fatal("Wrongly assuming non-containerized")
 	}
 
-<<<<<<< HEAD
 	if err := os.WriteFile(proc1Cgroup, containerizedProc1Cgroup, 0o600); err != nil {
-=======
-	if err := ioutil.WriteFile(proc1Cgroup, containerizedProc1Cgroup, 0600); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatalf("failed to write to %s: %v", proc1Cgroup, err)
 	}
 	inContainer, err = IsContainerized()
@@ -287,11 +266,7 @@ HOME_URL="http://www.gentoo.org/"
 SUPPORT_URL="http://www.gentoo.org/main/en/support.xml"
 BUG_REPORT_URL="https://bugs.gentoo.org/"
 `
-<<<<<<< HEAD
 	if err := os.WriteFile(altOsRelease, []byte(content), 0o600); err != nil {
-=======
-	if err := ioutil.WriteFile(altOsRelease, []byte(content), 0600); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatalf("failed to write to %s: %v", etcOsRelease, err)
 	}
 	s, err := GetOperatingSystem()

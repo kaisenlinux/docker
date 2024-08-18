@@ -3,7 +3,6 @@ package fakecontext // import "github.com/docker/docker/testutil/fakecontext"
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -31,7 +30,7 @@ func New(t testing.TB, dir string, modifiers ...func(*Fake) error) *Fake {
 }
 
 func newDir(fake *Fake) error {
-	tmp, err := ioutil.TempDir("", "fake-context")
+	tmp, err := os.MkdirTemp("", "fake-context")
 	if err != nil {
 		return err
 	}
@@ -96,12 +95,7 @@ func (f *Fake) addFile(file string, content []byte) error {
 			return err
 		}
 	}
-<<<<<<< HEAD
 	return os.WriteFile(fp, content, 0o644)
-=======
-	return ioutil.WriteFile(fp, content, 0644)
-
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 }
 
 // Delete a file at a path

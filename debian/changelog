@@ -1,9 +1,10 @@
-<<<<<<< HEAD
 docker.io (26.1.4+kaisen1-1) kaisen-packages; urgency=medium
 
   * Import the 26.1.4 release
+  * Add buildx into Recommends package (it will need in futures releases to build
+    an image)
 
- -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sat, 17 Aug 2024 23:56:10 +0200
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sun, 18 Aug 2024 03:56:48 +0200
 
 docker.io (26.1.4+dfsg3-1) unstable; urgency=medium
 
@@ -153,8 +154,6 @@ docker.io (20.10.24+dfsg1-1) unstable; urgency=medium
 
  -- Shengjing Zhu <zhsj@debian.org>  Wed, 05 Apr 2023 23:19:59 +0800
 
-=======
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 docker.io (20.10.23+kaisen1-1) kaisen-packages; urgency=medium
 
   * Import the new upstream release

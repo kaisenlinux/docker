@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 // set by the compile flags to get around content sha being the same
@@ -28,8 +29,9 @@ func main() {
 
 	mux := http.NewServeMux()
 	server := http.Server{
-		Addr:    l.Addr().String(),
-		Handler: http.NewServeMux(),
+		Addr:              l.Addr().String(),
+		Handler:           http.NewServeMux(),
+		ReadHeaderTimeout: 2 * time.Second, // G112: Potential Slowloris Attack because ReadHeaderTimeout is not configured in the http.Server
 	}
 	mux.HandleFunc("/Plugin.Activate", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/vnd.docker.plugins.v1.1+json")

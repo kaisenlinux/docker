@@ -1,13 +1,9 @@
 package secret
 
 import (
-<<<<<<< HEAD
 	"context"
 	"io"
 	"os"
-=======
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -52,14 +48,14 @@ func TestSecretCreateErrors(t *testing.T) {
 			}),
 		)
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(ioutil.Discard)
+		cmd.SetOut(io.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }
 
 func TestSecretCreateWithName(t *testing.T) {
 	name := "foo"
-	data, err := ioutil.ReadFile(filepath.Join("testdata", secretDataFile))
+	data, err := os.ReadFile(filepath.Join("testdata", secretDataFile))
 	assert.NilError(t, err)
 
 	expected := swarm.SecretSpec{

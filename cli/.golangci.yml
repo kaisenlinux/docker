@@ -1,11 +1,7 @@
 linters:
   enable:
     - bodyclose
-<<<<<<< HEAD
     - depguard
-=======
-    - deadcode
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
     - dogsled
     - dupword       # Detects duplicate words.
     - durationcheck
@@ -23,7 +19,6 @@ linters:
     - megacheck
     - misspell      # Detects commonly misspelled English words in comments.
     - nakedret
-<<<<<<< HEAD
     - nilerr        # Detects code that returns nil even if it checks that the error is not nil.
     - nolintlint    # Detects ill-formed or insufficient nolint directives.
     - perfsprint    # Detects fmt.Sprintf uses that can be replaced with a faster alternative.
@@ -36,22 +31,13 @@ linters:
     - tenv          # Detects using os.Setenv instead of t.Setenv.
     - thelper       # Detects test helpers without t.Helper().
     - tparallel     # Detects inappropriate usage of t.Parallel().
-=======
-    - staticcheck
-    - structcheck
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
     - typecheck
     - unconvert     # Detects unnecessary type conversions.
     - unparam
     - unused
-<<<<<<< HEAD
     - usestdlibvars
     - vet
     - wastedassign
-=======
-    - revive
-    - varcheck
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
   disable:
     - errcheck
@@ -149,7 +135,6 @@ issues:
       linters:
         - gosec
 
-<<<<<<< HEAD
     # G113 Potential uncontrolled memory consumption in Rat.SetString (CVE-2022-23772)
     # only affects gp < 1.16.14. and go < 1.17.7
     - text: "G113"
@@ -159,8 +144,6 @@ issues:
     - text: "G104"
       linters:
         - gosec
-=======
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
     # Looks like the match in "EXC0007" above doesn't catch this one
     # TODO: consider upstreaming this to golangci-lint's default exclusion rules
     - text: "G204: Subprocess launched with a potential tainted input or cmd arguments"
@@ -172,7 +155,6 @@ issues:
       linters:
         - gosec
 
-<<<<<<< HEAD
     # TODO: make sure all packages have a description. Currently, there's 67 packages without.
     - text: "package-comments: should have a package comment"
       linters:
@@ -181,14 +163,11 @@ issues:
     - text: "SA1019: (assert|cmp|is)\\.ErrorType is deprecated"
       linters:
         - staticcheck
-=======
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
     # Exclude some linters from running on tests files.
     - path: _test\.go
       linters:
         - errcheck
         - gosec
-<<<<<<< HEAD
     - text: "ST1000: at least one file in a package should have a package comment"
       linters:
         - stylecheck
@@ -198,8 +177,6 @@ issues:
       linters:
         - govet
 
-=======
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
   # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
   max-issues-per-linter: 0

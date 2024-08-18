@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"sort"
@@ -71,7 +70,7 @@ func TestCIDFileCloseWithWrite(t *testing.T) {
 	content := "id"
 	assert.NilError(t, file.Write(content))
 
-	actual, err := ioutil.ReadFile(path)
+	actual, err := os.ReadFile(path)
 	assert.NilError(t, err)
 	assert.Check(t, is.Equal(content, string(actual)))
 
@@ -119,7 +118,6 @@ func TestCreateContainerImagePullPolicy(t *testing.T) {
 		t.Run(tc.PullPolicy, func(t *testing.T) {
 			pullCounter := 0
 
-<<<<<<< HEAD
 			client := &fakeClient{
 				createContainerFunc: func(
 					config *container.Config,
@@ -160,38 +158,6 @@ func TestCreateContainerImagePullPolicy(t *testing.T) {
 			}
 
 			assert.Check(t, is.Equal(tc.ExpectedPulls, pullCounter))
-=======
-		client := &fakeClient{
-			createContainerFunc: func(
-				config *container.Config,
-				hostConfig *container.HostConfig,
-				networkingConfig *network.NetworkingConfig,
-				platform *specs.Platform,
-				containerName string,
-			) (container.ContainerCreateCreatedBody, error) {
-				defer func() { c.ResponseCounter++ }()
-				switch c.ResponseCounter {
-				case 0:
-					return container.ContainerCreateCreatedBody{}, fakeNotFound{}
-				default:
-					return container.ContainerCreateCreatedBody{ID: containerID}, nil
-				}
-			},
-			imageCreateFunc: func(parentReference string, options types.ImageCreateOptions) (io.ReadCloser, error) {
-				defer func() { pullCounter++ }()
-				return ioutil.NopCloser(strings.NewReader("")), nil
-			},
-			infoFunc: func() (types.Info, error) {
-				return types.Info{IndexServerAddress: "https://indexserver.example.com"}, nil
-			},
-		}
-		cli := test.NewFakeCli(client)
-		body, err := createContainer(context.Background(), cli, config, &createOptions{
-			name:      "name",
-			platform:  runtime.GOOS,
-			untrusted: true,
-			pull:      c.PullPolicy,
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		})
 	}
 }
@@ -268,15 +234,9 @@ func TestNewCreateCommandWithContentTrustErrors(t *testing.T) {
 				return container.CreateResponse{}, fmt.Errorf("shouldn't try to pull image")
 			},
 		}, test.EnableContentTrust)
-<<<<<<< HEAD
 		fakeCLI.SetNotaryClient(tc.notaryFunc)
 		cmd := NewCreateCommand(fakeCLI)
 		cmd.SetOut(io.Discard)
-=======
-		cli.SetNotaryClient(tc.notaryFunc)
-		cmd := NewCreateCommand(cli)
-		cmd.SetOut(ioutil.Discard)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		cmd.SetArgs(tc.args)
 		err := cmd.Execute()
 		assert.ErrorContains(t, err, tc.expectedError)
@@ -336,7 +296,7 @@ func TestNewCreateCommandWithWarnings(t *testing.T) {
 				},
 			})
 			cmd := NewCreateCommand(cli)
-			cmd.SetOut(ioutil.Discard)
+			cmd.SetOut(io.Discard)
 			cmd.SetArgs(tc.args)
 			err := cmd.Execute()
 			assert.NilError(t, err)
@@ -387,13 +347,8 @@ func TestCreateContainerWithProxyConfig(t *testing.T) {
 			},
 		},
 	})
-<<<<<<< HEAD
 	cmd := NewCreateCommand(fakeCLI)
 	cmd.SetOut(io.Discard)
-=======
-	cmd := NewCreateCommand(cli)
-	cmd.SetOut(ioutil.Discard)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	cmd.SetArgs([]string{"image:tag"})
 	err := cmd.Execute()
 	assert.NilError(t, err)

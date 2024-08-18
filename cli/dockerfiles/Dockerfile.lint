@@ -1,14 +1,8 @@
 # syntax=docker/dockerfile:1
 
-<<<<<<< HEAD
 ARG GO_VERSION=1.21.11
 ARG ALPINE_VERSION=3.20
 ARG GOLANGCI_LINT_VERSION=v1.55.2
-=======
-ARG GO_VERSION=1.18.10
-ARG ALPINE_VERSION=3.16
-ARG GOLANGCI_LINT_VERSION=v1.45.2
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 FROM golangci/golangci-lint:${GOLANGCI_LINT_VERSION}-alpine AS golangci-lint
 

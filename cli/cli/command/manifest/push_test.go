@@ -2,14 +2,11 @@ package manifest
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"testing"
 
-<<<<<<< HEAD
 	"github.com/distribution/reference"
 	"github.com/docker/cli/cli/manifest/store"
-=======
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	manifesttypes "github.com/docker/cli/cli/manifest/types"
 	"github.com/docker/cli/internal/test"
 	"github.com/pkg/errors"
@@ -46,18 +43,13 @@ func TestManifestPushErrors(t *testing.T) {
 		cli := test.NewFakeCli(nil)
 		cmd := newPushListCommand(cli)
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(ioutil.Discard)
+		cmd.SetOut(io.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }
 
 func TestManifestPush(t *testing.T) {
-<<<<<<< HEAD
 	manifestStore := store.NewStore(t.TempDir())
-=======
-	store, sCleanup := newTempManifestStore(t)
-	defer sCleanup()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	registry := newFakeRegistryClient()
 

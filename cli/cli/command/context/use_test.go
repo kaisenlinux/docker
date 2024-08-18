@@ -1,13 +1,9 @@
 package context
 
 import (
-<<<<<<< HEAD
 	"bytes"
 	"errors"
 	"io"
-=======
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path/filepath"
 	"runtime"
@@ -23,14 +19,11 @@ import (
 )
 
 func TestUse(t *testing.T) {
-	configDir, err := ioutil.TempDir("", t.Name()+"config")
-	assert.NilError(t, err)
-	defer os.RemoveAll(configDir)
+	configDir := t.TempDir()
 	configFilePath := filepath.Join(configDir, "config.json")
 	testCfg := configfile.New(configFilePath)
-	cli, cleanup := makeFakeCli(t, withCliConfig(testCfg))
-	defer cleanup()
-	err = RunCreate(cli, &CreateOptions{
+	cli := makeFakeCli(t, withCliConfig(testCfg))
+	err := RunCreate(cli, &CreateOptions{
 		Name:   "test",
 		Docker: map[string]string{},
 	})
@@ -52,8 +45,7 @@ func TestUse(t *testing.T) {
 }
 
 func TestUseNoExist(t *testing.T) {
-	cli, cleanup := makeFakeCli(t)
-	defer cleanup()
+	cli := makeFakeCli(t)
 	err := newUseCommand(cli).RunE(nil, []string{"test"})
 	assert.Check(t, is.ErrorType(err, errdefs.IsNotFound))
 }

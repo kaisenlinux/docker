@@ -2,12 +2,7 @@ package service // import "github.com/docker/docker/integration/service"
 
 import (
 	"context"
-<<<<<<< HEAD
 	"io"
-=======
-	"fmt"
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"strings"
 	"testing"
 	"time"
@@ -242,7 +237,7 @@ func TestCreateServiceSecretFileMode(t *testing.T) {
 	assert.NilError(t, err)
 	defer body.Close()
 
-	content, err := ioutil.ReadAll(body)
+	content, err := io.ReadAll(body)
 	assert.NilError(t, err)
 	assert.Check(t, is.Contains(string(content), "-rwxrwxrwx"))
 
@@ -299,7 +294,7 @@ func TestCreateServiceConfigFileMode(t *testing.T) {
 	assert.NilError(t, err)
 	defer body.Close()
 
-	content, err := ioutil.ReadAll(body)
+	content, err := io.ReadAll(body)
 	assert.NilError(t, err)
 	assert.Check(t, is.Contains(string(content), "-rwxrwxrwx"))
 
@@ -316,7 +311,7 @@ func TestCreateServiceConfigFileMode(t *testing.T) {
 //
 // To test this, we're going to create a service with the sysctl option
 //
-//   {"net.ipv4.ip_nonlocal_bind": "0"}
+//	{"net.ipv4.ip_nonlocal_bind": "0"}
 //
 // We'll get the service's tasks to get the container ID, and then we'll
 // inspect the container. If the output of the container inspect contains the
@@ -402,7 +397,7 @@ func TestCreateServiceSysctls(t *testing.T) {
 //
 // To test this, we're going to create a service with the capabilities option
 //
-//   []string{"CAP_NET_RAW", "CAP_SYS_CHROOT"}
+//	[]string{"CAP_NET_RAW", "CAP_SYS_CHROOT"}
 //
 // We'll get the service's tasks to get the container ID, and then we'll
 // inspect the container. If the output of the container inspect contains the

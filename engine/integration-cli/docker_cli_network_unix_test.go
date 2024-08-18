@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -205,19 +204,11 @@ func setupRemoteNetworkDrivers(c *testing.T, mux *http.ServeMux, url, netDrv, ip
 	assert.NilError(c, err)
 
 	fileName := fmt.Sprintf("/etc/docker/plugins/%s.spec", netDrv)
-<<<<<<< HEAD
 	err = os.WriteFile(fileName, []byte(url), 0o644)
 	assert.NilError(c, err)
 
 	ipamFileName := fmt.Sprintf("/etc/docker/plugins/%s.spec", ipamDrv)
 	err = os.WriteFile(ipamFileName, []byte(url), 0o644)
-=======
-	err = ioutil.WriteFile(fileName, []byte(url), 0644)
-	assert.NilError(c, err)
-
-	ipamFileName := fmt.Sprintf("/etc/docker/plugins/%s.spec", ipamDrv)
-	err = ioutil.WriteFile(ipamFileName, []byte(url), 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 }
 

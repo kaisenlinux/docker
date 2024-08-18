@@ -10,14 +10,9 @@ Fix build issue with
  1 file changed, 1 insertion(+)
  create mode 100644 go.mod
 
-<<<<<<< HEAD
 Index: docker.io/engine/go.mod
 ===================================================================
 --- /dev/null
 +++ docker.io/engine/go.mod
-=======
---- /dev/null
-+++ b/engine/go.mod
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 @@ -0,0 +1 @@
 +module github.com/docker/docker

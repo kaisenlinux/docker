@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -31,7 +30,7 @@ func ensureSyscallTest(ctx context.Context, c *testing.T) {
 		return
 	}
 
-	tmp, err := ioutil.TempDir("", "syscall-test-build")
+	tmp, err := os.MkdirTemp("", "syscall-test-build")
 	assert.NilError(c, err, "couldn't create temp dir")
 	defer os.RemoveAll(tmp)
 
@@ -54,11 +53,7 @@ func ensureSyscallTest(ctx context.Context, c *testing.T) {
 	FROM debian:bookworm-slim
 	COPY . /usr/bin/
 	`)
-<<<<<<< HEAD
 	err = os.WriteFile(dockerFile, content, 0o600)
-=======
-	err = ioutil.WriteFile(dockerFile, content, 0600)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	var buildArgs []string
@@ -98,7 +93,7 @@ func ensureNNPTest(ctx context.Context, c *testing.T) {
 		return
 	}
 
-	tmp, err := ioutil.TempDir("", "docker-nnp-test")
+	tmp, err := os.MkdirTemp("", "docker-nnp-test")
 	assert.NilError(c, err)
 
 	gcc, err := exec.LookPath("gcc")
@@ -113,11 +108,7 @@ func ensureNNPTest(ctx context.Context, c *testing.T) {
 	COPY . /usr/bin
 	RUN chmod +s /usr/bin/nnp-test
 	`
-<<<<<<< HEAD
 	err = os.WriteFile(dockerfile, []byte(content), 0o600)
-=======
-	err = ioutil.WriteFile(dockerfile, []byte(content), 0600)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err, "could not write Dockerfile for nnp-test image")
 
 	var buildArgs []string

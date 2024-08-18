@@ -33,7 +33,6 @@ type NaiveDiffDriver struct {
 // NewNaiveDiffDriver returns a fully functional driver that wraps the
 // given ProtoDriver and adds the capability of the following methods which
 // it may or may not support on its own:
-<<<<<<< HEAD
 //
 //	Diff(id, parent string) (archive.Archive, error)
 //	Changes(id, parent string) ([]archive.Change, error)
@@ -44,16 +43,6 @@ func NewNaiveDiffDriver(driver ProtoDriver, idMap idtools.IdentityMapping) Drive
 		ProtoDriver: driver,
 		IDMap:       idMap,
 	}
-=======
-//     Diff(id, parent string) (archive.Archive, error)
-//     Changes(id, parent string) ([]archive.Change, error)
-//     ApplyDiff(id, parent string, diff archive.Reader) (size int64, err error)
-//     DiffSize(id, parent string) (size int64, err error)
-func NewNaiveDiffDriver(driver ProtoDriver, uidMaps, gidMaps []idtools.IDMap) Driver {
-	return &NaiveDiffDriver{ProtoDriver: driver,
-		uidMaps: uidMaps,
-		gidMaps: gidMaps}
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 }
 
 // Diff produces an archive of the changes between the specified

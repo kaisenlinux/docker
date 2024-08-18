@@ -2,12 +2,6 @@ package supervisor // import "github.com/docker/docker/libcontainerd/supervisor"
 
 import (
 	"context"
-<<<<<<< HEAD
-=======
-	"fmt"
-	"io"
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -215,18 +209,12 @@ func (r *remote) startContainerd() error {
 
 	r.daemonPid = cmd.Process.Pid
 
-<<<<<<< HEAD
 	if err := r.adjustOOMScore(); err != nil {
 		r.logger.WithError(err).Warn("failed to adjust OOM score")
 	}
 
 	if err := pidfile.Write(r.pidFile, r.daemonPid); err != nil {
 		_ = process.Kill(r.daemonPid)
-=======
-	err = ioutil.WriteFile(filepath.Join(r.stateDir, pidFile), []byte(fmt.Sprintf("%d", r.daemonPid)), 0660)
-	if err != nil {
-		system.KillProcess(r.daemonPid)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		return errors.Wrap(err, "libcontainerd: failed to save daemon pid to disk")
 	}
 

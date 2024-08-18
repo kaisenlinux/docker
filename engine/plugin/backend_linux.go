@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -228,7 +227,7 @@ func (pm *Manager) Upgrade(ctx context.Context, ref reference.Named, name string
 	pm.muGC.RLock()
 	defer pm.muGC.RUnlock()
 
-	tmpRootFSDir, err := ioutil.TempDir(pm.tmpDir(), ".rootfs")
+	tmpRootFSDir, err := os.MkdirTemp(pm.tmpDir(), ".rootfs")
 	if err != nil {
 		return errors.Wrap(err, "error creating tmp dir for plugin rootfs")
 	}
@@ -273,7 +272,7 @@ func (pm *Manager) Pull(ctx context.Context, ref reference.Named, name string, m
 		return errdefs.InvalidParameter(err)
 	}
 
-	tmpRootFSDir, err := ioutil.TempDir(pm.tmpDir(), ".rootfs")
+	tmpRootFSDir, err := os.MkdirTemp(pm.tmpDir(), ".rootfs")
 	if err != nil {
 		return errors.Wrap(errdefs.System(err), "error preparing upgrade")
 	}
@@ -638,7 +637,7 @@ func (pm *Manager) CreateFromContext(ctx context.Context, tarCtx io.ReadCloser, 
 		return err
 	}
 
-	tmpRootFSDir, err := ioutil.TempDir(pm.tmpDir(), ".rootfs")
+	tmpRootFSDir, err := os.MkdirTemp(pm.tmpDir(), ".rootfs")
 	if err != nil {
 		return errors.Wrap(err, "failed to create temp directory")
 	}
@@ -771,7 +770,7 @@ func splitConfigRootFSFromTar(in io.ReadCloser, config *[]byte) io.ReadCloser {
 				name = name[1:]
 			}
 			if name == configFileName {
-				dt, err := ioutil.ReadAll(content)
+				dt, err := io.ReadAll(content)
 				if err != nil {
 					pw.CloseWithError(errors.Wrapf(err, "failed to read %s", configFileName))
 					return
@@ -793,7 +792,7 @@ func splitConfigRootFSFromTar(in io.ReadCloser, config *[]byte) io.ReadCloser {
 				}
 				hasRootFS = true
 			} else {
-				io.Copy(ioutil.Discard, content)
+				io.Copy(io.Discard, content)
 			}
 		}
 	}()

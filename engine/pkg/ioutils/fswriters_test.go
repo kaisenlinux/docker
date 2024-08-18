@@ -2,7 +2,6 @@ package ioutils // import "github.com/docker/docker/pkg/ioutils"
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -19,22 +18,14 @@ func init() {
 }
 
 func TestAtomicWriteToFile(t *testing.T) {
-<<<<<<< HEAD
 	tmpDir := t.TempDir()
-=======
-	tmpDir, err := ioutil.TempDir("", "atomic-writers-test")
-	if err != nil {
-		t.Fatalf("Error when creating temporary directory: %s", err)
-	}
-	defer os.RemoveAll(tmpDir)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	expected := []byte("barbaz")
 	if err := AtomicWriteFile(filepath.Join(tmpDir, "foo"), expected, testMode); err != nil {
 		t.Fatalf("Error writing to file: %v", err)
 	}
 
-	actual, err := ioutil.ReadFile(filepath.Join(tmpDir, "foo"))
+	actual, err := os.ReadFile(filepath.Join(tmpDir, "foo"))
 	if err != nil {
 		t.Fatalf("Error reading from file: %v", err)
 	}
@@ -53,15 +44,7 @@ func TestAtomicWriteToFile(t *testing.T) {
 }
 
 func TestAtomicWriteSetCommit(t *testing.T) {
-<<<<<<< HEAD
 	tmpDir := t.TempDir()
-=======
-	tmpDir, err := ioutil.TempDir("", "atomic-writerset-test")
-	if err != nil {
-		t.Fatalf("Error when creating temporary directory: %s", err)
-	}
-	defer os.RemoveAll(tmpDir)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	if err := os.Mkdir(filepath.Join(tmpDir, "tmp"), 0o700); err != nil {
 		t.Fatalf("Error creating tmp directory: %s", err)
@@ -78,7 +61,7 @@ func TestAtomicWriteSetCommit(t *testing.T) {
 		t.Fatalf("Error writing to file: %v", err)
 	}
 
-	if _, err := ioutil.ReadFile(filepath.Join(targetDir, "foo")); err == nil {
+	if _, err := os.ReadFile(filepath.Join(targetDir, "foo")); err == nil {
 		t.Fatalf("Expected error reading file where should not exist")
 	}
 
@@ -86,7 +69,7 @@ func TestAtomicWriteSetCommit(t *testing.T) {
 		t.Fatalf("Error committing file: %s", err)
 	}
 
-	actual, err := ioutil.ReadFile(filepath.Join(targetDir, "foo"))
+	actual, err := os.ReadFile(filepath.Join(targetDir, "foo"))
 	if err != nil {
 		t.Fatalf("Error reading from file: %v", err)
 	}
@@ -105,15 +88,7 @@ func TestAtomicWriteSetCommit(t *testing.T) {
 }
 
 func TestAtomicWriteSetCancel(t *testing.T) {
-<<<<<<< HEAD
 	tmpDir := t.TempDir()
-=======
-	tmpDir, err := ioutil.TempDir("", "atomic-writerset-test")
-	if err != nil {
-		t.Fatalf("Error when creating temporary directory: %s", err)
-	}
-	defer os.RemoveAll(tmpDir)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	if err := os.Mkdir(filepath.Join(tmpDir, "tmp"), 0o700); err != nil {
 		t.Fatalf("Error creating tmp directory: %s", err)
@@ -133,7 +108,7 @@ func TestAtomicWriteSetCancel(t *testing.T) {
 		t.Fatalf("Error committing file: %s", err)
 	}
 
-	if _, err := ioutil.ReadFile(filepath.Join(tmpDir, "target", "foo")); err == nil {
+	if _, err := os.ReadFile(filepath.Join(tmpDir, "target", "foo")); err == nil {
 		t.Fatalf("Expected error reading file where should not exist")
 	} else if !os.IsNotExist(err) {
 		t.Fatalf("Unexpected error reading file: %s", err)

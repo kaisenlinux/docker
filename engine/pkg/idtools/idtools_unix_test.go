@@ -4,7 +4,6 @@ package idtools // import "github.com/docker/docker/pkg/idtools"
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"os/user"
@@ -29,7 +28,7 @@ type node struct {
 
 func TestMkdirAllAndChown(t *testing.T) {
 	RequiresRoot(t)
-	dirName, err := ioutil.TempDir("", "mkdirall")
+	dirName, err := os.MkdirTemp("", "mkdirall")
 	if err != nil {
 		t.Fatalf("Couldn't create temp dir: %v", err)
 	}
@@ -90,7 +89,7 @@ func TestMkdirAllAndChown(t *testing.T) {
 
 func TestMkdirAllAndChownNew(t *testing.T) {
 	RequiresRoot(t)
-	dirName, err := ioutil.TempDir("", "mkdirnew")
+	dirName, err := os.MkdirTemp("", "mkdirnew")
 	assert.NilError(t, err)
 	defer os.RemoveAll(dirName)
 
@@ -223,7 +222,7 @@ func setWorkingDirectory(t *testing.T, dir string) {
 
 func TestMkdirAndChown(t *testing.T) {
 	RequiresRoot(t)
-	dirName, err := ioutil.TempDir("", "mkdir")
+	dirName, err := os.MkdirTemp("", "mkdir")
 	if err != nil {
 		t.Fatalf("Couldn't create temp dir: %v", err)
 	}
@@ -284,7 +283,7 @@ func buildTree(base string, tree map[string]node) error {
 func readTree(base, root string) (map[string]node, error) {
 	tree := make(map[string]node)
 
-	dirInfos, err := ioutil.ReadDir(base)
+	dirInfos, err := os.ReadDir(base)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't read directory entries for %q: %v", base, err)
 	}
@@ -333,7 +332,7 @@ func delUser(t *testing.T, name string) {
 }
 
 func TestParseSubidFileWithNewlinesAndComments(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "parsesubid")
+	tmpDir, err := os.MkdirTemp("", "parsesubid")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -342,11 +341,7 @@ func TestParseSubidFileWithNewlinesAndComments(t *testing.T) {
 # empty default subuid/subgid file
 
 dockremap:231072:65536`
-<<<<<<< HEAD
 	if err := os.WriteFile(fnamePath, []byte(fcontent), 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile(fnamePath, []byte(fcontent), 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 	ranges, err := parseSubidFile(fnamePath, "dockremap")
@@ -425,7 +420,7 @@ func TestNewIDMappings(t *testing.T) {
 	rootUID, rootGID, err := GetRootUIDGID(idMapping.UIDMaps, idMapping.GIDMaps)
 	assert.Check(t, err)
 
-	dirName, err := ioutil.TempDir("", "mkdirall")
+	dirName, err := os.MkdirTemp("", "mkdirall")
 	assert.Check(t, err, "Couldn't create temp directory")
 	defer os.RemoveAll(dirName)
 
@@ -480,7 +475,7 @@ func TestLookupUserAndGroupThatDoesNotExist(t *testing.T) {
 // returns a correct error in case a directory which it is about to create
 // already exists but is a file (rather than a directory).
 func TestMkdirIsNotDir(t *testing.T) {
-	file, err := ioutil.TempFile("", t.Name())
+	file, err := os.CreateTemp("", t.Name())
 	if err != nil {
 		t.Fatalf("Couldn't create temp dir: %v", err)
 	}

@@ -1,12 +1,8 @@
 package buildkit
 
 import (
-<<<<<<< HEAD:engine/builder/builder-next/executor_linux.go
 	"context"
 	"net"
-=======
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):engine/builder/builder-next/executor_unix.go
 	"os"
 	"path/filepath"
 	"strconv"
@@ -39,7 +35,7 @@ func newExecutor(root, cgroupParent string, net *libnetwork.Controller, dnsConfi
 	}
 
 	// make sure net state directory is cleared from previous state
-	fis, err := ioutil.ReadDir(netRoot)
+	fis, err := os.ReadDir(netRoot)
 	if err == nil {
 		for _, fi := range fis {
 			fp := filepath.Join(netRoot, fi.Name())

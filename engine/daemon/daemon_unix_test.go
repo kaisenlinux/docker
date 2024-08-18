@@ -4,7 +4,6 @@ package daemon // import "github.com/docker/docker/daemon"
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -59,88 +58,6 @@ func TestAdjustSharedNamespaceContainerName(t *testing.T) {
 }
 
 // Unix test as uses settings which are not available on Windows
-<<<<<<< HEAD
-=======
-func TestAdjustCPUShares(t *testing.T) {
-	tmp, err := ioutil.TempDir("", "docker-daemon-unix-test-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(tmp)
-	daemon := &Daemon{
-		repository: tmp,
-		root:       tmp,
-	}
-	muteLogs()
-
-	hostConfig := &containertypes.HostConfig{
-		Resources: containertypes.Resources{CPUShares: linuxMinCPUShares - 1},
-	}
-	daemon.adaptContainerSettings(hostConfig, true)
-	if hostConfig.CPUShares != linuxMinCPUShares {
-		t.Errorf("Expected CPUShares to be %d", linuxMinCPUShares)
-	}
-
-	hostConfig.CPUShares = linuxMaxCPUShares + 1
-	daemon.adaptContainerSettings(hostConfig, true)
-	if hostConfig.CPUShares != linuxMaxCPUShares {
-		t.Errorf("Expected CPUShares to be %d", linuxMaxCPUShares)
-	}
-
-	hostConfig.CPUShares = 0
-	daemon.adaptContainerSettings(hostConfig, true)
-	if hostConfig.CPUShares != 0 {
-		t.Error("Expected CPUShares to be unchanged")
-	}
-
-	hostConfig.CPUShares = 1024
-	daemon.adaptContainerSettings(hostConfig, true)
-	if hostConfig.CPUShares != 1024 {
-		t.Error("Expected CPUShares to be unchanged")
-	}
-}
-
-// Unix test as uses settings which are not available on Windows
-func TestAdjustCPUSharesNoAdjustment(t *testing.T) {
-	tmp, err := ioutil.TempDir("", "docker-daemon-unix-test-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(tmp)
-	daemon := &Daemon{
-		repository: tmp,
-		root:       tmp,
-	}
-
-	hostConfig := &containertypes.HostConfig{
-		Resources: containertypes.Resources{CPUShares: linuxMinCPUShares - 1},
-	}
-	daemon.adaptContainerSettings(hostConfig, false)
-	if hostConfig.CPUShares != linuxMinCPUShares-1 {
-		t.Errorf("Expected CPUShares to be %d", linuxMinCPUShares-1)
-	}
-
-	hostConfig.CPUShares = linuxMaxCPUShares + 1
-	daemon.adaptContainerSettings(hostConfig, false)
-	if hostConfig.CPUShares != linuxMaxCPUShares+1 {
-		t.Errorf("Expected CPUShares to be %d", linuxMaxCPUShares+1)
-	}
-
-	hostConfig.CPUShares = 0
-	daemon.adaptContainerSettings(hostConfig, false)
-	if hostConfig.CPUShares != 0 {
-		t.Error("Expected CPUShares to be unchanged")
-	}
-
-	hostConfig.CPUShares = 1024
-	daemon.adaptContainerSettings(hostConfig, false)
-	if hostConfig.CPUShares != 1024 {
-		t.Error("Expected CPUShares to be unchanged")
-	}
-}
-
-// Unix test as uses settings which are not available on Windows
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 func TestParseSecurityOptWithDeprecatedColon(t *testing.T) {
 	opts := &container.SecurityOptions{}
 	cfg := &containertypes.HostConfig{}
@@ -398,7 +315,7 @@ func deviceTypeMock(t *testing.T, testAndCheck func(string)) {
 
 	t.Parallel()
 
-	tempDir, err := ioutil.TempDir("", "tempDevDir"+t.Name())
+	tempDir, err := os.MkdirTemp("", "tempDevDir"+t.Name())
 	assert.NilError(t, err, "create temp file")
 	tempFile := filepath.Join(tempDir, "dev")
 

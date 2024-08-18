@@ -3,12 +3,8 @@ package image
 import (
 	"context"
 	"fmt"
-<<<<<<< HEAD
 	"io"
 	"strings"
-=======
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"testing"
 
 	"github.com/docker/cli/cli/streams"
@@ -47,7 +43,7 @@ func TestNewPruneCommandErrors(t *testing.T) {
 		cmd := NewPruneCommand(test.NewFakeCli(&fakeClient{
 			imagesPruneFunc: tc.imagesPruneFunc,
 		}))
-		cmd.SetOut(ioutil.Discard)
+		cmd.SetOut(io.Discard)
 		cmd.SetArgs(tc.args)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
@@ -99,7 +95,6 @@ func TestNewPruneCommandSuccess(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-<<<<<<< HEAD
 		t.Run(tc.name, func(t *testing.T) {
 			cli := test.NewFakeCli(&fakeClient{imagesPruneFunc: tc.imagesPruneFunc})
 			// when prompted, answer "Y" to confirm the prune.
@@ -112,15 +107,6 @@ func TestNewPruneCommandSuccess(t *testing.T) {
 			assert.NilError(t, err)
 			golden.Assert(t, cli.OutBuffer().String(), fmt.Sprintf("prune-command-success.%s.golden", tc.name))
 		})
-=======
-		cli := test.NewFakeCli(&fakeClient{imagesPruneFunc: tc.imagesPruneFunc})
-		cmd := NewPruneCommand(cli)
-		cmd.SetOut(ioutil.Discard)
-		cmd.SetArgs(tc.args)
-		err := cmd.Execute()
-		assert.NilError(t, err)
-		golden.Assert(t, cli.OutBuffer().String(), fmt.Sprintf("prune-command-success.%s.golden", tc.name))
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	}
 }
 

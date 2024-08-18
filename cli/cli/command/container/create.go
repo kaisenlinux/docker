@@ -184,20 +184,11 @@ func newCIDFile(path string) (*cidFile, error) {
 	return &cidFile{path: path, file: f}, nil
 }
 
-<<<<<<< HEAD
 //nolint:gocyclo
 func createContainer(ctx context.Context, dockerCli command.Cli, containerCfg *containerConfig, options *createOptions) (containerID string, err error) {
 	config := containerCfg.Config
 	hostConfig := containerCfg.HostConfig
 	networkingConfig := containerCfg.NetworkingConfig
-=======
-// nolint: gocyclo
-func createContainer(ctx context.Context, dockerCli command.Cli, containerConfig *containerConfig, opts *createOptions) (*container.ContainerCreateCreatedBody, error) {
-	config := containerConfig.Config
-	hostConfig := containerConfig.HostConfig
-	networkingConfig := containerConfig.NetworkingConfig
-	stderr := dockerCli.Err()
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	warnOnOomKillDisable(*hostConfig, dockerCli.Err())
 	warnOnLocalhostDNS(*hostConfig, dockerCli.Err())

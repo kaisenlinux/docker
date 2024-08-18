@@ -2,7 +2,7 @@ package image
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"testing"
 
 	"github.com/docker/cli/cli/config/configfile"
@@ -29,19 +29,14 @@ func TestNewImagesCommandErrors(t *testing.T) {
 		{
 			name:          "failed-list",
 			expectedError: "something went wrong",
-<<<<<<< HEAD
 			imageListFunc: func(options image.ListOptions) ([]image.Summary, error) {
 				return []image.Summary{}, errors.Errorf("something went wrong")
-=======
-			imageListFunc: func(options types.ImageListOptions) ([]types.ImageSummary, error) {
-				return []types.ImageSummary{{}}, errors.Errorf("something went wrong")
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			},
 		},
 	}
 	for _, tc := range testCases {
 		cmd := NewImagesCommand(test.NewFakeCli(&fakeClient{imageListFunc: tc.imageListFunc}))
-		cmd.SetOut(ioutil.Discard)
+		cmd.SetOut(io.Discard)
 		cmd.SetArgs(tc.args)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
@@ -71,11 +66,7 @@ func TestNewImagesCommandSuccess(t *testing.T) {
 			args: []string{"image"},
 			imageListFunc: func(options image.ListOptions) ([]image.Summary, error) {
 				assert.Check(t, is.Equal("image", options.Filters.Get("reference")[0]))
-<<<<<<< HEAD
 				return []image.Summary{}, nil
-=======
-				return []types.ImageSummary{{}}, nil
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			},
 		},
 		{
@@ -83,11 +74,7 @@ func TestNewImagesCommandSuccess(t *testing.T) {
 			args: []string{"--filter", "name=value"},
 			imageListFunc: func(options image.ListOptions) ([]image.Summary, error) {
 				assert.Check(t, is.Equal("value", options.Filters.Get("name")[0]))
-<<<<<<< HEAD
 				return []image.Summary{}, nil
-=======
-				return []types.ImageSummary{{}}, nil
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			},
 		},
 	}
@@ -95,7 +82,7 @@ func TestNewImagesCommandSuccess(t *testing.T) {
 		cli := test.NewFakeCli(&fakeClient{imageListFunc: tc.imageListFunc})
 		cli.SetConfigFile(&configfile.ConfigFile{ImagesFormat: tc.imageFormat})
 		cmd := NewImagesCommand(cli)
-		cmd.SetOut(ioutil.Discard)
+		cmd.SetOut(io.Discard)
 		cmd.SetArgs(tc.args)
 		err := cmd.Execute()
 		assert.NilError(t, err)

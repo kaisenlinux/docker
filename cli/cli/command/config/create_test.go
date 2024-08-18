@@ -1,13 +1,9 @@
 package config
 
 import (
-<<<<<<< HEAD
 	"context"
 	"io"
 	"os"
-=======
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -53,7 +49,7 @@ func TestConfigCreateErrors(t *testing.T) {
 			}),
 		)
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(ioutil.Discard)
+		cmd.SetOut(io.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }
@@ -89,7 +85,7 @@ func TestConfigCreateWithLabels(t *testing.T) {
 	}
 	name := "foo"
 
-	data, err := ioutil.ReadFile(filepath.Join("testdata", configDataFile))
+	data, err := os.ReadFile(filepath.Join("testdata", configDataFile))
 	assert.NilError(t, err)
 
 	expected := swarm.ConfigSpec{

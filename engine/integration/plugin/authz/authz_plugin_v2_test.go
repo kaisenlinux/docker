@@ -5,12 +5,7 @@ package authz // import "github.com/docker/docker/integration/plugin/authz"
 import (
 	"context"
 	"fmt"
-<<<<<<< HEAD
 	"io"
-=======
-	"io/ioutil"
-	"os"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"strings"
 	"testing"
 
@@ -165,6 +160,6 @@ func pluginInstallGrantAllPermissions(ctx context.Context, client client.APIClie
 	// we have to read the response out here because the client API
 	// actually starts a goroutine which we can only be sure has
 	// completed when we get EOF from reading responseBody
-	_, err = ioutil.ReadAll(responseReader)
+	_, err = io.ReadAll(responseReader)
 	return err
 }

@@ -61,20 +61,8 @@ func (ep *Endpoint) tlsConfig() (*tls.Config, error) {
 		if pemBlock == nil {
 			return nil, errors.New("no valid private key found")
 		}
-<<<<<<< HEAD
 		if x509.IsEncryptedPEMBlock(pemBlock) { //nolint:staticcheck // SA1019: x509.IsEncryptedPEMBlock is deprecated, and insecure by design
 			return nil, errors.New("private key is encrypted - support for encrypted private keys has been removed, see https://docs.docker.com/go/deprecated/")
-=======
-
-		var err error
-		// TODO should we follow Golang, and deprecate RFC 1423 encryption, and produce a warning (or just error)? see https://github.com/docker/cli/issues/3212
-		if x509.IsEncryptedPEMBlock(pemBlock) { //nolint: staticcheck // SA1019: x509.IsEncryptedPEMBlock is deprecated, and insecure by design
-			keyBytes, err = x509.DecryptPEMBlock(pemBlock, []byte(c.TLSPassword)) //nolint: staticcheck // SA1019: x509.IsEncryptedPEMBlock is deprecated, and insecure by design
-			if err != nil {
-				return nil, errors.Wrap(err, "private key is encrypted, but could not decrypt it")
-			}
-			keyBytes = pem.EncodeToMemory(&pem.Block{Type: pemBlock.Type, Bytes: keyBytes})
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		}
 
 		x509cert, err := tls.X509KeyPair(ep.TLSData.Cert, keyBytes)

@@ -3,11 +3,6 @@
 package daemon // import "github.com/docker/docker/daemon"
 
 import (
-<<<<<<< HEAD
-=======
-	"fmt"
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"strconv"
 	"strings"
@@ -55,7 +50,7 @@ func setRootKeyLimit(limit int) error {
 }
 
 func readRootKeyLimit(path string) (int, error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return -1, err
 	}

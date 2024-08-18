@@ -3,7 +3,6 @@
 package trap // import "github.com/docker/docker/cmd/dockerd/trap"
 
 import (
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"syscall"
@@ -15,7 +14,7 @@ import (
 
 func buildTestBinary(t *testing.T, tmpdir string, prefix string) (string, string) {
 	t.Helper()
-	tmpDir, err := ioutil.TempDir(tmpdir, prefix)
+	tmpDir, err := os.MkdirTemp(tmpdir, prefix)
 	assert.NilError(t, err)
 	exePath := tmpDir + "/" + prefix
 	wd, _ := os.Getwd()
@@ -61,25 +60,4 @@ func TestTrap(t *testing.T) {
 			}
 		})
 	}
-<<<<<<< HEAD:engine/cmd/dockerd/trap/trap_linux_test.go
-=======
-
-}
-
-func TestDumpStacks(t *testing.T) {
-	directory, err := ioutil.TempDir("", "test-dump-tasks")
-	assert.Check(t, err)
-	defer os.RemoveAll(directory)
-	dumpPath, err := DumpStacks(directory)
-	assert.Check(t, err)
-	readFile, _ := ioutil.ReadFile(dumpPath)
-	fileData := string(readFile)
-	assert.Check(t, is.Contains(fileData, "goroutine"))
-}
-
-func TestDumpStacksWithEmptyInput(t *testing.T) {
-	path, err := DumpStacks("")
-	assert.Check(t, err)
-	assert.Check(t, is.Equal(os.Stderr.Name(), path))
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):engine/pkg/signal/trap_linux_test.go
 }

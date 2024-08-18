@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -95,7 +94,7 @@ func (s *DockerCLIBuildSuite) TestBuildAddChangeOwnership(c *testing.T) {
 			RUN [ $(stat -c %U:%G "/bar") = 'root:root' ]
 			RUN [ $(stat -c %U:%G "/bar/foo") = 'root:root' ]
 			`
-		tmpDir, err := ioutil.TempDir("", "fake-context")
+		tmpDir, err := os.MkdirTemp("", "fake-context")
 		assert.NilError(c, err)
 		testFile, err := os.Create(filepath.Join(tmpDir, "foo"))
 		if err != nil {
@@ -108,11 +107,7 @@ func (s *DockerCLIBuildSuite) TestBuildAddChangeOwnership(c *testing.T) {
 			Dir:     tmpDir,
 		}).Assert(c, icmd.Success)
 
-<<<<<<< HEAD
 		if err := os.WriteFile(filepath.Join(tmpDir, "Dockerfile"), []byte(dockerfile), 0o644); err != nil {
-=======
-		if err := ioutil.WriteFile(filepath.Join(tmpDir, "Dockerfile"), []byte(dockerfile), 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			c.Fatalf("failed to open destination dockerfile: %v", err)
 		}
 		return fakecontext.New(c, tmpDir)

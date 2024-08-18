@@ -74,11 +74,10 @@ func TestDaemonRestartKillContainers(t *testing.T) {
 					d.Stop(t)
 				},
 			} {
+				tc := tc
+				liveRestoreEnabled := liveRestoreEnabled
+				stopDaemon := stopDaemon
 				t.Run(fmt.Sprintf("live-restore=%v/%s/%s", liveRestoreEnabled, tc.desc, fnName), func(t *testing.T) {
-					c := tc
-					liveRestoreEnabled := liveRestoreEnabled
-					stopDaemon := stopDaemon
-
 					t.Parallel()
 
 					ctx := testutil.StartSpan(ctx, t)
@@ -94,7 +93,6 @@ func TestDaemonRestartKillContainers(t *testing.T) {
 					d.StartWithBusybox(ctx, t, args...)
 					defer d.Stop(t)
 
-<<<<<<< HEAD
 					config := container.Config{Image: "busybox", Cmd: []string{"top"}}
 					hostConfig := container.HostConfig{RestartPolicy: tc.restartPolicy}
 					if tc.xHealthCheck {
@@ -106,19 +104,11 @@ func TestDaemonRestartKillContainers(t *testing.T) {
 						}
 					}
 					resp, err := apiClient.ContainerCreate(ctx, &config, &hostConfig, nil, nil, "")
-=======
-					resp, err := client.ContainerCreate(ctx, c.config, c.hostConfig, nil, nil, "")
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 					assert.NilError(t, err)
 					defer apiClient.ContainerRemove(ctx, resp.ID, container.RemoveOptions{Force: true})
 
-<<<<<<< HEAD
 					if tc.xStart {
 						err = apiClient.ContainerStart(ctx, resp.ID, container.StartOptions{})
-=======
-					if c.xStart {
-						err = client.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{})
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 						assert.NilError(t, err)
 						if tc.xHealthCheck {
 							poll.WaitOn(t, pollForHealthStatus(ctx, apiClient, resp.ID, types.Healthy), poll.WithDelay(100*time.Millisecond), poll.WithTimeout(30*time.Second))
@@ -130,9 +120,9 @@ func TestDaemonRestartKillContainers(t *testing.T) {
 					startTime := time.Now()
 					d.Start(t, args...)
 
-					expected := c.xRunning
+					expected := tc.xRunning
 					if liveRestoreEnabled {
-						expected = c.xRunningLiveRestore
+						expected = tc.xRunningLiveRestore
 					}
 
 					poll.WaitOn(t, testContainer.RunningStateFlagIs(ctx, apiClient, resp.ID, expected), poll.WithDelay(100*time.Millisecond), poll.WithTimeout(30*time.Second))

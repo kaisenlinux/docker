@@ -3,11 +3,7 @@
 package container // import "github.com/docker/docker/container"
 
 import (
-<<<<<<< HEAD
 	"context"
-=======
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path/filepath"
 	"syscall"
@@ -63,11 +59,7 @@ func (container *Container) BuildHostnameFile() error {
 		return err
 	}
 	container.HostnamePath = hostnamePath
-<<<<<<< HEAD
 	return os.WriteFile(container.HostnamePath, []byte(container.Config.Hostname+"\n"), 0o644)
-=======
-	return ioutil.WriteFile(container.HostnamePath, []byte(container.Config.Hostname+"\n"), 0644)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 }
 
 // NetworkMounts returns the list of network mounts.
@@ -397,7 +389,7 @@ func ignoreUnsupportedXAttrs() fs.CopyDirOpt {
 // copyExistingContents copies from the source to the destination and
 // ensures the ownership is appropriately set.
 func copyExistingContents(source, destination string) error {
-	dstList, err := ioutil.ReadDir(destination)
+	dstList, err := os.ReadDir(destination)
 	if err != nil {
 		return err
 	}

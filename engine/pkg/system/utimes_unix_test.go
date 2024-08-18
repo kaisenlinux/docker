@@ -3,7 +3,6 @@
 package system // import "github.com/docker/docker/pkg/system"
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"syscall"
@@ -11,7 +10,6 @@ import (
 )
 
 // prepareFiles creates files for testing in the temp directory
-<<<<<<< HEAD
 func prepareFiles(t *testing.T) (file, invalid, symlink string) {
 	t.Helper()
 	dir := t.TempDir()
@@ -23,22 +21,6 @@ func prepareFiles(t *testing.T) (file, invalid, symlink string) {
 
 	invalid = filepath.Join(dir, "doesnt-exist")
 	symlink = filepath.Join(dir, "symlink")
-=======
-func prepareFiles(t *testing.T) (string, string, string, string) {
-	dir, err := ioutil.TempDir("", "docker-system-test")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	file := filepath.Join(dir, "exist")
-	if err := ioutil.WriteFile(file, []byte("hello"), 0644); err != nil {
-		t.Fatal(err)
-	}
-
-	invalid := filepath.Join(dir, "doesnt-exist")
-
-	symlink := filepath.Join(dir, "symlink")
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err := os.Symlink(file, symlink); err != nil {
 		t.Fatal(err)
 	}

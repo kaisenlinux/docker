@@ -5,11 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-<<<<<<< HEAD
-=======
-	"io/ioutil"
-	"net/url"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"runtime"
 	"strings"
@@ -1073,7 +1068,7 @@ func fixManifestLayers(m *schema1.Manifest) error {
 }
 
 func createDownloadFile() (*os.File, error) {
-	return ioutil.TempFile("", "GetImageBlob")
+	return os.CreateTemp("", "GetImageBlob")
 }
 
 func toOCIPlatform(p manifestlist.PlatformSpec) *ocispec.Platform {

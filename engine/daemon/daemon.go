@@ -11,7 +11,6 @@ package daemon // import "github.com/docker/docker/daemon"
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"path"
@@ -231,7 +230,7 @@ func (daemon *Daemon) RegistryHosts(host string) ([]docker.RegistryHost, error) 
 	}
 
 	certsDir := registry.CertsDir()
-	if fis, err := ioutil.ReadDir(certsDir); err == nil {
+	if fis, err := os.ReadDir(certsDir); err == nil {
 		for _, fi := range fis {
 			if _, ok := m[fi.Name()]; !ok {
 				m[fi.Name()] = resolverconfig.RegistryConfig{
@@ -255,7 +254,7 @@ func (daemon *Daemon) restore(cfg *configStore) error {
 
 	log.G(context.TODO()).Info("Loading containers: start.")
 
-	dir, err := ioutil.ReadDir(daemon.repository)
+	dir, err := os.ReadDir(daemon.repository)
 	if err != nil {
 		return err
 	}

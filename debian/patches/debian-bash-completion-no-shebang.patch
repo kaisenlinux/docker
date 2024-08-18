@@ -5,26 +5,17 @@ Forwarded: https://github.com/docker/cli/pull/2853
 Author: Arnaud Rebillout <elboulangero@gmail.com>
 Last-Update: 2020-11-27
 
-<<<<<<< HEAD
 Index: docker.io/cli/contrib/completion/bash/docker
 ===================================================================
 --- docker.io.orig/cli/contrib/completion/bash/docker
 +++ docker.io/cli/contrib/completion/bash/docker
-=======
---- a/cli/contrib/completion/bash/docker
-+++ b/cli/contrib/completion/bash/docker
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env bash
 +# bash completion for docker(1)                             -*- shell-script -*-
  # shellcheck disable=SC2016,SC2119,SC2155,SC2206,SC2207,SC2254
  #
  # Shellcheck ignore list:
-<<<<<<< HEAD
 @@ -5602,3 +5602,5 @@ eval "$__docker_previous_extglob_setting
-=======
-@@ -5647,3 +5647,5 @@
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
  unset __docker_previous_extglob_setting
  
  complete -F _docker docker docker.exe dockerd dockerd.exe

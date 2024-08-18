@@ -5,7 +5,6 @@ package loader
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"sort"
@@ -970,13 +969,9 @@ func uint32Ptr(value uint32) *uint32 {
 }
 
 func TestFullExample(t *testing.T) {
-<<<<<<< HEAD
 	skip.If(t, runtime.GOOS == "windows", "FIXME: TestFullExample substitutes platform-specific HOME-directories and requires platform-specific golden files; see https://github.com/docker/cli/pull/4610")
 
 	data, err := os.ReadFile("full-example.yml")
-=======
-	bytes, err := ioutil.ReadFile("full-example.yml")
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	homeDir := "/home/foo"

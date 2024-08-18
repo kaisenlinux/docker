@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"runtime"
 	"strings"
 	"testing"
@@ -40,19 +40,12 @@ func TestDecodeContainerConfig(t *testing.T) {
 	}
 
 	for _, f := range fixtures {
-<<<<<<< HEAD
 		f := f
 		t.Run(f.file, func(t *testing.T) {
 			b, err := os.ReadFile(f.file)
 			if err != nil {
 				t.Fatal(err)
 			}
-=======
-		b, err := ioutil.ReadFile(f.file)
-		if err != nil {
-			t.Fatal(err)
-		}
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 			c, h, _, err := decodeContainerConfig(bytes.NewReader(b), sysinfo.New())
 			if err != nil {

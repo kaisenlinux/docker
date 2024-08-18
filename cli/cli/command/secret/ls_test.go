@@ -1,12 +1,8 @@
 package secret
 
 import (
-<<<<<<< HEAD
 	"context"
 	"io"
-=======
-	"io/ioutil"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"testing"
 	"time"
 
@@ -45,7 +41,7 @@ func TestSecretListErrors(t *testing.T) {
 			}),
 		)
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(ioutil.Discard)
+		cmd.SetOut(io.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }

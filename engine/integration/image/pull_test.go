@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -114,13 +113,8 @@ func createTestImage(ctx context.Context, t testing.TB, store content.Store) oci
 }
 
 // Make sure that pulling by an already cached digest but for a different ref (that should not have that digest)
-<<<<<<< HEAD
 // verifies with the remote that the digest exists in that repo.
 func TestImagePullStoredDigestForOtherRepo(t *testing.T) {
-=======
-//  verifies with the remote that the digest exists in that repo.
-func TestImagePullStoredfDigestForOtherRepo(t *testing.T) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	skip.If(t, testEnv.IsRemoteDaemon, "cannot run daemon when remote daemon")
 	skip.If(t, testEnv.DaemonInfo.OSType == "windows", "We don't run a test registry on Windows")
 	skip.If(t, testEnv.IsRootless, "Rootless has a different view of localhost (needed for test registry access)")
@@ -152,12 +146,8 @@ func TestImagePullStoredfDigestForOtherRepo(t *testing.T) {
 	rdr, err := client.ImagePull(ctx, remote, image.PullOptions{})
 	assert.NilError(t, err)
 	defer rdr.Close()
-<<<<<<< HEAD
 	_, err = io.Copy(io.Discard, rdr)
 	assert.Check(t, err)
-=======
-	io.Copy(ioutil.Discard, rdr)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	// Now, pull a totally different repo with a the same digest
 	rdr, err = client.ImagePull(ctx, path.Join(registry.DefaultURL, "other:image@"+desc.Digest.String()), image.PullOptions{})

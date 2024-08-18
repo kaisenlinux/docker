@@ -14,26 +14,44 @@ import (
 	"sync"
 	"syscall"
 
-<<<<<<< HEAD:engine/libnetwork/drivers/overlay/encryption.go
 	"github.com/containerd/log"
 	"github.com/docker/docker/libnetwork/drivers/overlay/overlayutils"
 	"github.com/docker/docker/libnetwork/iptables"
 	"github.com/docker/docker/libnetwork/ns"
 	"github.com/docker/docker/libnetwork/types"
-=======
-	"strconv"
-
-	"github.com/docker/libnetwork/drivers/overlay/overlayutils"
-	"github.com/docker/libnetwork/iptables"
-	"github.com/docker/libnetwork/ns"
-	"github.com/docker/libnetwork/types"
-	"github.com/sirupsen/logrus"
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):libnetwork/drivers/overlay/encryption.go
 	"github.com/vishvananda/netlink"
 )
 
+/*
+Encrypted overlay networks use IPsec in transport mode to encrypt and
+authenticate the VXLAN UDP datagrams. This driver implements a bespoke control
+plane which negotiates the security parameters for each peer-to-peer tunnel.
+
+IPsec Terminology
+
+ - ESP: IPSec Encapsulating Security Payload
+ - SPI: Security Parameter Index
+ - ICV: Integrity Check Value
+ - SA: Security Association https://en.wikipedia.org/wiki/IPsec#Security_association
+
+
+Developer documentation for Linux IPsec is rather sparse online. The following
+slide deck provides a decent overview.
+https://libreswan.org/wiki/images/e/e0/Netdev-0x12-ipsec-flow.pdf
+
+The Linux IPsec stack is part of XFRM, the netlink packet transformation
+interface.
+https://man7.org/linux/man-pages/man8/ip-xfrm.8.html
+*/
+
 const (
-	r            = 0xD0C4E3
+	// Value used to mark outgoing packets which should have our IPsec
+	// processing applied. It is also used as a label to identify XFRM
+	// states (Security Associations) and policies (Security Policies)
+	// programmed by us so we know which ones we can clean up without
+	// disrupting other VPN connections on the system.
+	mark = 0xD0C4E3
+
 	pktExpansion = 26 // SPI(4) + SeqN(4) + IV(8) + PadLength(1) + NextHeader(1) + ICV(8)
 )
 
@@ -43,7 +61,9 @@ const (
 	bidir
 )
 
-var spMark = netlink.XfrmMark{Value: uint32(r), Mask: 0xffffffff}
+// Mark value for matching packets which should have our IPsec security policy
+// applied.
+var spMark = netlink.XfrmMark{Value: mark, Mask: 0xffffffff}
 
 type key struct {
 	value []byte
@@ -57,6 +77,9 @@ func (k *key) String() string {
 	return ""
 }
 
+// Security Parameter Indices for the IPsec flows between local node and a
+// remote peer, which identify the Security Associations (XFRM states) to be
+// applied when encrypting and decrypting packets.
 type spi struct {
 	forward int
 	reverse int
@@ -89,13 +112,8 @@ func (e *encrMap) String() string {
 	return b.String()
 }
 
-<<<<<<< HEAD:engine/libnetwork/drivers/overlay/encryption.go
 func (d *driver) checkEncryption(nid string, rIP net.IP, isLocal, add bool) error {
 	log.G(context.TODO()).Debugf("checkEncryption(%.7s, %v, %t)", nid, rIP, isLocal)
-=======
-func (d *driver) checkEncryption(nid string, rIP net.IP, vxlanID uint32, isLocal, add bool) error {
-	logrus.Debugf("checkEncryption(%.7s, %v, %d, %t)", nid, rIP, vxlanID, isLocal)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):libnetwork/drivers/overlay/encryption.go
 
 	n := d.network(nid)
 	if n == nil || !n.secure {
@@ -130,13 +148,8 @@ func (d *driver) checkEncryption(nid string, rIP net.IP, vxlanID uint32, isLocal
 
 	if add {
 		for _, rIP := range nodes {
-<<<<<<< HEAD:engine/libnetwork/drivers/overlay/encryption.go
 			if err := setupEncryption(lIP, aIP, rIP, d.secMap, d.keys); err != nil {
 				log.G(context.TODO()).Warnf("Failed to program network encryption between %s and %s: %v", lIP, rIP, err)
-=======
-			if err := setupEncryption(lIP, aIP, rIP, vxlanID, d.secMap, d.keys); err != nil {
-				logrus.Warnf("Failed to program network encryption between %s and %s: %v", lIP, rIP, err)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):libnetwork/drivers/overlay/encryption.go
 			}
 		}
 	} else {
@@ -150,28 +163,13 @@ func (d *driver) checkEncryption(nid string, rIP net.IP, vxlanID uint32, isLocal
 	return nil
 }
 
-<<<<<<< HEAD:engine/libnetwork/drivers/overlay/encryption.go
 // setupEncryption programs the encryption parameters for secure communication
 // between the local node and a remote node.
 func setupEncryption(localIP, advIP, remoteIP net.IP, em *encrMap, keys []*key) error {
 	log.G(context.TODO()).Debugf("Programming encryption between %s and %s", localIP, remoteIP)
-=======
-func setupEncryption(localIP, advIP, remoteIP net.IP, vni uint32, em *encrMap, keys []*key) error {
-	logrus.Debugf("Programming encryption for vxlan %d between %s and %s", vni, localIP, remoteIP)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):libnetwork/drivers/overlay/encryption.go
 	rIPs := remoteIP.String()
 
 	indices := make([]*spi, 0, len(keys))
-
-	err := programMangle(vni, true)
-	if err != nil {
-		logrus.Warn(err)
-	}
-
-	err = programInput(vni, true)
-	if err != nil {
-		logrus.Warn(err)
-	}
 
 	for i, k := range keys {
 		spis := &spi{buildSPI(advIP, remoteIP, k.tag), buildSPI(remoteIP, advIP, k.tag)}
@@ -227,7 +225,6 @@ func removeEncryption(localIP, remoteIP net.IP, em *encrMap) error {
 	return nil
 }
 
-<<<<<<< HEAD:engine/libnetwork/drivers/overlay/encryption.go
 func (d *driver) transportIPTable() (*iptables.IPTable, error) {
 	v6, err := d.isIPv6Transport()
 	if err != nil {
@@ -241,16 +238,11 @@ func (d *driver) transportIPTable() (*iptables.IPTable, error) {
 }
 
 func (d *driver) programMangle(vni uint32, add bool) error {
-=======
-func programMangle(vni uint32, add bool) (err error) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):libnetwork/drivers/overlay/encryption.go
 	var (
-		p      = strconv.FormatUint(uint64(overlayutils.VXLANUDPPort()), 10)
-		c      = fmt.Sprintf("0>>22&0x3C@12&0xFFFFFF00=%d", int(vni)<<8)
-		m      = strconv.FormatUint(uint64(r), 10)
+		m      = strconv.FormatUint(mark, 10)
 		chain  = "OUTPUT"
-		rule   = []string{"-p", "udp", "--dport", p, "-m", "u32", "--u32", c, "-j", "MARK", "--set-mark", m}
-		a      = "-A"
+		rule   = append(matchVXLAN(overlayutils.VXLANUDPPort(), vni), "-j", "MARK", "--set-mark", m)
+		a      = iptables.Append
 		action = "install"
 	)
 
@@ -260,43 +252,25 @@ func programMangle(vni uint32, add bool) (err error) {
 		return err
 	}
 
-	if add == iptable.Exists(iptables.Mangle, chain, rule...) {
-		return
-	}
-
 	if !add {
-		a = "-D"
+		a = iptables.Delete
 		action = "remove"
 	}
 
-	if err = iptable.RawCombinedOutput(append([]string{"-t", string(iptables.Mangle), a, chain}, rule...)...); err != nil {
-		logrus.Warnf("could not %s mangle rule: %v", action, err)
+	if err := iptable.ProgramRule(iptables.Mangle, chain, a, rule); err != nil {
+		return fmt.Errorf("could not %s mangle rule: %w", action, err)
 	}
 
-<<<<<<< HEAD:engine/libnetwork/drivers/overlay/encryption.go
 	return nil
 }
 
 func (d *driver) programInput(vni uint32, add bool) error {
-=======
-	return
-}
-
-func programInput(vni uint32, add bool) (err error) {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):libnetwork/drivers/overlay/encryption.go
 	var (
-		port       = strconv.FormatUint(uint64(overlayutils.VXLANUDPPort()), 10)
-		vniMatch   = fmt.Sprintf("0>>22&0x3C@12&0xFFFFFF00=%d", int(vni)<<8)
-		plainVxlan = []string{"-p", "udp", "--dport", port, "-m", "u32", "--u32", vniMatch, "-j"}
-		ipsecVxlan = append([]string{"-m", "policy", "--dir", "in", "--pol", "ipsec"}, plainVxlan...)
-		block      = append(plainVxlan, "DROP")
-		accept     = append(ipsecVxlan, "ACCEPT")
+		plainVxlan = matchVXLAN(overlayutils.VXLANUDPPort(), vni)
 		chain      = "INPUT"
-		action     = iptables.Append
 		msg        = "add"
 	)
 
-<<<<<<< HEAD:engine/libnetwork/drivers/overlay/encryption.go
 	rule := func(policy, jump string) []string {
 		args := append([]string{"-m", "policy", "--dir", "in", "--pol", policy}, plainVxlan...)
 		return append(args, "-j", jump)
@@ -307,21 +281,18 @@ func programInput(vni uint32, add bool) (err error) {
 		// Fail closed if unsure. Better safe than cleartext.
 		return err
 	}
-=======
-	// TODO IPv6 support
-	iptable := iptables.GetIptable(iptables.IPv4)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):libnetwork/drivers/overlay/encryption.go
 
 	if !add {
-		action = iptables.Delete
 		msg = "remove"
 	}
 
-	if err := iptable.ProgramRule(iptables.Filter, chain, action, accept); err != nil {
-		logrus.Errorf("could not %s input rule: %v. Please do it manually.", msg, err)
+	action := func(a iptables.Action) iptables.Action {
+		if !add {
+			return iptables.Delete
+		}
+		return a
 	}
 
-<<<<<<< HEAD:engine/libnetwork/drivers/overlay/encryption.go
 	// Drop incoming VXLAN datagrams for the VNI which were received in cleartext.
 	// Insert at the top of the chain so the packets are dropped even if an
 	// administrator-configured rule exists which would otherwise unconditionally
@@ -331,13 +302,6 @@ func programInput(vni uint32, add bool) (err error) {
 	}
 
 	return nil
-=======
-	if err := iptable.ProgramRule(iptables.Filter, chain, action, block); err != nil {
-		logrus.Errorf("could not %s input rule: %v. Please do it manually.", msg, err)
-	}
-
-	return
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):libnetwork/drivers/overlay/encryption.go
 }
 
 func programSA(localIP, remoteIP net.IP, spi *spi, k *key, dir int, add bool) (fSA *netlink.XfrmState, rSA *netlink.XfrmState, err error) {
@@ -358,7 +322,7 @@ func programSA(localIP, remoteIP net.IP, spi *spi, k *key, dir int, add bool) (f
 			Proto: netlink.XFRM_PROTO_ESP,
 			Spi:   spi.reverse,
 			Mode:  netlink.XFRM_MODE_TRANSPORT,
-			Reqid: r,
+			Reqid: mark,
 		}
 		if add {
 			rSA.Aead = buildAeadAlgo(k, spi.reverse)
@@ -384,7 +348,7 @@ func programSA(localIP, remoteIP net.IP, spi *spi, k *key, dir int, add bool) (f
 			Proto: netlink.XFRM_PROTO_ESP,
 			Spi:   spi.forward,
 			Mode:  netlink.XFRM_MODE_TRANSPORT,
-			Reqid: r,
+			Reqid: mark,
 		}
 		if add {
 			fSA.Aead = buildAeadAlgo(k, spi.forward)
@@ -443,7 +407,7 @@ func programSP(fSA *netlink.XfrmState, rSA *netlink.XfrmState, add bool) error {
 				Proto: netlink.XFRM_PROTO_ESP,
 				Mode:  netlink.XFRM_MODE_TRANSPORT,
 				Spi:   fSA.Spi,
-				Reqid: r,
+				Reqid: mark,
 			},
 		},
 	}
@@ -657,7 +621,7 @@ func updateNodeKey(lIP, aIP, rIP net.IP, idxs []*spi, curKeys []*key, newIdx, pr
 					Proto: netlink.XFRM_PROTO_ESP,
 					Mode:  netlink.XFRM_MODE_TRANSPORT,
 					Spi:   fSA2.Spi,
-					Reqid: r,
+					Reqid: mark,
 				},
 			},
 		}
@@ -725,12 +689,8 @@ func clearEncryptionStates() {
 		}
 	}
 	for _, sa := range saList {
-<<<<<<< HEAD:engine/libnetwork/drivers/overlay/encryption.go
 		sa := sa
 		if sa.Reqid == mark {
-=======
-		if sa.Reqid == r {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version):libnetwork/drivers/overlay/encryption.go
 			if err := nlh.XfrmStateDel(&sa); err != nil {
 				log.G(context.TODO()).Warnf("Failed to delete stale SA %s: %v", sa, err)
 				continue

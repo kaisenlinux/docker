@@ -3,7 +3,7 @@ package node
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"testing"
 	"time"
 
@@ -60,7 +60,7 @@ func TestNodePsErrors(t *testing.T) {
 		for key, value := range tc.flags {
 			assert.Check(t, cmd.Flags().Set(key, value))
 		}
-		cmd.SetOut(ioutil.Discard)
+		cmd.SetOut(io.Discard)
 		assert.Error(t, cmd.Execute(), tc.expectedError)
 	}
 }

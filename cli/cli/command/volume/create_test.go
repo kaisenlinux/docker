@@ -1,7 +1,7 @@
 package volume
 
 import (
-	"io/ioutil"
+	"io"
 	"reflect"
 	"sort"
 	"strings"
@@ -49,12 +49,8 @@ func TestVolumeCreateErrors(t *testing.T) {
 		for key, value := range tc.flags {
 			cmd.Flags().Set(key, value)
 		}
-<<<<<<< HEAD
 		cmd.SetOut(io.Discard)
 		cmd.SetErr(io.Discard)
-=======
-		cmd.SetOut(ioutil.Discard)
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }

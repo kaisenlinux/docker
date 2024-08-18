@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -34,7 +33,7 @@ var testUntarFns = map[string]func(string, io.Reader) error{
 //
 // When using testBreakout make sure you cover one of the scenarios listed above.
 func testBreakout(untarFn string, tmpdir string, headers []*tar.Header) error {
-	tmpdir, err := ioutil.TempDir("", tmpdir)
+	tmpdir, err := os.MkdirTemp("", tmpdir)
 	if err != nil {
 		return err
 	}
@@ -54,11 +53,7 @@ func testBreakout(untarFn string, tmpdir string, headers []*tar.Header) error {
 	if err != nil {
 		return err
 	}
-<<<<<<< HEAD
 	if err := os.WriteFile(hello, helloData, 0o644); err != nil {
-=======
-	if err := ioutil.WriteFile(hello, helloData, 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		return err
 	}
 	helloStat, err := os.Stat(hello)
@@ -123,7 +118,7 @@ func testBreakout(untarFn string, tmpdir string, headers []*tar.Header) error {
 		return fmt.Errorf("archive breakout: could not lstat %q: %v", hello, err)
 	}
 	defer f.Close()
-	b, err := ioutil.ReadAll(f)
+	b, err := io.ReadAll(f)
 	if err != nil {
 		return err
 	}
@@ -157,7 +152,7 @@ func testBreakout(untarFn string, tmpdir string, headers []*tar.Header) error {
 			// skip file if error
 			return nil
 		}
-		b, err := ioutil.ReadFile(path)
+		b, err := os.ReadFile(path)
 		if err != nil {
 			// Houston, we have a problem. Aborting (space)walk.
 			return err

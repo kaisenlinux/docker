@@ -4,17 +4,11 @@ Forwarded: not-needed
 Author: Dmitry Smirnov <onlyjob@debian.org>
 Description: remove prompt and delay
 
-<<<<<<< HEAD
 Index: docker.io/engine/contrib/nuke-graph-directory.sh
 ===================================================================
 --- docker.io.orig/engine/contrib/nuke-graph-directory.sh
 +++ docker.io/engine/contrib/nuke-graph-directory.sh
 @@ -28,13 +28,6 @@ dir="$(readlink -f "$dir")"
-=======
---- a/engine/contrib/nuke-graph-directory.sh
-+++ b/engine/contrib/nuke-graph-directory.sh
-@@ -28,13 +28,6 @@
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
  
  echo
  echo "Nuking $dir ..."

@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -65,47 +64,6 @@ func New(fn string) *ConfigFile {
 	}
 }
 
-<<<<<<< HEAD
-=======
-// LegacyLoadFromReader reads the non-nested configuration data given and sets up the
-// auth config information with given directory and populates the receiver object
-func (configFile *ConfigFile) LegacyLoadFromReader(configData io.Reader) error {
-	b, err := ioutil.ReadAll(configData)
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(b, &configFile.AuthConfigs); err != nil {
-		arr := strings.Split(string(b), "\n")
-		if len(arr) < 2 {
-			return errors.Errorf("The Auth config file is empty")
-		}
-		authConfig := types.AuthConfig{}
-		origAuth := strings.Split(arr[0], " = ")
-		if len(origAuth) != 2 {
-			return errors.Errorf("Invalid Auth config file")
-		}
-		authConfig.Username, authConfig.Password, err = decodeAuth(origAuth[1])
-		if err != nil {
-			return err
-		}
-		authConfig.ServerAddress = defaultIndexServer
-		configFile.AuthConfigs[defaultIndexServer] = authConfig
-	} else {
-		for k, authConfig := range configFile.AuthConfigs {
-			authConfig.Username, authConfig.Password, err = decodeAuth(authConfig.Auth)
-			if err != nil {
-				return err
-			}
-			authConfig.Auth = ""
-			authConfig.ServerAddress = k
-			configFile.AuthConfigs[k] = authConfig
-		}
-	}
-	return nil
-}
-
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 // LoadFromReader reads the configuration data given and sets up the auth config
 // information with given directory and populates the receiver object
 func (configFile *ConfigFile) LoadFromReader(configData io.Reader) error {
@@ -187,7 +145,7 @@ func (configFile *ConfigFile) Save() (retErr error) {
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return err
 	}
-	temp, err := ioutil.TempFile(dir, filepath.Base(configFile.Filename))
+	temp, err := os.CreateTemp(dir, filepath.Base(configFile.Filename))
 	if err != nil {
 		return err
 	}

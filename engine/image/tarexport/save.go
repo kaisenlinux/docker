@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -185,7 +184,7 @@ func (s *saveSession) save(outStream io.Writer) error {
 	s.savedLayers = make(map[layer.DiffID]distribution.Descriptor)
 
 	// get image json
-	tempDir, err := ioutil.TempDir("", "docker-export-")
+	tempDir, err := os.MkdirTemp("", "docker-export-")
 	if err != nil {
 		return err
 	}
@@ -428,16 +427,11 @@ func (s *saveSession) saveImage(id image.ID) (map[layer.DiffID]distribution.Desc
 		}
 	}
 
-<<<<<<< HEAD
 	data := img.RawJSON()
 	dgst := digest.FromBytes(data)
 
 	blobDir := filepath.Join(s.outDir, ocispec.ImageBlobsDir, dgst.Algorithm().String())
 	if err := os.MkdirAll(blobDir, 0o755); err != nil {
-=======
-	configFile := filepath.Join(s.outDir, id.Digest().Hex()+".json")
-	if err := ioutil.WriteFile(configFile, img.RawJSON(), 0644); err != nil {
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		return nil, err
 	}
 	if img.Created != nil {
@@ -466,30 +460,10 @@ func (s *saveSession) saveImage(id image.ID) (map[layer.DiffID]distribution.Desc
 func (s *saveSession) saveConfigAndLayer(id layer.ChainID, legacyImg image.V1Image, createdTime *time.Time) (distribution.Descriptor, error) {
 	outDir := filepath.Join(s.outDir, ocispec.ImageBlobsDir)
 
-<<<<<<< HEAD
 	if _, ok := s.savedConfigs[legacyImg.ID]; !ok {
 		if err := s.saveConfig(legacyImg, outDir, createdTime); err != nil {
 			return distribution.Descriptor{}, err
 		}
-=======
-	outDir := filepath.Join(s.outDir, legacyImg.ID)
-	if err := os.Mkdir(outDir, 0755); err != nil {
-		return distribution.Descriptor{}, err
-	}
-
-	// todo: why is this version file here?
-	if err := ioutil.WriteFile(filepath.Join(outDir, legacyVersionFileName), []byte("1.0"), 0644); err != nil {
-		return distribution.Descriptor{}, err
-	}
-
-	imageConfig, err := json.Marshal(legacyImg)
-	if err != nil {
-		return distribution.Descriptor{}, err
-	}
-
-	if err := ioutil.WriteFile(filepath.Join(outDir, legacyConfigFileName), imageConfig, 0644); err != nil {
-		return distribution.Descriptor{}, err
->>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	}
 
 	// serialize filesystem

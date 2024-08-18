@@ -3,7 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"testing"
 	"time"
 
@@ -60,7 +60,7 @@ func TestConfigInspectErrors(t *testing.T) {
 		for key, value := range tc.flags {
 			assert.Check(t, cmd.Flags().Set(key, value))
 		}
-		cmd.SetOut(ioutil.Discard)
+		cmd.SetOut(io.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }
