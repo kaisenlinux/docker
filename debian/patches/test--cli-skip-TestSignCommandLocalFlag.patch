@@ -17,11 +17,17 @@ Origin: vendor, Debian
 Forwarded: not-needed, Debian-specific
 Signed-off-by: Arnaud Rebillout <arnaud.rebillout@collabora.com>
 
+<<<<<<< HEAD
 Index: docker.io/cli/cli/command/trust/sign_test.go
 ===================================================================
 --- docker.io.orig/cli/cli/command/trust/sign_test.go
 +++ docker.io/cli/cli/command/trust/sign_test.go
 @@ -272,6 +272,7 @@ func TestSignCommandChangeListIsCleanedO
+=======
+--- a/cli/cli/command/trust/sign_test.go
++++ b/cli/cli/command/trust/sign_test.go
+@@ -299,6 +299,7 @@
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
  }
  
  func TestSignCommandLocalFlag(t *testing.T) {

@@ -5,6 +5,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -29,7 +30,7 @@ func (s *DockerCLISaveLoadSuite) TestSaveAndLoadRepoStdout(c *testing.T) {
 	before := cli.DockerCmd(c, "commit", name, imgRepoName).Stdout()
 	before = strings.TrimRight(before, "\n")
 
-	tmpFile, err := os.CreateTemp("", "foobar-save-load-test.tar")
+	tmpFile, err := ioutil.TempFile("", "foobar-save-load-test.tar")
 	assert.NilError(c, err)
 	defer os.Remove(tmpFile.Name())
 

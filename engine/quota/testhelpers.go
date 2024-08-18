@@ -3,6 +3,7 @@
 package quota // import "github.com/docker/docker/quota"
 
 import (
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"testing"
@@ -38,7 +39,7 @@ func PrepareQuotaTestImage(t *testing.T) (string, error) {
 	}
 
 	// create a sparse image
-	imageFile, err := os.CreateTemp("", "xfs-image")
+	imageFile, err := ioutil.TempFile("", "xfs-image")
 	if err != nil {
 		return "", err
 	}
@@ -104,10 +105,15 @@ func WrapMountTest(imageFileName string, enableQuota bool, testFunc func(t *test
 			t.Fatalf("assertion failed: error is not nil: %v", err)
 		}
 
+<<<<<<< HEAD
 		testDir, err := os.MkdirTemp(mountPoint, "per-test")
 		if err != nil {
 			t.Fatalf("assertion failed: error is not nil: %v", err)
 		}
+=======
+		testDir, err := ioutil.TempDir(mountPoint, "per-test")
+		assert.NilError(t, err)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		defer os.RemoveAll(testDir)
 
 		testFunc(t, mountPoint, backingFsDev, testDir)
@@ -123,10 +129,15 @@ func WrapQuotaTest(testFunc func(t *testing.T, ctrl *Control, mountPoint, testDi
 			t.Fatalf("assertion failed: error is not nil: %v", err)
 		}
 
+<<<<<<< HEAD
 		testSubDir, err := os.MkdirTemp(testDir, "quota-test")
 		if err != nil {
 			t.Fatalf("assertion failed: error is not nil: %v", err)
 		}
+=======
+		testSubDir, err := ioutil.TempDir(testDir, "quota-test")
+		assert.NilError(t, err)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		testFunc(t, ctrl, mountPoint, testDir, testSubDir)
 	}
 }

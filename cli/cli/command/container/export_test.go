@@ -2,6 +2,7 @@ package container
 
 import (
 	"io"
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -16,11 +17,11 @@ func TestContainerExportOutputToFile(t *testing.T) {
 
 	cli := test.NewFakeCli(&fakeClient{
 		containerExportFunc: func(container string) (io.ReadCloser, error) {
-			return io.NopCloser(strings.NewReader("bar")), nil
+			return ioutil.NopCloser(strings.NewReader("bar")), nil
 		},
 	})
 	cmd := NewExportCommand(cli)
-	cmd.SetOut(io.Discard)
+	cmd.SetOut(ioutil.Discard)
 	cmd.SetArgs([]string{"-o", dir.Join("foo"), "container"})
 	assert.NilError(t, cmd.Execute())
 
@@ -34,11 +35,11 @@ func TestContainerExportOutputToFile(t *testing.T) {
 func TestContainerExportOutputToIrregularFile(t *testing.T) {
 	cli := test.NewFakeCli(&fakeClient{
 		containerExportFunc: func(container string) (io.ReadCloser, error) {
-			return io.NopCloser(strings.NewReader("foo")), nil
+			return ioutil.NopCloser(strings.NewReader("foo")), nil
 		},
 	})
 	cmd := NewExportCommand(cli)
-	cmd.SetOut(io.Discard)
+	cmd.SetOut(ioutil.Discard)
 	cmd.SetArgs([]string{"-o", "/dev/random", "container"})
 
 	err := cmd.Execute()

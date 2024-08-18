@@ -2,6 +2,7 @@ package container // import "github.com/docker/docker/container"
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -72,7 +73,7 @@ func TestContainerSecretReferenceDestTarget(t *testing.T) {
 }
 
 func TestContainerLogPathSetForJSONFileLogger(t *testing.T) {
-	containerRoot, err := os.MkdirTemp("", "TestContainerLogPathSetForJSONFileLogger")
+	containerRoot, err := ioutil.TempDir("", "TestContainerLogPathSetForJSONFileLogger")
 	assert.NilError(t, err)
 	defer os.RemoveAll(containerRoot)
 
@@ -97,7 +98,7 @@ func TestContainerLogPathSetForJSONFileLogger(t *testing.T) {
 }
 
 func TestContainerLogPathSetForRingLogger(t *testing.T) {
-	containerRoot, err := os.MkdirTemp("", "TestContainerLogPathSetForRingLogger")
+	containerRoot, err := ioutil.TempDir("", "TestContainerLogPathSetForRingLogger")
 	assert.NilError(t, err)
 	defer os.RemoveAll(containerRoot)
 

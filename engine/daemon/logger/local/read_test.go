@@ -2,6 +2,7 @@ package local
 
 import (
 	"io"
+	"io/ioutil"
 	"os"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestDecode(t *testing.T) {
 }
 
 func testDecode(t *testing.T, buf []byte, split int) {
-	fw, err := os.CreateTemp("", t.Name())
+	fw, err := ioutil.TempFile("", t.Name())
 	assert.NilError(t, err)
 	defer os.Remove(fw.Name())
 

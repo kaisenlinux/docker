@@ -8,7 +8,7 @@ package authorization // import "github.com/docker/docker/pkg/authorization"
 import (
 	"bytes"
 	"encoding/json"
-	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -152,7 +152,7 @@ func TestDrainBody(t *testing.T) {
 
 	for _, test := range tests {
 		msg := strings.Repeat("a", test.length)
-		body, closer, err := drainBody(io.NopCloser(bytes.NewReader([]byte(msg))))
+		body, closer, err := drainBody(ioutil.NopCloser(bytes.NewReader([]byte(msg))))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -162,7 +162,7 @@ func TestDrainBody(t *testing.T) {
 		if closer == nil {
 			t.Fatal("Closer must not be nil")
 		}
-		modified, err := io.ReadAll(closer)
+		modified, err := ioutil.ReadAll(closer)
 		if err != nil {
 			t.Fatalf("Error must not be nil: '%v'", err)
 		}
@@ -290,7 +290,7 @@ func (t *authZPluginTestServer) socketAddress() string {
 // start starts the test server that implements the plugin
 func (t *authZPluginTestServer) start() {
 	var err error
-	t.tmpDir, err = os.MkdirTemp("", "authz")
+	t.tmpDir, err = ioutil.TempDir("", "authz")
 	if err != nil {
 		t.t.Fatal(err)
 	}
@@ -326,7 +326,7 @@ func (t *authZPluginTestServer) stop() {
 // auth is a used to record/replay the authentication api messages
 func (t *authZPluginTestServer) auth(w http.ResponseWriter, r *http.Request) {
 	t.recordedRequest = Request{}
-	body, err := io.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		t.t.Fatal(err)
 	}

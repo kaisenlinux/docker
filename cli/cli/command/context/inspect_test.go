@@ -9,10 +9,16 @@ import (
 )
 
 func TestInspect(t *testing.T) {
+<<<<<<< HEAD
 	cli := makeFakeCli(t)
 	createTestContext(t, cli, "current", map[string]any{
 		"MyCustomMetadata": "MyCustomMetadataValue",
 	})
+=======
+	cli, cleanup := makeFakeCli(t)
+	defer cleanup()
+	createTestContextWithKubeAndSwarm(t, cli, "current", "all")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	cli.OutBuffer().Reset()
 	assert.NilError(t, runInspect(cli, inspectOptions{
 		refs: []string{"current"},

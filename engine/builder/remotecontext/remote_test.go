@@ -3,6 +3,7 @@ package remotecontext // import "github.com/docker/docker/builder/remotecontext"
 import (
 	"bytes"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -51,7 +52,7 @@ func TestSelectAcceptableMIME(t *testing.T) {
 
 func TestInspectEmptyResponse(t *testing.T) {
 	ct := "application/octet-stream"
-	br := io.NopCloser(bytes.NewReader([]byte("")))
+	br := ioutil.NopCloser(bytes.NewReader([]byte("")))
 	contentType, bReader, err := inspectResponse(ct, br, 0)
 	if err == nil {
 		t.Fatal("Should have generated an error for an empty response")
@@ -59,7 +60,7 @@ func TestInspectEmptyResponse(t *testing.T) {
 	if contentType != "application/octet-stream" {
 		t.Fatalf("Content type should be 'application/octet-stream' but is %q", contentType)
 	}
-	body, err := io.ReadAll(bReader)
+	body, err := ioutil.ReadAll(bReader)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +71,7 @@ func TestInspectEmptyResponse(t *testing.T) {
 
 func TestInspectResponseBinary(t *testing.T) {
 	ct := "application/octet-stream"
-	br := io.NopCloser(bytes.NewReader(binaryContext))
+	br := ioutil.NopCloser(bytes.NewReader(binaryContext))
 	contentType, bReader, err := inspectResponse(ct, br, int64(len(binaryContext)))
 	if err != nil {
 		t.Fatal(err)
@@ -78,7 +79,7 @@ func TestInspectResponseBinary(t *testing.T) {
 	if contentType != "application/octet-stream" {
 		t.Fatalf("Content type should be 'application/octet-stream' but is %q", contentType)
 	}
-	body, err := io.ReadAll(bReader)
+	body, err := ioutil.ReadAll(bReader)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -95,7 +96,7 @@ func TestInspectResponseBinary(t *testing.T) {
 func TestResponseUnsupportedContentType(t *testing.T) {
 	content := []byte(dockerfileContents)
 	ct := "application/json"
-	br := io.NopCloser(bytes.NewReader(content))
+	br := ioutil.NopCloser(bytes.NewReader(content))
 	contentType, bReader, err := inspectResponse(ct, br, int64(len(dockerfileContents)))
 
 	if err == nil {
@@ -104,7 +105,7 @@ func TestResponseUnsupportedContentType(t *testing.T) {
 	if contentType != ct {
 		t.Fatalf("Should not have altered content-type: orig: %s, altered: %s", ct, contentType)
 	}
-	body, err := io.ReadAll(bReader)
+	body, err := ioutil.ReadAll(bReader)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -116,7 +117,7 @@ func TestResponseUnsupportedContentType(t *testing.T) {
 func TestInspectResponseTextSimple(t *testing.T) {
 	content := []byte(dockerfileContents)
 	ct := "text/plain"
-	br := io.NopCloser(bytes.NewReader(content))
+	br := ioutil.NopCloser(bytes.NewReader(content))
 	contentType, bReader, err := inspectResponse(ct, br, int64(len(content)))
 	if err != nil {
 		t.Fatal(err)
@@ -124,7 +125,7 @@ func TestInspectResponseTextSimple(t *testing.T) {
 	if contentType != "text/plain" {
 		t.Fatalf("Content type should be 'text/plain' but is %q", contentType)
 	}
-	body, err := io.ReadAll(bReader)
+	body, err := ioutil.ReadAll(bReader)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -135,7 +136,7 @@ func TestInspectResponseTextSimple(t *testing.T) {
 
 func TestInspectResponseEmptyContentType(t *testing.T) {
 	content := []byte(dockerfileContents)
-	br := io.NopCloser(bytes.NewReader(content))
+	br := ioutil.NopCloser(bytes.NewReader(content))
 	contentType, bodyReader, err := inspectResponse("", br, int64(len(content)))
 	if err != nil {
 		t.Fatal(err)
@@ -143,7 +144,7 @@ func TestInspectResponseEmptyContentType(t *testing.T) {
 	if contentType != "text/plain" {
 		t.Fatalf("Content type should be 'text/plain' but is %q", contentType)
 	}
-	body, err := io.ReadAll(bodyReader)
+	body, err := ioutil.ReadAll(bodyReader)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -155,7 +156,7 @@ func TestInspectResponseEmptyContentType(t *testing.T) {
 func TestUnknownContentLength(t *testing.T) {
 	content := []byte(dockerfileContents)
 	ct := "text/plain"
-	br := io.NopCloser(bytes.NewReader(content))
+	br := ioutil.NopCloser(bytes.NewReader(content))
 	contentType, bReader, err := inspectResponse(ct, br, -1)
 	if err != nil {
 		t.Fatal(err)
@@ -163,7 +164,7 @@ func TestUnknownContentLength(t *testing.T) {
 	if contentType != "text/plain" {
 		t.Fatalf("Content type should be 'text/plain' but is %q", contentType)
 	}
-	body, err := io.ReadAll(bReader)
+	body, err := ioutil.ReadAll(bReader)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -189,8 +190,13 @@ func TestDownloadRemote(t *testing.T) {
 	contentType, content, err := downloadRemote(remoteURL)
 	assert.NilError(t, err)
 
+<<<<<<< HEAD
 	assert.Check(t, is.Equal(mimeTypeTextPlain, contentType))
 	raw, err := io.ReadAll(content)
+=======
+	assert.Check(t, is.Equal(mimeTypes.TextPlain, contentType))
+	raw, err := ioutil.ReadAll(content)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 	assert.Check(t, is.Equal(dockerfileContents, string(raw)))
 }
@@ -237,5 +243,5 @@ func TestGetWithStatusError(t *testing.T) {
 
 func readBody(b io.ReadCloser) ([]byte, error) {
 	defer b.Close()
-	return io.ReadAll(b)
+	return ioutil.ReadAll(b)
 }

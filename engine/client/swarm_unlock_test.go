@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -37,7 +37,7 @@ func TestSwarmUnlock(t *testing.T) {
 			}
 			return &http.Response{
 				StatusCode: http.StatusOK,
-				Body:       io.NopCloser(bytes.NewReader([]byte(""))),
+				Body:       ioutil.NopCloser(bytes.NewReader([]byte(""))),
 			}, nil
 		}),
 	}

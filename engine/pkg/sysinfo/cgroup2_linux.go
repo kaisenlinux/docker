@@ -1,7 +1,11 @@
 package sysinfo // import "github.com/docker/docker/pkg/sysinfo"
 
 import (
+<<<<<<< HEAD
 	"context"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path"
 	"strings"
@@ -119,13 +123,21 @@ func applyCPUSetCgroupInfoV2(info *SysInfo) {
 	}
 	info.Cpuset = true
 
+<<<<<<< HEAD
 	cpus, err := os.ReadFile(path.Join("/sys/fs/cgroup", info.cg2GroupPath, "cpuset.cpus.effective"))
+=======
+	cpus, err := ioutil.ReadFile(path.Join(dirPath, "cpuset.cpus.effective"))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		return
 	}
 	info.Cpus = strings.TrimSpace(string(cpus))
 
+<<<<<<< HEAD
 	mems, err := os.ReadFile(path.Join("/sys/fs/cgroup", info.cg2GroupPath, "cpuset.mems.effective"))
+=======
+	mems, err := ioutil.ReadFile(path.Join(dirPath, "cpuset.mems.effective"))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		return
 	}

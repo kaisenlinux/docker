@@ -5,7 +5,6 @@ import (
 	"net"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/containerd/log"
 	metrics "github.com/docker/go-metrics"
@@ -25,6 +24,7 @@ func startMetricsServer(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", metrics.Handler())
 	go func() {
+<<<<<<< HEAD
 		log.G(context.TODO()).Infof("metrics API listening on %s", l.Addr())
 		srv := &http.Server{
 			Handler:           mux,
@@ -32,6 +32,11 @@ func startMetricsServer(addr string) error {
 		}
 		if err := srv.Serve(l); err != nil && !strings.Contains(err.Error(), "use of closed network connection") {
 			log.G(context.TODO()).WithError(err).Error("error serving metrics API")
+=======
+		logrus.Infof("metrics API listening on %s", l.Addr())
+		if err := http.Serve(l, mux); err != nil && !strings.Contains(err.Error(), "use of closed network connection") {
+			logrus.WithError(err).Error("error serving metrics API")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		}
 	}()
 	return nil

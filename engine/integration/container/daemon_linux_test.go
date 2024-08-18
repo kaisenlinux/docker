@@ -3,7 +3,12 @@ package container // import "github.com/docker/docker/integration/container"
 import (
 	"context"
 	"fmt"
+<<<<<<< HEAD
 	"os"
+=======
+	"io/ioutil"
+	"path/filepath"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"strconv"
 	"strings"
 	"testing"
@@ -73,7 +78,7 @@ func TestContainerStartOnDaemonRestart(t *testing.T) {
 }
 
 func getContainerdShimPid(t *testing.T, c types.ContainerJSON) int {
-	statB, err := os.ReadFile(fmt.Sprintf("/proc/%d/stat", c.State.Pid))
+	statB, err := ioutil.ReadFile(fmt.Sprintf("/proc/%d/stat", c.State.Pid))
 	assert.Check(t, err, "error looking up containerd-shim pid")
 
 	// ppid is the 4th entry in `/proc/pid/stat`
@@ -207,12 +212,32 @@ func TestRestartDaemonWithRestartingContainer(t *testing.T) {
 
 	d.Stop(t)
 
+<<<<<<< HEAD
 	d.TamperWithContainerConfig(t, id, func(c *realcontainer.Container) {
 		c.SetRestarting(&realcontainer.ExitStatus{ExitCode: 1})
 		c.HasBeenStartedBefore = true
 	})
 
 	d.Start(t, "--iptables=false")
+=======
+	configPath := filepath.Join(d.Root, "containers", id, "config.v2.json")
+	configBytes, err := ioutil.ReadFile(configPath)
+	assert.NilError(t, err)
+
+	var c realcontainer.Container
+
+	assert.NilError(t, json.Unmarshal(configBytes, &c))
+
+	c.State = realcontainer.NewState()
+	c.SetRestarting(&realcontainer.ExitStatus{ExitCode: 1})
+	c.HasBeenStartedBefore = true
+
+	configBytes, err = json.Marshal(&c)
+	assert.NilError(t, err)
+	assert.NilError(t, ioutil.WriteFile(configPath, configBytes, 0600))
+
+	d.Start(t)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	ctxTimeout, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()

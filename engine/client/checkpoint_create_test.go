@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -58,7 +58,7 @@ func TestCheckpointCreate(t *testing.T) {
 
 			return &http.Response{
 				StatusCode: http.StatusOK,
-				Body:       io.NopCloser(bytes.NewReader([]byte(""))),
+				Body:       ioutil.NopCloser(bytes.NewReader([]byte(""))),
 			}, nil
 		}),
 	}

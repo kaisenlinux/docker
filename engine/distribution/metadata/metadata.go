@@ -1,6 +1,7 @@
 package metadata // import "github.com/docker/docker/distribution/metadata"
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -47,7 +48,7 @@ func (store *FSMetadataStore) Get(namespace string, key string) ([]byte, error) 
 	store.RLock()
 	defer store.RUnlock()
 
-	return os.ReadFile(store.path(namespace, key))
+	return ioutil.ReadFile(store.path(namespace, key))
 }
 
 // Set writes data indexed by namespace and key. The data is written to a file

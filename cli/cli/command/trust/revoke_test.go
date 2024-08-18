@@ -1,8 +1,13 @@
 package trust
 
 import (
+<<<<<<< HEAD
 	"context"
 	"io"
+=======
+	"io/ioutil"
+	"os"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"testing"
 
 	"github.com/docker/cli/cli/trust"
@@ -51,7 +56,7 @@ func TestTrustRevokeCommandErrors(t *testing.T) {
 		cmd := newRevokeCommand(
 			test.NewFakeCli(&fakeClient{}))
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }
@@ -138,7 +143,7 @@ func TestTrustRevokeCommand(t *testing.T) {
 			cli.SetNotaryClient(tc.notaryRepository)
 			cmd := newRevokeCommand(cli)
 			cmd.SetArgs(tc.args)
-			cmd.SetOut(io.Discard)
+			cmd.SetOut(ioutil.Discard)
 			if tc.expectedErr != "" {
 				assert.ErrorContains(t, cmd.Execute(), tc.expectedErr)
 			} else {
@@ -150,7 +155,11 @@ func TestTrustRevokeCommand(t *testing.T) {
 }
 
 func TestGetSignableRolesForTargetAndRemoveError(t *testing.T) {
-	notaryRepo, err := client.NewFileCachedRepository(t.TempDir(), "gun", "https://localhost", nil, passphrase.ConstantRetriever("password"), trustpinning.TrustPinConfig{})
+	tmpDir, err := ioutil.TempDir("", "notary-test-")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpDir)
+
+	notaryRepo, err := client.NewFileCachedRepository(tmpDir, "gun", "https://localhost", nil, passphrase.ConstantRetriever("password"), trustpinning.TrustPinConfig{})
 	assert.NilError(t, err)
 	target := client.Target{}
 	err = getSignableRolesForTargetAndRemove(target, notaryRepo)

@@ -3,6 +3,7 @@ package image
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -39,7 +40,7 @@ func TestNewPullCommandErrors(t *testing.T) {
 	for _, tc := range testCases {
 		cli := test.NewFakeCli(&fakeClient{})
 		cmd := NewPullCommand(cli)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		cmd.SetArgs(tc.args)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
@@ -71,11 +72,11 @@ func TestNewPullCommandSuccess(t *testing.T) {
 		cli := test.NewFakeCli(&fakeClient{
 			imagePullFunc: func(ref string, options image.PullOptions) (io.ReadCloser, error) {
 				assert.Check(t, is.Equal(tc.expectedTag, ref), tc.name)
-				return io.NopCloser(strings.NewReader("")), nil
+				return ioutil.NopCloser(strings.NewReader("")), nil
 			},
 		})
 		cmd := NewPullCommand(cli)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		cmd.SetArgs(tc.args)
 		err := cmd.Execute()
 		assert.NilError(t, err)
@@ -111,13 +112,18 @@ func TestNewPullCommandWithContentTrustErrors(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		cli := test.NewFakeCli(&fakeClient{
+<<<<<<< HEAD
 			imagePullFunc: func(ref string, options image.PullOptions) (io.ReadCloser, error) {
 				return io.NopCloser(strings.NewReader("")), fmt.Errorf("shouldn't try to pull image")
+=======
+			imagePullFunc: func(ref string, options types.ImagePullOptions) (io.ReadCloser, error) {
+				return ioutil.NopCloser(strings.NewReader("")), fmt.Errorf("shouldn't try to pull image")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			},
 		}, test.EnableContentTrust)
 		cli.SetNotaryClient(tc.notaryFunc)
 		cmd := NewPullCommand(cli)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		cmd.SetArgs(tc.args)
 		err := cmd.Execute()
 		assert.ErrorContains(t, err, tc.expectedError)

@@ -3,7 +3,7 @@ package client // import "github.com/docker/docker/client"
 import (
 	"bytes"
 	"encoding/json"
-	"io"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/docker/docker/api/types"
@@ -49,7 +49,7 @@ func errorMock(statusCode int, message string) func(req *http.Request) (*http.Re
 
 		return &http.Response{
 			StatusCode: statusCode,
-			Body:       io.NopCloser(bytes.NewReader(body)),
+			Body:       ioutil.NopCloser(bytes.NewReader(body)),
 			Header:     header,
 		}, nil
 	}
@@ -59,7 +59,7 @@ func plainTextErrorMock(statusCode int, message string) func(req *http.Request) 
 	return func(req *http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: statusCode,
-			Body:       io.NopCloser(bytes.NewReader([]byte(message))),
+			Body:       ioutil.NopCloser(bytes.NewReader([]byte(message))),
 		}, nil
 	}
 }

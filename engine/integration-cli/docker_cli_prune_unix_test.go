@@ -3,7 +3,11 @@
 package main
 
 import (
+<<<<<<< HEAD
 	"context"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path/filepath"
 	"strconv"
@@ -157,10 +161,14 @@ func (s *DockerCLIPruneSuite) TestPruneContainerLabel(c *testing.T) {
 
 	// Add a config file of label=foobar, that will have no impact if cli is label!=foobar
 	config := `{"pruneFilters": ["label=foobar"]}`
-	d, err := os.MkdirTemp("", "integration-cli-")
+	d, err := ioutil.TempDir("", "integration-cli-")
 	assert.NilError(c, err)
 	defer os.RemoveAll(d)
+<<<<<<< HEAD
 	err = os.WriteFile(filepath.Join(d, "config.json"), []byte(config), 0o644)
+=======
+	err = ioutil.WriteFile(filepath.Join(d, "config.json"), []byte(config), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	// With config.json only, prune based on label=foobar
@@ -215,10 +223,14 @@ func (s *DockerCLIPruneSuite) TestPruneVolumeLabel(c *testing.T) {
 
 	// Add a config file of label=foobar, that will have no impact if cli is label!=foobar
 	config := `{"pruneFilters": ["label=foobar"]}`
-	d, err := os.MkdirTemp("", "integration-cli-")
+	d, err := ioutil.TempDir("", "integration-cli-")
 	assert.NilError(c, err)
 	defer os.RemoveAll(d)
+<<<<<<< HEAD
 	err = os.WriteFile(filepath.Join(d, "config.json"), []byte(config), 0o644)
+=======
+	err = ioutil.WriteFile(filepath.Join(d, "config.json"), []byte(config), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	// With config.json only, prune based on label=foobar

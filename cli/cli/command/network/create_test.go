@@ -2,7 +2,7 @@ package network
 
 import (
 	"context"
-	"io"
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -137,7 +137,7 @@ func TestNetworkCreateErrors(t *testing.T) {
 		for key, value := range tc.flags {
 			assert.NilError(t, cmd.Flags().Set(key, value))
 		}
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }

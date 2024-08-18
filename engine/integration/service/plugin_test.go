@@ -2,6 +2,11 @@ package service
 
 import (
 	"io"
+<<<<<<< HEAD
+=======
+	"io/ioutil"
+	"os"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"path"
 	"strings"
 	"testing"
@@ -39,7 +44,7 @@ func TestServicePlugin(t *testing.T) {
 	assert.NilError(t, err)
 	r, err := apiclient.PluginPush(ctx, repo, "")
 	assert.NilError(t, err)
-	_, err = io.Copy(io.Discard, r)
+	_, err = io.Copy(ioutil.Discard, r)
 	assert.NilError(t, err)
 	err = apiclient.PluginRemove(ctx, repo, types.PluginRemoveOptions{})
 	assert.NilError(t, err)
@@ -47,7 +52,7 @@ func TestServicePlugin(t *testing.T) {
 	assert.NilError(t, err)
 	r, err = apiclient.PluginPush(ctx, repo2, "")
 	assert.NilError(t, err)
-	_, err = io.Copy(io.Discard, r)
+	_, err = io.Copy(ioutil.Discard, r)
 	assert.NilError(t, err)
 	err = apiclient.PluginRemove(ctx, repo2, types.PluginRemoveOptions{})
 	assert.NilError(t, err)

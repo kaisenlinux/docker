@@ -12,6 +12,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -137,7 +138,7 @@ func sizedTar(opts sizedOptions) io.Reader {
 		err error
 	)
 	if opts.realFile {
-		fh, err = os.CreateTemp("", "tarsum")
+		fh, err = ioutil.TempFile("", "tarsum")
 		if err != nil {
 			return nil
 		}
@@ -374,7 +375,7 @@ func TestTarSums(t *testing.T) {
 		}
 
 		// Read and discard remaining bytes
-		_, err = io.Copy(io.Discard, ts)
+		_, err = io.Copy(ioutil.Discard, ts)
 		if err != nil {
 			t.Errorf("failed to copy from %s: %s", layer.filename, err)
 			continue
@@ -388,7 +389,7 @@ func TestTarSums(t *testing.T) {
 			}
 			defer jfh.Close()
 
-			buf, err := io.ReadAll(jfh)
+			buf, err := ioutil.ReadAll(jfh)
 			if err != nil {
 				t.Errorf("failed to readAll %s: %s", layer.jsonfile, err)
 				continue
@@ -552,7 +553,7 @@ func renderSumForHeader(v Version, h *tar.Header, data []byte) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if _, err = io.Copy(io.Discard, tr); err != nil {
+		if _, err = io.Copy(ioutil.Discard, tr); err != nil {
 			return "", err
 		}
 	}
@@ -585,7 +586,7 @@ func Benchmark9kTar(b *testing.B) {
 			b.Error(err)
 			return
 		}
-		io.Copy(io.Discard, ts)
+		io.Copy(ioutil.Discard, ts)
 		ts.Sum(nil)
 	}
 }
@@ -616,7 +617,7 @@ func Benchmark9kTarGzip(b *testing.B) {
 			b.Error(err)
 			return
 		}
-		io.Copy(io.Discard, ts)
+		io.Copy(ioutil.Discard, ts)
 		ts.Sum(nil)
 	}
 }
@@ -658,7 +659,7 @@ func benchmarkTar(b *testing.B, opts sizedOptions, isGzip bool) {
 			b.Error(err)
 			return
 		}
-		io.Copy(io.Discard, ts)
+		io.Copy(ioutil.Discard, ts)
 		ts.Sum(nil)
 		fh.Seek(0, 0)
 	}

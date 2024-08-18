@@ -1,6 +1,7 @@
 package service // import "github.com/docker/docker/volume/service"
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -14,7 +15,7 @@ import (
 func TestSetGetMeta(t *testing.T) {
 	t.Parallel()
 
-	dir, err := os.MkdirTemp("", "test-set-get")
+	dir, err := ioutil.TempDir("", "test-set-get")
 	assert.NilError(t, err)
 	defer os.RemoveAll(dir)
 

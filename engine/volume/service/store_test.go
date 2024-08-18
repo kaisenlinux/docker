@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"os"
 	"strings"
@@ -86,7 +87,7 @@ func TestRemove(t *testing.T) {
 func TestList(t *testing.T) {
 	t.Parallel()
 
-	dir, err := os.MkdirTemp("", "test-list")
+	dir, err := ioutil.TempDir("", "test-list")
 	assert.NilError(t, err)
 	defer os.RemoveAll(dir)
 
@@ -368,8 +369,13 @@ var cmpVolume = cmp.AllowUnexported(volumetestutils.FakeVolume{}, volumeWrapper{
 func setupTest(t *testing.T) (*VolumeStore, func()) {
 	t.Helper()
 
+<<<<<<< HEAD
 	dirName := strings.ReplaceAll(t.Name(), string(os.PathSeparator), "_")
 	dir, err := os.MkdirTemp("", dirName)
+=======
+	dirName := strings.Replace(t.Name(), string(os.PathSeparator), "_", -1)
+	dir, err := ioutil.TempDir("", dirName)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	cleanup := func() {

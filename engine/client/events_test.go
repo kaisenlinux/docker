@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -135,7 +136,7 @@ func TestEvents(t *testing.T) {
 
 				return &http.Response{
 					StatusCode: http.StatusOK,
-					Body:       io.NopCloser(buffer),
+					Body:       ioutil.NopCloser(buffer),
 				}, nil
 			}),
 		}

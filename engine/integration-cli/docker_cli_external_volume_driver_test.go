@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -225,12 +226,20 @@ func newVolumePlugin(c *testing.T, name string) *volumePlugin {
 			return
 		}
 
+<<<<<<< HEAD
 		if err := os.WriteFile(filepath.Join(p, "test"), []byte(s.Server.URL), 0o644); err != nil {
+=======
+		if err := ioutil.WriteFile(filepath.Join(p, "test"), []byte(s.Server.URL), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			send(w, err)
 			return
 		}
 
+<<<<<<< HEAD
 		if err := os.WriteFile(filepath.Join(p, "mountID"), []byte(pr.ID), 0o644); err != nil {
+=======
+		if err := ioutil.WriteFile(filepath.Join(p, "mountID"), []byte(pr.ID), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			send(w, err)
 			return
 		}
@@ -265,7 +274,11 @@ func newVolumePlugin(c *testing.T, name string) *volumePlugin {
 	err := os.MkdirAll("/etc/docker/plugins", 0o755)
 	assert.NilError(c, err)
 
+<<<<<<< HEAD
 	err = os.WriteFile("/etc/docker/plugins/"+name+".spec", []byte(s.Server.URL), 0o644)
+=======
+	err = ioutil.WriteFile("/etc/docker/plugins/"+name+".spec", []byte(s.Server.URL), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 	return s
 }
@@ -368,7 +381,11 @@ func hostVolumePath(name string) string {
 // Make sure a request to use a down driver doesn't block other requests
 func (s *DockerExternalVolumeSuite) TestExternalVolumeDriverLookupNotBlocked(c *testing.T) {
 	specPath := "/etc/docker/plugins/down-driver.spec"
+<<<<<<< HEAD
 	err := os.WriteFile(specPath, []byte("tcp://127.0.0.7:9999"), 0o644)
+=======
+	err := ioutil.WriteFile(specPath, []byte("tcp://127.0.0.7:9999"), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 	defer os.RemoveAll(specPath)
 
@@ -515,7 +532,8 @@ func (s *DockerExternalVolumeSuite) TestExternalVolumeDriverGetEmptyResponse(c *
 
 // Ensure only cached paths are used in volume list to prevent N+1 calls to `VolumeDriver.Path`
 //
-// TODO(@cpuguy83): This test is testing internal implementation. In all the cases here, there may not even be a path available because the volume is not even mounted. Consider removing this test.
+// TODO(@cpuguy83): This test is testing internal implementation. In all the cases here, there may not even be a path
+// 	available because the volume is not even mounted. Consider removing this test.
 func (s *DockerExternalVolumeSuite) TestExternalVolumeDriverPathCalls(c *testing.T) {
 	s.d.Start(c)
 	assert.Equal(c, s.ec.paths, 0)

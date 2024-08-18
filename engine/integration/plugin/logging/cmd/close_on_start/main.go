@@ -6,7 +6,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"time"
 )
 
 type start struct {
@@ -41,9 +40,8 @@ func main() {
 		fmt.Fprintln(w, `{}`)
 	})
 	server := http.Server{
-		Addr:              l.Addr().String(),
-		Handler:           mux,
-		ReadHeaderTimeout: 2 * time.Second, // This server is not for production code; picked an arbitrary timeout to statisfy gosec (G112: Potential Slowloris Attack)
+		Addr:    l.Addr().String(),
+		Handler: mux,
 	}
 
 	server.Serve(l)

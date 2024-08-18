@@ -1,5 +1,9 @@
 variable "GO_VERSION" {
+<<<<<<< HEAD
     default = "1.21.11"
+=======
+    default = "1.18.10"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 }
 variable "VERSION" {
     default = ""

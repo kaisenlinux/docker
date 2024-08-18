@@ -5,7 +5,11 @@
 
 # This represents the bare minimum required to build and test Docker.
 
+<<<<<<< HEAD
 ARG GO_VERSION=1.21.11
+=======
+ARG GO_VERSION=1.18.10
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 ARG BASE_DEBIAN_DISTRO="bookworm"
 ARG GOLANG_IMAGE="golang:${GO_VERSION}-${BASE_DEBIAN_DISTRO}"

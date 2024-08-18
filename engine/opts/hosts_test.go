@@ -31,6 +31,7 @@ func TestParseHost(t *testing.T) {
 		"fd://something":           "fd://something",
 		"tcp://host:":              fmt.Sprintf("tcp://host:%d", DefaultHTTPPort),
 		"tcp://":                   DefaultTCPHost,
+<<<<<<< HEAD
 		"tcp://:":                  DefaultTCPHost,
 		"tcp://:5555":              fmt.Sprintf("tcp://%s:5555", DefaultHTTPHost), //nolint:nosprintfhostport // sprintf is more readable for this case.
 		"tcp://[::1]":              fmt.Sprintf(`tcp://[::1]:%d`, DefaultHTTPPort),
@@ -41,6 +42,16 @@ func TestParseHost(t *testing.T) {
 		"tcp://192.168.0.1:5555":   "tcp://192.168.0.1:5555",
 		"tcp://0.0.0.0:1234567890": "tcp://0.0.0.0:1234567890", // yeah it's valid :P
 		"tcp://docker.com:5555":    "tcp://docker.com:5555",
+=======
+		"tcp://:2375":              fmt.Sprintf("tcp://%s:2375", DefaultHTTPHost),
+		"tcp://:2376":              fmt.Sprintf("tcp://%s:2376", DefaultHTTPHost),
+		"tcp://0.0.0.0:8080":       "tcp://0.0.0.0:8080",
+		"tcp://192.168.0.0:12000":  "tcp://192.168.0.0:12000",
+		"tcp://192.168:8080":       "tcp://192.168:8080",
+		"tcp://0.0.0.0:1234567890": "tcp://0.0.0.0:1234567890", // yeah it's valid :P
+		" tcp://:7777/path ":       fmt.Sprintf("tcp://%s:7777/path", DefaultHTTPHost),
+		"tcp://docker.com:2375":    "tcp://docker.com:2375",
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		"unix://":                  "unix://" + DefaultUnixSocket,
 		"unix://path/to/socket":    "unix://path/to/socket",
 		"npipe://":                 "npipe://" + DefaultNamedPipe,
@@ -89,6 +100,7 @@ func TestParseDockerDaemonHost(t *testing.T) {
 		"unix://unix://tcp://127.0.0.1": "invalid bind address (unix://unix://tcp://127.0.0.1): invalid unix address: unix://tcp://127.0.0.1",
 	}
 	valids := map[string]string{
+<<<<<<< HEAD
 		":":                       DefaultTCPHost,
 		":5555":                   fmt.Sprintf("tcp://%s:5555", DefaultHTTPHost), //nolint:nosprintfhostport // sprintf is more readable for this case.
 		"0.0.0.1:":                fmt.Sprintf("tcp://0.0.0.1:%d", DefaultHTTPPort),
@@ -113,6 +125,27 @@ func TestParseDockerDaemonHost(t *testing.T) {
 		"tcp://[::1]:5555":        "tcp://[::1]:5555",
 		"unix://":                 "unix://" + DefaultUnixSocket,
 		"unix:///run/docker.sock": "unix:///run/docker.sock",
+=======
+		"0.0.0.1:":                    "tcp://0.0.0.1:2375",
+		"0.0.0.1:5555":                "tcp://0.0.0.1:5555",
+		"0.0.0.1:5555/path":           "tcp://0.0.0.1:5555/path",
+		"[::1]:":                      "tcp://[::1]:2375",
+		"[::1]:5555/path":             "tcp://[::1]:5555/path",
+		"[0:0:0:0:0:0:0:1]:":          "tcp://[0:0:0:0:0:0:0:1]:2375",
+		"[0:0:0:0:0:0:0:1]:5555/path": "tcp://[0:0:0:0:0:0:0:1]:5555/path",
+		":6666":                       fmt.Sprintf("tcp://%s:6666", DefaultHTTPHost),
+		":6666/path":                  fmt.Sprintf("tcp://%s:6666/path", DefaultHTTPHost),
+		"tcp://":                      DefaultTCPHost,
+		"tcp://:7777":                 fmt.Sprintf("tcp://%s:7777", DefaultHTTPHost),
+		"tcp://:7777/path":            fmt.Sprintf("tcp://%s:7777/path", DefaultHTTPHost),
+		"unix:///run/docker.sock":     "unix:///run/docker.sock",
+		"unix://":                     "unix://" + DefaultUnixSocket,
+		"fd://":                       "fd://",
+		"fd://something":              "fd://something",
+		"localhost:":                  "tcp://localhost:2375",
+		"localhost:5555":              "tcp://localhost:5555",
+		"localhost:5555/path":         "tcp://localhost:5555/path",
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	}
 	for invalidAddr, expectedError := range invalids {
 		t.Run(invalidAddr, func(t *testing.T) {

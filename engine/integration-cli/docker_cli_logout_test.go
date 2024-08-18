@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -29,20 +30,24 @@ func (s *DockerRegistryAuthHtpasswdSuite) TestLogoutWithExternalAuth(c *testing.
 
 	imgRepoName := fmt.Sprintf("%v/dockercli/busybox:authtest", privateRegistryURL)
 
-	tmp, err := os.MkdirTemp("", "integration-cli-")
+	tmp, err := ioutil.TempDir("", "integration-cli-")
 	assert.NilError(c, err)
 	defer os.RemoveAll(tmp)
 
 	externalAuthConfig := `{ "credsStore": "shell-test" }`
 
 	configPath := filepath.Join(tmp, "config.json")
+<<<<<<< HEAD
 	err = os.WriteFile(configPath, []byte(externalAuthConfig), 0o644)
+=======
+	err = ioutil.WriteFile(configPath, []byte(externalAuthConfig), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	_, err = s.d.Cmd("--config", tmp, "login", "-u", s.reg.Username(), "-p", s.reg.Password(), privateRegistryURL)
 	assert.NilError(c, err)
 
-	b, err := os.ReadFile(configPath)
+	b, err := ioutil.ReadFile(configPath)
 	assert.NilError(c, err)
 	assert.Assert(c, !strings.Contains(string(b), `"auth":`))
 	assert.Assert(c, strings.Contains(string(b), privateRegistryURL))
@@ -54,7 +59,7 @@ func (s *DockerRegistryAuthHtpasswdSuite) TestLogoutWithExternalAuth(c *testing.
 	_, err = s.d.Cmd("--config", tmp, "logout", privateRegistryURL)
 	assert.NilError(c, err)
 
-	b, err = os.ReadFile(configPath)
+	b, err = ioutil.ReadFile(configPath)
 	assert.NilError(c, err)
 	assert.Assert(c, !strings.Contains(string(b), privateRegistryURL))
 
@@ -80,25 +85,29 @@ func (s *DockerRegistryAuthHtpasswdSuite) TestLogoutWithWrongHostnamesStored(c *
 	cmd.Stdin = stdin
 	assert.NilError(c, cmd.Run())
 
-	tmp, err := os.MkdirTemp("", "integration-cli-")
+	tmp, err := ioutil.TempDir("", "integration-cli-")
 	assert.NilError(c, err)
 
 	externalAuthConfig := fmt.Sprintf(`{ "auths": {"https://%s": {}}, "credsStore": "shell-test" }`, privateRegistryURL)
 
 	configPath := filepath.Join(tmp, "config.json")
+<<<<<<< HEAD
 	err = os.WriteFile(configPath, []byte(externalAuthConfig), 0o644)
+=======
+	err = ioutil.WriteFile(configPath, []byte(externalAuthConfig), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	cli.DockerCmd(c, "--config", tmp, "login", "-u", s.reg.Username(), "-p", s.reg.Password(), privateRegistryURL)
 
-	b, err := os.ReadFile(configPath)
+	b, err := ioutil.ReadFile(configPath)
 	assert.NilError(c, err)
 	assert.Assert(c, strings.Contains(string(b), fmt.Sprintf(`"https://%s": {}`, privateRegistryURL)))
 	assert.Assert(c, strings.Contains(string(b), fmt.Sprintf(`"%s": {}`, privateRegistryURL)))
 
 	cli.DockerCmd(c, "--config", tmp, "logout", privateRegistryURL)
 
-	b, err = os.ReadFile(configPath)
+	b, err = ioutil.ReadFile(configPath)
 	assert.NilError(c, err)
 	assert.Assert(c, !strings.Contains(string(b), fmt.Sprintf(`"https://%s": {}`, privateRegistryURL)))
 	assert.Assert(c, !strings.Contains(string(b), fmt.Sprintf(`"%s": {}`, privateRegistryURL)))

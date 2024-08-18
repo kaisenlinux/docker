@@ -1,6 +1,7 @@
 package daemon // import "github.com/docker/docker/daemon"
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -142,7 +143,7 @@ func TestContainerInitDNS(t *testing.T) {
 		t.Skip("root required") // for chown
 	}
 
-	tmp, err := os.MkdirTemp("", "docker-container-test-")
+	tmp, err := ioutil.TempDir("", "docker-container-test-")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -176,7 +177,11 @@ func TestContainerInitDNS(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+<<<<<<< HEAD
 	if err = os.WriteFile(configPath, []byte(config), 0o644); err != nil {
+=======
+	if err = ioutil.WriteFile(configPath, []byte(config), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 
@@ -189,7 +194,11 @@ func TestContainerInitDNS(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+<<<<<<< HEAD
 	if err = os.WriteFile(hostConfigPath, []byte(hostConfig), 0o644); err != nil {
+=======
+	if err = ioutil.WriteFile(hostConfigPath, []byte(hostConfig), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 

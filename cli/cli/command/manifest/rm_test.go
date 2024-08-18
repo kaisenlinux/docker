@@ -1,17 +1,21 @@
 package manifest
 
 import (
-	"io"
+	"io/ioutil"
 	"testing"
 
-	"github.com/docker/cli/cli/manifest/store"
 	"github.com/docker/cli/internal/test"
 	"gotest.tools/v3/assert"
 )
 
 // create two manifest lists and remove them both
 func TestRmSeveralManifests(t *testing.T) {
+<<<<<<< HEAD
 	manifestStore := store.NewStore(t.TempDir())
+=======
+	store, cleanup := newTempManifestStore(t)
+	defer cleanup()
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	cli := test.NewFakeCli(nil)
 	cli.SetManifestStore(manifestStore)
@@ -31,7 +35,7 @@ func TestRmSeveralManifests(t *testing.T) {
 
 	cmd := newRmManifestListCommand(cli)
 	cmd.SetArgs([]string{"example.com/first:1", "example.com/second:2"})
-	cmd.SetOut(io.Discard)
+	cmd.SetOut(ioutil.Discard)
 	err = cmd.Execute()
 	assert.NilError(t, err)
 
@@ -43,7 +47,12 @@ func TestRmSeveralManifests(t *testing.T) {
 
 // attempt to remove a manifest list which was never created
 func TestRmManifestNotCreated(t *testing.T) {
+<<<<<<< HEAD
 	manifestStore := store.NewStore(t.TempDir())
+=======
+	store, cleanup := newTempManifestStore(t)
+	defer cleanup()
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	cli := test.NewFakeCli(nil)
 	cli.SetManifestStore(manifestStore)
@@ -55,7 +64,7 @@ func TestRmManifestNotCreated(t *testing.T) {
 
 	cmd := newRmManifestListCommand(cli)
 	cmd.SetArgs([]string{"example.com/first:1", "example.com/second:2"})
-	cmd.SetOut(io.Discard)
+	cmd.SetOut(ioutil.Discard)
 	err = cmd.Execute()
 	assert.Error(t, err, "No such manifest: example.com/first:1")
 

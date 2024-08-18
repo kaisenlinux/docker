@@ -1,6 +1,7 @@
 package container // import "github.com/docker/docker/daemon/cluster/executor/container"
 
 import (
+	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -49,7 +50,7 @@ func TestControllerValidateMountBind(t *testing.T) {
 	}
 
 	// with proper source
-	tmpdir, err := os.MkdirTemp("", "TestControllerValidateMountBind")
+	tmpdir, err := ioutil.TempDir("", "TestControllerValidateMountBind")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
@@ -85,7 +86,7 @@ func TestControllerValidateMountVolume(t *testing.T) {
 }
 
 func TestControllerValidateMountTarget(t *testing.T) {
-	tmpdir, err := os.MkdirTemp("", "TestControllerValidateMountTarget")
+	tmpdir, err := ioutil.TempDir("", "TestControllerValidateMountTarget")
 	if err != nil {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}

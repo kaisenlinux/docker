@@ -45,9 +45,15 @@ func (res ExecResult) AssertSuccess(t testing.TB) {
 
 // Exec executes a command inside a container, returning the result
 // containing stdout, stderr, and exit code. Note:
+<<<<<<< HEAD
 //   - this is a synchronous operation;
 //   - cmd stdin is closed.
 func Exec(ctx context.Context, apiClient client.APIClient, id string, cmd []string, ops ...func(*types.ExecConfig)) (ExecResult, error) {
+=======
+//  - this is a synchronous operation;
+//  - cmd stdin is closed.
+func Exec(ctx context.Context, cli client.APIClient, id string, cmd []string) (ExecResult, error) {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	// prepare exec
 	execConfig := types.ExecConfig{
 		AttachStdout: true,

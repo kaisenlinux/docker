@@ -5,7 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+<<<<<<< HEAD
 	"os"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"strings"
 
 	"github.com/containerd/containerd/content"
@@ -140,7 +144,7 @@ func (m *manifestStore) getLocal(ctx context.Context, desc ocispec.Descriptor, r
 	}
 
 	r := io.NewSectionReader(ra, 0, ra.Size())
-	data, err := io.ReadAll(r)
+	data, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, errors.Wrap(err, "error reading manifest from content store")
 	}

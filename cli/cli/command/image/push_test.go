@@ -2,6 +2,7 @@ package image
 
 import (
 	"io"
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -32,15 +33,20 @@ func TestNewPushCommandErrors(t *testing.T) {
 			name:          "push-failed",
 			args:          []string{"image:repo"},
 			expectedError: "Failed to push",
+<<<<<<< HEAD
 			imagePushFunc: func(ref string, options image.PushOptions) (io.ReadCloser, error) {
 				return io.NopCloser(strings.NewReader("")), errors.Errorf("Failed to push")
+=======
+			imagePushFunc: func(ref string, options types.ImagePushOptions) (io.ReadCloser, error) {
+				return ioutil.NopCloser(strings.NewReader("")), errors.Errorf("Failed to push")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			},
 		},
 	}
 	for _, tc := range testCases {
 		cli := test.NewFakeCli(&fakeClient{imagePushFunc: tc.imagePushFunc})
 		cmd := NewPushCommand(cli)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		cmd.SetArgs(tc.args)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
@@ -67,8 +73,13 @@ func TestNewPushCommandSuccess(t *testing.T) {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			cli := test.NewFakeCli(&fakeClient{
+<<<<<<< HEAD
 				imagePushFunc: func(ref string, options image.PushOptions) (io.ReadCloser, error) {
 					return io.NopCloser(strings.NewReader("")), nil
+=======
+				imagePushFunc: func(ref string, options types.ImagePushOptions) (io.ReadCloser, error) {
+					return ioutil.NopCloser(strings.NewReader("")), nil
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 				},
 			})
 			cmd := NewPushCommand(cli)

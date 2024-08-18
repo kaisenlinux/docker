@@ -3,23 +3,35 @@ Forwarded: not-needed
 Author: Dmitry Smirnov <onlyjob@debian.org>
 Description: fix generation of .pb.go files.
 
+<<<<<<< HEAD
 Index: docker.io/engine/libnetwork/drivers/overlay/overlay.go
 ===================================================================
 --- docker.io.orig/engine/libnetwork/drivers/overlay/overlay.go
 +++ docker.io/engine/libnetwork/drivers/overlay/overlay.go
 @@ -3,7 +3,7 @@
  
+=======
+--- a/libnetwork/drivers/overlay/overlay.go
++++ b/libnetwork/drivers/overlay/overlay.go
+@@ -1,6 +1,6 @@
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
  package overlay
  
 -//go:generate protoc -I.:../../Godeps/_workspace/src/github.com/gogo/protobuf  --gogo_out=import_path=github.com/docker/docker/libnetwork/drivers/overlay,Mgogoproto/gogo.proto=github.com/gogo/protobuf/gogoproto:. overlay.proto
 +//go:generate protoc -I.:../../../../../github.com/gogo/protobuf  --gogo_out=import_path=github.com/docker/docker/libnetwork/drivers/overlay,Mgogoproto/gogo.proto=github.com/gogo/protobuf/gogoproto:. overlay.proto
  
  import (
+<<<<<<< HEAD
  	"fmt"
 Index: docker.io/engine/libnetwork/agent.go
 ===================================================================
 --- docker.io.orig/engine/libnetwork/agent.go
 +++ docker.io/engine/libnetwork/agent.go
+=======
+ 	"context"
+--- a/libnetwork/agent.go
++++ b/libnetwork/agent.go
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 @@ -1,6 +1,6 @@
  package libnetwork
  
@@ -28,3 +40,16 @@ Index: docker.io/engine/libnetwork/agent.go
  
  import (
  	"encoding/json"
+<<<<<<< HEAD
+=======
+--- a/libnetwork/networkdb/networkdb.go
++++ b/libnetwork/networkdb/networkdb.go
+@@ -1,6 +1,6 @@
+ package networkdb
+ 
+-//go:generate protoc -I.:../vendor/github.com/gogo/protobuf --gogo_out=import_path=github.com/docker/libnetwork/networkdb,Mgogoproto/gogo.proto=github.com/gogo/protobuf/gogoproto:. networkdb.proto
++//go:generate protoc -I.:../../../../github.com/gogo/protobuf --gogo_out=import_path=github.com/docker/libnetwork/networkdb,Mgogoproto/gogo.proto=github.com/gogo/protobuf/gogoproto:. networkdb.proto
+ 
+ import (
+ 	"context"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)

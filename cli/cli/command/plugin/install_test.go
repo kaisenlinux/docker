@@ -3,6 +3,7 @@ package plugin
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -57,7 +58,7 @@ func TestInstallErrors(t *testing.T) {
 		cli := test.NewFakeCli(&fakeClient{pluginInstallFunc: tc.installFunc})
 		cmd := newInstallCommand(cli)
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }
@@ -98,7 +99,7 @@ func TestInstallContentTrustErrors(t *testing.T) {
 		cli.SetNotaryClient(tc.notaryFunc)
 		cmd := newInstallCommand(cli)
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }
@@ -115,7 +116,7 @@ func TestInstall(t *testing.T) {
 			args:           []string{"foo"},
 			expectedOutput: "Installed plugin foo\n",
 			installFunc: func(name string, options types.PluginInstallOptions) (io.ReadCloser, error) {
-				return io.NopCloser(strings.NewReader("")), nil
+				return ioutil.NopCloser(strings.NewReader("")), nil
 			},
 		},
 		{
@@ -124,7 +125,7 @@ func TestInstall(t *testing.T) {
 			expectedOutput: "Installed plugin foo\n",
 			installFunc: func(name string, options types.PluginInstallOptions) (io.ReadCloser, error) {
 				assert.Check(t, options.Disabled)
-				return io.NopCloser(strings.NewReader("")), nil
+				return ioutil.NopCloser(strings.NewReader("")), nil
 			},
 		},
 	}

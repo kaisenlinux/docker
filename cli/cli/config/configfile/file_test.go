@@ -3,7 +3,11 @@ package configfile
 import (
 	"bytes"
 	"encoding/json"
+<<<<<<< HEAD
 	"errors"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"testing"
 
@@ -486,7 +490,7 @@ func TestSave(t *testing.T) {
 	defer os.Remove("test-save")
 	err := configFile.Save()
 	assert.NilError(t, err)
-	cfg, err := os.ReadFile("test-save")
+	cfg, err := ioutil.ReadFile("test-save")
 	assert.NilError(t, err)
 	assert.Equal(t, string(cfg), `{
 	"auths": {}
@@ -501,7 +505,7 @@ func TestSaveCustomHTTPHeaders(t *testing.T) {
 	configFile.HTTPHeaders["user-agent"] = "user-agent 2"
 	err := configFile.Save()
 	assert.NilError(t, err)
-	cfg, err := os.ReadFile(t.Name())
+	cfg, err := ioutil.ReadFile(t.Name())
 	assert.NilError(t, err)
 	assert.Equal(t, string(cfg), `{
 	"auths": {},
@@ -529,11 +533,11 @@ func TestSaveWithSymlink(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Assert(t, fi.Mode()&os.ModeSymlink != 0, "expected %s to be a symlink", symLink)
 
-	cfg, err := os.ReadFile(symLink)
+	cfg, err := ioutil.ReadFile(symLink)
 	assert.NilError(t, err)
 	assert.Check(t, is.Equal(string(cfg), "{\n	\"auths\": {}\n}"))
 
-	cfg, err = os.ReadFile(realFile)
+	cfg, err = ioutil.ReadFile(realFile)
 	assert.NilError(t, err)
 	assert.Check(t, is.Equal(string(cfg), "{\n	\"auths\": {}\n}"))
 }
@@ -552,7 +556,7 @@ func TestPluginConfig(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Read it back and check it has the expected content
-	cfg, err := os.ReadFile("test-plugin")
+	cfg, err := ioutil.ReadFile("test-plugin")
 	assert.NilError(t, err)
 	golden.Assert(t, string(cfg), "plugin-config.golden")
 
@@ -563,7 +567,7 @@ func TestPluginConfig(t *testing.T) {
 	assert.NilError(t, configFile.LoadFromReader(bytes.NewReader(cfg)))
 	err = configFile.Save()
 	assert.NilError(t, err)
-	cfg, err = os.ReadFile("test-plugin2")
+	cfg, err = ioutil.ReadFile("test-plugin2")
 	assert.NilError(t, err)
 	golden.Assert(t, string(cfg), "plugin-config.golden")
 
@@ -598,7 +602,7 @@ func TestPluginConfig(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Read it back and check it has the expected content again
-	cfg, err = os.ReadFile("test-plugin2")
+	cfg, err = ioutil.ReadFile("test-plugin2")
 	assert.NilError(t, err)
 	golden.Assert(t, string(cfg), "plugin-config-2.golden")
 }

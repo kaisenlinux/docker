@@ -4,8 +4,13 @@ package chrootarchive // import "github.com/docker/docker/pkg/chrootarchive"
 
 import (
 	"io"
+<<<<<<< HEAD
 	"net"
 	"os/user"
+=======
+	"io/ioutil"
+	"os"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"path/filepath"
 	"strings"
 
@@ -26,7 +31,89 @@ func invokeUnpack(decompressedArchive io.Reader, dest string, options *archive.T
 		return err
 	}
 
+<<<<<<< HEAD
 	return doUnpack(decompressedArchive, relDest, root, options)
+=======
+	if root != "" {
+		relDest, err := filepath.Rel(root, dest)
+		if err != nil {
+			return err
+		}
+		if relDest == "." {
+			relDest = "/"
+		}
+		if relDest[0] != '/' {
+			relDest = "/" + relDest
+		}
+		dest = relDest
+	}
+
+	cmd := reexec.Command("docker-untar", dest, root)
+	cmd.Stdin = decompressedArchive
+
+	cmd.ExtraFiles = append(cmd.ExtraFiles, r)
+	output := bytes.NewBuffer(nil)
+	cmd.Stdout = output
+	cmd.Stderr = output
+
+	if err := cmd.Start(); err != nil {
+		w.Close()
+		return fmt.Errorf("Untar error on re-exec cmd: %v", err)
+	}
+
+	// write the options to the pipe for the untar exec to read
+	if err := json.NewEncoder(w).Encode(options); err != nil {
+		w.Close()
+		return fmt.Errorf("Untar json encode to pipe failed: %v", err)
+	}
+	w.Close()
+
+	if err := cmd.Wait(); err != nil {
+		// when `xz -d -c -q | docker-untar ...` failed on docker-untar side,
+		// we need to exhaust `xz`'s output, otherwise the `xz` side will be
+		// pending on write pipe forever
+		io.Copy(ioutil.Discard, decompressedArchive)
+
+		return fmt.Errorf("Error processing tar file(%v): %s", err, output)
+	}
+	return nil
+}
+
+func tar() {
+	runtime.LockOSThread()
+	flag.Parse()
+
+	src := flag.Arg(0)
+	var root string
+	if len(flag.Args()) > 1 {
+		root = flag.Arg(1)
+	}
+
+	if root == "" {
+		root = src
+	}
+
+	if err := realChroot(root); err != nil {
+		fatal(err)
+	}
+
+	var options archive.TarOptions
+	if err := json.NewDecoder(os.Stdin).Decode(&options); err != nil {
+		fatal(err)
+	}
+
+	rdr, err := archive.TarWithOptions(src, &options)
+	if err != nil {
+		fatal(err)
+	}
+	defer rdr.Close()
+
+	if _, err := io.Copy(os.Stdout, rdr); err != nil {
+		fatal(err)
+	}
+
+	os.Exit(0)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 }
 
 func invokePack(srcPath string, options *archive.TarOptions, root string) (io.ReadCloser, error) {

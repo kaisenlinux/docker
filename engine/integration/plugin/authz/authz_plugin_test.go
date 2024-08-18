@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -61,7 +62,11 @@ func setupTestV1(t *testing.T) context.Context {
 	assert.NilError(t, err)
 
 	fileName := fmt.Sprintf("/etc/docker/plugins/%s.spec", testAuthZPlugin)
+<<<<<<< HEAD
 	err = os.WriteFile(fileName, []byte(server.URL), 0o644)
+=======
+	err = ioutil.WriteFile(fileName, []byte(server.URL), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	t.Cleanup(func() {
@@ -349,7 +354,7 @@ func TestAuthZPluginEnsureLoadImportWorking(t *testing.T) {
 
 	c := d.NewClientT(t)
 
-	tmp, err := os.MkdirTemp("", "test-authz-load-import")
+	tmp, err := ioutil.TempDir("", "test-authz-load-import")
 	assert.NilError(t, err)
 	defer os.RemoveAll(tmp)
 
@@ -383,11 +388,11 @@ func TestAuthzPluginEnsureContainerCopyToFrom(t *testing.T) {
 	ctrl.resRes.Allow = true
 	d.StartWithBusybox(ctx, t, "--authorization-plugin="+testAuthZPlugin, "--authorization-plugin="+testAuthZPlugin)
 
-	dir, err := os.MkdirTemp("", t.Name())
+	dir, err := ioutil.TempDir("", t.Name())
 	assert.NilError(t, err)
 	defer os.RemoveAll(dir)
 
-	f, err := os.CreateTemp(dir, "send")
+	f, err := ioutil.TempFile(dir, "send")
 	assert.NilError(t, err)
 	defer f.Close()
 
@@ -421,7 +426,7 @@ func TestAuthzPluginEnsureContainerCopyToFrom(t *testing.T) {
 
 	rdr, _, err := c.CopyFromContainer(ctx, cID, "/test")
 	assert.NilError(t, err)
-	_, err = io.Copy(io.Discard, rdr)
+	_, err = io.Copy(ioutil.Discard, rdr)
 	assert.NilError(t, err)
 }
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
+	"io/ioutil"
 	"path/filepath"
 	"strings"
 
@@ -519,7 +519,7 @@ func readCredentialSpecFile(id, root, location string) (string, error) {
 	if !strings.HasPrefix(full, base) {
 		return "", fmt.Errorf("invalid credential spec: file:// path must be under %s", base)
 	}
-	bcontents, err := os.ReadFile(full)
+	bcontents, err := ioutil.ReadFile(full)
 	if err != nil {
 		return "", errors.Wrapf(err, "failed to load credential spec for container %s", id)
 	}

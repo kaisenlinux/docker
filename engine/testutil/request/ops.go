@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -38,7 +39,7 @@ func Method(method string) func(*Options) {
 
 // RawString sets the specified string as body for the request
 func RawString(content string) func(*Options) {
-	return RawContent(io.NopCloser(strings.NewReader(content)))
+	return RawContent(ioutil.NopCloser(strings.NewReader(content)))
 }
 
 // RawContent sets the specified reader as body for the request
@@ -70,7 +71,7 @@ func JSONBody(data interface{}) func(*Options) {
 		if err := json.NewEncoder(jsonData).Encode(data); err != nil {
 			return err
 		}
-		req.Body = io.NopCloser(jsonData)
+		req.Body = ioutil.NopCloser(jsonData)
 		req.Header.Set("Content-Type", "application/json")
 		return nil
 	})

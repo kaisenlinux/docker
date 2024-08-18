@@ -3,6 +3,7 @@ package build
 import (
 	"bytes"
 	"io"
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -59,7 +60,7 @@ func TestBuildSquashParent(t *testing.T) {
 			Tags:        []string{name},
 		})
 	assert.NilError(t, err)
-	_, err = io.Copy(io.Discard, resp.Body)
+	_, err = io.Copy(ioutil.Discard, resp.Body)
 	resp.Body.Close()
 	assert.NilError(t, err)
 
@@ -77,7 +78,7 @@ func TestBuildSquashParent(t *testing.T) {
 			Tags:        []string{name},
 		})
 	assert.NilError(t, err)
-	_, err = io.Copy(io.Discard, resp.Body)
+	_, err = io.Copy(ioutil.Discard, resp.Body)
 	resp.Body.Close()
 	assert.NilError(t, err)
 
@@ -91,7 +92,7 @@ func TestBuildSquashParent(t *testing.T) {
 	assert.NilError(t, err)
 
 	actualStdout := new(bytes.Buffer)
-	actualStderr := io.Discard
+	actualStderr := ioutil.Discard
 	_, err = stdcopy.StdCopy(actualStdout, actualStderr, reader)
 	assert.NilError(t, err)
 	assert.Check(t, is.Equal(strings.TrimSpace(actualStdout.String()), "hello\nworld"))

@@ -4,6 +4,12 @@ package registry // import "github.com/docker/docker/registry"
 import (
 	"context"
 	"crypto/tls"
+<<<<<<< HEAD
+=======
+	"errors"
+	"fmt"
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"net"
 	"net/http"
 	"os"
@@ -39,7 +45,7 @@ func newTLSConfig(hostname string, isSecure bool) (*tls.Config, error) {
 	return tlsConfig, nil
 }
 
-func hasFile(files []os.DirEntry, name string) bool {
+func hasFile(files []os.FileInfo, name string) bool {
 	for _, f := range files {
 		if f.Name() == name {
 			return true
@@ -52,7 +58,7 @@ func hasFile(files []os.DirEntry, name string) bool {
 // including roots and certificate pairs and updates the
 // provided TLS configuration.
 func ReadCertsDirectory(tlsConfig *tls.Config, directory string) error {
-	fs, err := os.ReadDir(directory)
+	fs, err := ioutil.ReadDir(directory)
 	if err != nil && !os.IsNotExist(err) {
 		return invalidParam(err)
 	}
@@ -66,8 +72,13 @@ func ReadCertsDirectory(tlsConfig *tls.Config, directory string) error {
 				}
 				tlsConfig.RootCAs = systemPool
 			}
+<<<<<<< HEAD
 			log.G(context.TODO()).Debugf("crt: %s", filepath.Join(directory, f.Name()))
 			data, err := os.ReadFile(filepath.Join(directory, f.Name()))
+=======
+			logrus.Debugf("crt: %s", filepath.Join(directory, f.Name()))
+			data, err := ioutil.ReadFile(filepath.Join(directory, f.Name()))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			if err != nil {
 				return err
 			}

@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -88,7 +89,11 @@ func UnpackLayer(dest string, layer io.Reader, options *TarOptions) (size int64,
 				basename := filepath.Base(hdr.Name)
 				aufsHardlinks[basename] = hdr
 				if aufsTempdir == "" {
+<<<<<<< HEAD
 					if aufsTempdir, err = os.MkdirTemp(dest, "dockerplnk"); err != nil {
+=======
+					if aufsTempdir, err = ioutil.TempDir("", "dockerplnk"); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 						return 0, err
 					}
 					defer os.RemoveAll(aufsTempdir)

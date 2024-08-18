@@ -2,7 +2,7 @@ package plugin
 
 import (
 	"fmt"
-	"io"
+	"io/ioutil"
 	"testing"
 
 	"github.com/docker/cli/internal/test"
@@ -36,7 +36,7 @@ func TestRemoveErrors(t *testing.T) {
 		})
 		cmd := newRemoveCommand(cli)
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }

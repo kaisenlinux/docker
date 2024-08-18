@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -65,7 +65,7 @@ func TestContainerExecCreate(t *testing.T) {
 			}
 			return &http.Response{
 				StatusCode: http.StatusOK,
-				Body:       io.NopCloser(bytes.NewReader(b)),
+				Body:       ioutil.NopCloser(bytes.NewReader(b)),
 			}, nil
 		}),
 	}
@@ -109,7 +109,7 @@ func TestContainerExecStart(t *testing.T) {
 
 			return &http.Response{
 				StatusCode: http.StatusOK,
-				Body:       io.NopCloser(bytes.NewReader([]byte(""))),
+				Body:       ioutil.NopCloser(bytes.NewReader([]byte(""))),
 			}, nil
 		}),
 	}
@@ -147,7 +147,7 @@ func TestContainerExecInspect(t *testing.T) {
 			}
 			return &http.Response{
 				StatusCode: http.StatusOK,
-				Body:       io.NopCloser(bytes.NewReader(b)),
+				Body:       ioutil.NopCloser(bytes.NewReader(b)),
 			}, nil
 		}),
 	}

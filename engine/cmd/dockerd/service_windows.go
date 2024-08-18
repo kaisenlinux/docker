@@ -5,7 +5,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+<<<<<<< HEAD
 	"io"
+=======
+	"io/ioutil"
+	"log"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path/filepath"
 	"time"
@@ -252,8 +257,13 @@ func initService(daemonCli *DaemonCli) (bool, bool, error) {
 		}
 	}
 
+<<<<<<< HEAD
 	log.L.Logger.AddHook(&etwHook{eventLog})
 	log.L.Logger.SetOutput(io.Discard)
+=======
+	logrus.AddHook(&etwHook{log})
+	logrus.SetOutput(ioutil.Discard)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	service = h
 	go func() {

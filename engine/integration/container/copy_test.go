@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -135,7 +136,7 @@ func TestCopyFromContainer(t *testing.T) {
 
 	apiClient := testEnv.APIClient()
 
-	dir, err := os.MkdirTemp("", t.Name())
+	dir, err := ioutil.TempDir("", t.Name())
 	assert.NilError(t, err)
 	defer os.RemoveAll(dir)
 
@@ -153,7 +154,7 @@ func TestCopyFromContainer(t *testing.T) {
 	defer resp.Body.Close()
 
 	var imageID string
-	err = jsonmessage.DisplayJSONMessagesStream(resp.Body, io.Discard, 0, false, func(msg jsonmessage.JSONMessage) {
+	err = jsonmessage.DisplayJSONMessagesStream(resp.Body, ioutil.Discard, 0, false, func(msg jsonmessage.JSONMessage) {
 		var r types.BuildResult
 		assert.NilError(t, json.Unmarshal(*msg.Aux, &r))
 		imageID = r.ID
@@ -212,7 +213,7 @@ func TestCopyFromContainer(t *testing.T) {
 				numFound++
 				found[h.Name] = true
 
-				buf, err := io.ReadAll(tr)
+				buf, err := ioutil.ReadAll(tr)
 				if err == nil {
 					assert.Check(t, is.Equal(string(buf), expected))
 				}

@@ -4,10 +4,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+<<<<<<< HEAD
 	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path/filepath"
 	"runtime"
@@ -278,23 +282,23 @@ func TestNewDockerCliAndOperators(t *testing.T) {
 	outbuf := bytes.NewBuffer(nil)
 	errbuf := bytes.NewBuffer(nil)
 	err = cli.Apply(
-		WithInputStream(io.NopCloser(inbuf)),
+		WithInputStream(ioutil.NopCloser(inbuf)),
 		WithOutputStream(outbuf),
 		WithErrorStream(errbuf),
 	)
 	assert.NilError(t, err)
 	// Check input stream
-	inputStream, err := io.ReadAll(cli.In())
+	inputStream, err := ioutil.ReadAll(cli.In())
 	assert.NilError(t, err)
 	assert.Equal(t, string(inputStream), "input")
 	// Check output stream
 	fmt.Fprintf(cli.Out(), "output")
-	outputStream, err := io.ReadAll(outbuf)
+	outputStream, err := ioutil.ReadAll(outbuf)
 	assert.NilError(t, err)
 	assert.Equal(t, string(outputStream), "output")
 	// Check error stream
 	fmt.Fprintf(cli.Err(), "error")
-	errStream, err := io.ReadAll(errbuf)
+	errStream, err := ioutil.ReadAll(errbuf)
 	assert.NilError(t, err)
 	assert.Equal(t, string(errStream), "error")
 }

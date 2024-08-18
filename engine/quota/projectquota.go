@@ -53,8 +53,12 @@ const int Q_XGETQSTAT_PRJQUOTA = QCMD(Q_XGETQSTAT, PRJQUOTA);
 import "C"
 
 import (
+<<<<<<< HEAD
 	"context"
 	"os"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"path"
 	"path/filepath"
 	"sync"
@@ -105,10 +109,9 @@ func (state *pquotaState) updateMinProjID(minProjectID uint32) {
 // This test will fail if the backing fs is not xfs.
 //
 // xfs_quota tool can be used to assign a project id to the driver home directory, e.g.:
-//
-//	echo 999:/var/lib/docker/overlay2 >> /etc/projects
-//	echo docker:999 >> /etc/projid
-//	xfs_quota -x -c 'project -s docker' /<xfs mount point>
+//    echo 999:/var/lib/docker/overlay2 >> /etc/projects
+//    echo docker:999 >> /etc/projid
+//    xfs_quota -x -c 'project -s docker' /<xfs mount point>
 //
 // In that case, the home directory project id will be used as a "start offset"
 // and all containers will be assigned larger project ids (e.g. >= 1000).
@@ -117,6 +120,7 @@ func (state *pquotaState) updateMinProjID(minProjectID uint32) {
 // Then try to create a test directory with the next project id and set a quota
 // on it. If that works, continue to scan existing containers to map allocated
 // project ids.
+//
 func NewControl(basePath string) (*Control, error) {
 	//
 	// If we are running in a user namespace quota won't be supported for
@@ -340,7 +344,7 @@ func (q *Control) findNextProjectID(home string, baseID uint32) error {
 		return projid, nil
 	}
 
-	files, err := os.ReadDir(home)
+	files, err := ioutil.ReadDir(home)
 	if err != nil {
 		return errors.Errorf("read directory failed: %s", home)
 	}
@@ -356,7 +360,7 @@ func (q *Control) findNextProjectID(home string, baseID uint32) error {
 		if projid > 0 && projid != baseID {
 			continue
 		}
-		subfiles, err := os.ReadDir(path)
+		subfiles, err := ioutil.ReadDir(path)
 		if err != nil {
 			return errors.Errorf("read directory failed: %s", path)
 		}

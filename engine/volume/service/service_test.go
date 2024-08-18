@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"io/ioutil"
 	"os"
 	"testing"
 
@@ -235,7 +236,7 @@ func TestServicePrune(t *testing.T) {
 func newTestService(t *testing.T, ds *volumedrivers.Store) (*VolumesService, func()) {
 	t.Helper()
 
-	dir, err := os.MkdirTemp("", t.Name())
+	dir, err := ioutil.TempDir("", t.Name())
 	assert.NilError(t, err)
 
 	store, err := NewStore(dir, ds)

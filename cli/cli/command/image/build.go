@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -171,8 +172,21 @@ func (out *lastProgressOutput) WriteProgress(prog progress.Progress) error {
 	return out.output.WriteProgress(prog)
 }
 
+<<<<<<< HEAD
 //nolint:gocyclo
 func runBuild(ctx context.Context, dockerCli command.Cli, options buildOptions) error {
+=======
+// nolint: gocyclo
+func runBuild(dockerCli command.Cli, options buildOptions) error {
+	buildkitEnabled, err := command.BuildKitEnabled(dockerCli.ServerInfo())
+	if err != nil {
+		return err
+	}
+	if buildkitEnabled {
+		return runBuildBuildKit(dockerCli, options)
+	}
+
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	var (
 		err           error
 		buildCtx      io.ReadCloser
@@ -291,7 +305,7 @@ func runBuild(ctx context.Context, dockerCli command.Cli, options buildOptions) 
 			if err != nil {
 				return err
 			}
-			dockerfileCtx = io.NopCloser(bytes.NewBuffer(newDockerfile))
+			dockerfileCtx = ioutil.NopCloser(bytes.NewBuffer(newDockerfile))
 		}
 	}
 
@@ -387,7 +401,11 @@ func runBuild(ctx context.Context, dockerCli command.Cli, options buildOptions) 
 		if imageID == "" {
 			return errors.Errorf("Server did not provide an image ID. Cannot write %s", options.imageIDFile)
 		}
+<<<<<<< HEAD
 		if err := os.WriteFile(options.imageIDFile, []byte(imageID), 0o666); err != nil {
+=======
+		if err := ioutil.WriteFile(options.imageIDFile, []byte(imageID), 0666); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			return err
 		}
 	}

@@ -1,7 +1,11 @@
 package config // import "github.com/docker/docker/daemon/config"
 
 import (
+<<<<<<< HEAD
 	"encoding/json"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path/filepath"
 	"reflect"
@@ -36,6 +40,7 @@ func TestDaemonConfigurationNotFound(t *testing.T) {
 }
 
 func TestDaemonBrokenConfiguration(t *testing.T) {
+<<<<<<< HEAD
 	configFile := makeConfigFile(t, `{"Debug": tru`)
 
 	_, err := MergeDaemonConfigurations(&Config{}, nil, configFile)
@@ -67,6 +72,11 @@ func TestDaemonConfigurationUnicodeVariations(t *testing.T) {
 			name:     "UTF-16 (LE with BOM)",
 			encoding: unicode.UTF16(unicode.LittleEndian, unicode.UseBOM),
 		},
+=======
+	f, err := ioutil.TempFile("", "docker-config-")
+	if err != nil {
+		t.Fatal(err)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -112,7 +122,18 @@ func TestFindConfigurationConflictsWithNamedOptions(t *testing.T) {
 }
 
 func TestDaemonConfigurationMergeConflicts(t *testing.T) {
+<<<<<<< HEAD
 	configFile := makeConfigFile(t, `{"debug": true}`)
+=======
+	f, err := ioutil.TempFile("", "docker-config-")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	configFile := f.Name()
+	f.Write([]byte(`{"debug": true}`))
+	f.Close()
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	flags := pflag.NewFlagSet("test", pflag.ContinueOnError)
 	flags.Bool("debug", false, "")
@@ -128,21 +149,46 @@ func TestDaemonConfigurationMergeConflicts(t *testing.T) {
 }
 
 func TestDaemonConfigurationMergeConcurrent(t *testing.T) {
+<<<<<<< HEAD
 	configFile := makeConfigFile(t, `{"max-concurrent-downloads": 1}`)
+=======
+	f, err := ioutil.TempFile("", "docker-config-")
+	if err != nil {
+		t.Fatal(err)
+	}
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	_, err := MergeDaemonConfigurations(&Config{}, nil, configFile)
 	assert.NilError(t, err)
 }
 
 func TestDaemonConfigurationMergeConcurrentError(t *testing.T) {
+<<<<<<< HEAD
 	configFile := makeConfigFile(t, `{"max-concurrent-downloads": -1}`)
+=======
+	f, err := ioutil.TempFile("", "docker-config-")
+	if err != nil {
+		t.Fatal(err)
+	}
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	_, err := MergeDaemonConfigurations(&Config{}, nil, configFile)
 	assert.ErrorContains(t, err, `invalid max concurrent downloads: -1`)
 }
 
 func TestDaemonConfigurationMergeConflictsWithInnerStructs(t *testing.T) {
+<<<<<<< HEAD
 	configFile := makeConfigFile(t, `{"tlscacert": "/etc/certificates/ca.pem"}`)
+=======
+	f, err := ioutil.TempFile("", "docker-config-")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	configFile := f.Name()
+	f.Write([]byte(`{"tlscacert": "/etc/certificates/ca.pem"}`))
+	f.Close()
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	flags := pflag.NewFlagSet("test", pflag.ContinueOnError)
 	flags.String("tlscacert", "", "")
@@ -628,7 +674,18 @@ func TestReloadDefaultConfigNotExist(t *testing.T) {
 // TestReloadBadDefaultConfig tests that when `--config-file` is not set and the default configuration file exists and
 // is bad, an error is returned.
 func TestReloadBadDefaultConfig(t *testing.T) {
+<<<<<<< HEAD
 	configFile := makeConfigFile(t, `{wrong: "configuration"}`)
+=======
+	f, err := ioutil.TempFile("", "docker-config-")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	configFile := f.Name()
+	f.Write([]byte(`{wrong: "configuration"}`))
+	f.Close()
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	flags := pflag.NewFlagSet("test", pflag.ContinueOnError)
 	flags.String("config-file", configFile, "")

@@ -1,7 +1,7 @@
 package stack
 
 import (
-	"io"
+	"io/ioutil"
 	"testing"
 
 	"github.com/docker/cli/internal/test"
@@ -49,7 +49,7 @@ func TestListErrors(t *testing.T) {
 			serviceListFunc: tc.serviceListFunc,
 		}))
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		for key, value := range tc.flags {
 			assert.Check(t, cmd.Flags().Set(key, value))
 		}

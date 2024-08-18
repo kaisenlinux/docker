@@ -3,6 +3,7 @@
 package containerfs // import "github.com/docker/docker/pkg/containerfs"
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -16,11 +17,11 @@ func TestEnsureRemoveAllWithMount(t *testing.T) {
 		t.Skip("skipping test that requires root")
 	}
 
-	dir1, err := os.MkdirTemp("", "test-ensure-removeall-with-dir1")
+	dir1, err := ioutil.TempDir("", "test-ensure-removeall-with-dir1")
 	if err != nil {
 		t.Fatal(err)
 	}
-	dir2, err := os.MkdirTemp("", "test-ensure-removeall-with-dir2")
+	dir2, err := ioutil.TempDir("", "test-ensure-removeall-with-dir2")
 	if err != nil {
 		t.Fatal(err)
 	}

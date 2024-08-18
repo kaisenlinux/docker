@@ -1,10 +1,15 @@
 # syntax=docker/dockerfile:1
 
+<<<<<<< HEAD
 ARG GO_VERSION=1.21.11
 ARG ALPINE_VERSION=3.20
 
 ARG BUILDX_VERSION=0.12.1
 FROM docker/buildx-bin:${BUILDX_VERSION} AS buildx
+=======
+ARG GO_VERSION=1.18.10
+ARG ALPINE_VERSION=3.16
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS golang
 ENV GOTOOLCHAIN=local

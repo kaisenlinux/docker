@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -117,7 +118,7 @@ func TestPluginInstall(t *testing.T) {
 		assert.NilError(t, err)
 		defer rdr.Close()
 
-		_, err = io.Copy(io.Discard, rdr)
+		_, err = io.Copy(ioutil.Discard, rdr)
 		assert.NilError(t, err)
 
 		_, _, err = client.PluginInspectWithRaw(ctx, repo)
@@ -189,7 +190,7 @@ func TestPluginInstall(t *testing.T) {
 		assert.NilError(t, err)
 		defer rdr.Close()
 
-		_, err = io.Copy(io.Discard, rdr)
+		_, err = io.Copy(ioutil.Discard, rdr)
 		assert.NilError(t, err)
 
 		_, _, err = client.PluginInspectWithRaw(ctx, repo)
@@ -239,7 +240,7 @@ func TestPluginInstall(t *testing.T) {
 		assert.NilError(t, err)
 		defer rdr.Close()
 
-		_, err = io.Copy(io.Discard, rdr)
+		_, err = io.Copy(ioutil.Discard, rdr)
 		assert.NilError(t, err)
 
 		_, _, err = client.PluginInspectWithRaw(ctx, repo)
@@ -255,7 +256,7 @@ func TestPluginsWithRuntimes(t *testing.T) {
 
 	ctx := testutil.StartSpan(baseContext, t)
 
-	dir, err := os.MkdirTemp("", t.Name())
+	dir, err := ioutil.TempDir("", t.Name())
 	assert.NilError(t, err)
 	defer os.RemoveAll(dir)
 
@@ -284,7 +285,11 @@ func TestPluginsWithRuntimes(t *testing.T) {
 	exec runc $@
 	`, dir)
 
+<<<<<<< HEAD
 	assert.NilError(t, os.WriteFile(p, []byte(script), 0o777))
+=======
+	assert.NilError(t, ioutil.WriteFile(p, []byte(script), 0777))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	type config struct {
 		Runtimes map[string]system.Runtime `json:"runtimes"`
@@ -297,7 +302,11 @@ func TestPluginsWithRuntimes(t *testing.T) {
 		},
 	})
 	configPath := filepath.Join(dir, "config.json")
+<<<<<<< HEAD
 	os.WriteFile(configPath, cfg, 0o644)
+=======
+	ioutil.WriteFile(configPath, cfg, 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	t.Run("No Args", func(t *testing.T) {
 		_ = testutil.StartSpan(ctx, t)

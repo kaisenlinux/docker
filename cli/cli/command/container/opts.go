@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"os"
+	"io/ioutil"
 	"path"
 	"path/filepath"
 	"reflect"
@@ -333,8 +333,7 @@ type containerConfig struct {
 // parse parses the args for the specified command and generates a Config,
 // a HostConfig and returns them with the specified command.
 // If the specified args are not valid, it will return an error.
-//
-//nolint:gocyclo
+// nolint: gocyclo
 func parse(flags *pflag.FlagSet, copts *containerOptions, serverOS string) (*containerConfig, error) {
 	var (
 		attachStdin  = copts.attach.Get("stdin")
@@ -924,6 +923,7 @@ func parseSecurityOpts(securityOpts []string) ([]string, error) {
 		if !ok && k != "no-new-privileges" {
 			k, v, ok = strings.Cut(opt, ":")
 		}
+<<<<<<< HEAD
 		if (!ok || v == "") && k != "no-new-privileges" {
 			// "no-new-privileges" is the only option that does not require a value.
 			return securityOpts, errors.Errorf("Invalid --security-opt: %q", opt)
@@ -944,6 +944,12 @@ func parseSecurityOpts(securityOpts []string) ([]string, error) {
 					return securityOpts, errors.Errorf("compacting json for seccomp profile (%s) failed: %v", v, err)
 				}
 				securityOpts[key] = fmt.Sprintf("seccomp=%s", b.Bytes())
+=======
+		if con[0] == "seccomp" && con[1] != "unconfined" {
+			f, err := ioutil.ReadFile(con[1])
+			if err != nil {
+				return securityOpts, errors.Errorf("opening seccomp profile (%s) failed: %v", con[1], err)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			}
 		}
 	}
@@ -997,7 +1003,8 @@ func parseDevice(device, serverOS string) (container.DeviceMapping, error) {
 // parseLinuxDevice parses a device mapping string to a container.DeviceMapping struct
 // knowing that the target is a Linux daemon
 func parseLinuxDevice(device string) (container.DeviceMapping, error) {
-	var src, dst string
+	src := ""
+	dst := ""
 	permissions := "rwm"
 	// We expect 3 parts at maximum; limit to 4 parts to detect invalid options.
 	arr := strings.SplitN(device, ":", 4)
@@ -1038,8 +1045,7 @@ func parseWindowsDevice(device string) (container.DeviceMapping, error) {
 
 // validateDeviceCgroupRule validates a device cgroup rule string format
 // It will make sure 'val' is in the form:
-//
-//	'type major:minor mode'
+//    'type major:minor mode'
 func validateDeviceCgroupRule(val string) (string, error) {
 	if deviceCgroupRuleRegexp.MatchString(val) {
 		return val, nil
@@ -1083,9 +1089,7 @@ func validateDevice(val string, serverOS string) (string, error) {
 // validateLinuxPath is the implementation of validateDevice knowing that the
 // target server operating system is a Linux daemon.
 // It will make sure 'val' is in the form:
-//
-//	[host-dir:]container-path[:mode]
-//
+//    [host-dir:]container-path[:mode]
 // It also validates the device mode.
 func validateLinuxPath(val string, validator func(string) bool) (string, error) {
 	var containerPath string

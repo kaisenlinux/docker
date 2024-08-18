@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 
 	"github.com/containerd/containerd/content"
 	"github.com/containerd/containerd/images"
@@ -99,7 +100,7 @@ func (i *ImageService) manifestMatchesPlatform(ctx context.Context, img *image.I
 			continue
 		}
 
-		data, err := io.ReadAll(makeRdr(ra))
+		data, err := ioutil.ReadAll(makeRdr(ra))
 		ra.Close()
 
 		if err != nil {
@@ -139,7 +140,7 @@ func (i *ImageService) manifestMatchesPlatform(ctx context.Context, img *image.I
 				continue
 			}
 
-			data, err := io.ReadAll(makeRdr(ra))
+			data, err := ioutil.ReadAll(makeRdr(ra))
 			ra.Close()
 			if err != nil {
 				logger.WithError(err).Error("Error reading manifest for image")
@@ -276,7 +277,7 @@ func (i *ImageService) getImage(ctx context.Context, refOrID string, options bac
 }
 
 // OnlyPlatformWithFallback uses `platforms.Only` with a fallback to handle the case where the platform
-// being matched does not have a CPU variant.
+//  being matched does not have a CPU variant.
 //
 // The reason for this is that CPU variant is not even if the official image config spec as of this writing.
 // See: https://github.com/opencontainers/image-spec/pull/809

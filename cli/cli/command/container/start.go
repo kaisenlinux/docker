@@ -62,11 +62,17 @@ func NewStartCommand(dockerCli command.Cli) *cobra.Command {
 	return cmd
 }
 
+<<<<<<< HEAD
 // RunStart executes a `start` command
 //
 //nolint:gocyclo
 func RunStart(ctx context.Context, dockerCli command.Cli, opts *StartOptions) error {
 	ctx, cancelFun := context.WithCancel(ctx)
+=======
+// nolint: gocyclo
+func runStart(dockerCli command.Cli, opts *startOptions) error {
+	ctx, cancelFun := context.WithCancel(context.Background())
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	defer cancelFun()
 
 	switch {

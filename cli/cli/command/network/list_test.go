@@ -2,7 +2,7 @@ package network
 
 import (
 	"context"
-	"io"
+	"io/ioutil"
 	"testing"
 
 	"github.com/docker/cli/internal/test"
@@ -35,7 +35,7 @@ func TestNetworkListErrors(t *testing.T) {
 				networkListFunc: tc.networkListFunc,
 			}),
 		)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }

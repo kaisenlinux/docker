@@ -3,6 +3,7 @@ package daemon // import "github.com/docker/docker/daemon"
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -116,7 +117,7 @@ func (daemon *Daemon) CheckpointList(name string, config checkpoint.ListOptions)
 		return nil, err
 	}
 
-	dirs, err := os.ReadDir(checkpointDir)
+	dirs, err := ioutil.ReadDir(checkpointDir)
 	if err != nil {
 		return nil, err
 	}

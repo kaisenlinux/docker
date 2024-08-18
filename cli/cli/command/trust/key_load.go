@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/pem"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"os"
 	"runtime"
 
@@ -86,7 +86,7 @@ func getPrivKeyBytesFromPath(keyPath string) ([]byte, error) {
 	}
 	defer from.Close()
 
-	return io.ReadAll(from)
+	return ioutil.ReadAll(from)
 }
 
 func loadPrivKeyBytesToStore(privKeyBytes []byte, privKeyImporters []trustmanager.Importer, keyPath, keyName string, passRet notary.PassRetriever) error {

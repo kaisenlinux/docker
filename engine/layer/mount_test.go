@@ -1,9 +1,13 @@
 package layer // import "github.com/docker/docker/layer"
 
 import (
+<<<<<<< HEAD
 	"io"
 	"os"
 	"path/filepath"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"runtime"
 	"sort"
 	"testing"
@@ -57,7 +61,7 @@ func TestMountInit(t *testing.T) {
 	}
 	defer f.Close()
 
-	b, err := io.ReadAll(f)
+	b, err := ioutil.ReadAll(f)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -255,7 +259,7 @@ func TestMountApply(t *testing.T) {
 	}
 	defer f.Close()
 
-	b, err := io.ReadAll(f)
+	b, err := ioutil.ReadAll(f)
 	if err != nil {
 		t.Fatal(err)
 	}

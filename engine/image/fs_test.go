@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -15,7 +16,7 @@ import (
 )
 
 func defaultFSStoreBackend(t *testing.T) (StoreBackend, func()) {
-	tmpdir, err := os.MkdirTemp("", "images-fs-store")
+	tmpdir, err := ioutil.TempDir("", "images-fs-store")
 	assert.Check(t, err)
 
 	fsBackend, err := NewFSStoreBackend(tmpdir)
@@ -31,7 +32,11 @@ func TestFSGetInvalidData(t *testing.T) {
 	dgst, err := store.Set([]byte("foobar"))
 	assert.Check(t, err)
 
+<<<<<<< HEAD
 	err = os.WriteFile(filepath.Join(store.(*fs).root, contentDirName, string(dgst.Algorithm()), dgst.Encoded()), []byte("foobar2"), 0o600)
+=======
+	err = ioutil.WriteFile(filepath.Join(store.(*fs).root, contentDirName, string(dgst.Algorithm()), dgst.Hex()), []byte("foobar2"), 0600)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.Check(t, err)
 
 	_, err = store.Get(dgst)
@@ -51,7 +56,7 @@ func TestFSInvalidSet(t *testing.T) {
 }
 
 func TestFSInvalidRoot(t *testing.T) {
-	tmpdir, err := os.MkdirTemp("", "images-fs-store")
+	tmpdir, err := ioutil.TempDir("", "images-fs-store")
 	assert.Check(t, err)
 	defer os.RemoveAll(tmpdir)
 
@@ -128,7 +133,11 @@ func TestFSInvalidWalker(t *testing.T) {
 	fooID, err := store.Set([]byte("foo"))
 	assert.Check(t, err)
 
+<<<<<<< HEAD
 	err = os.WriteFile(filepath.Join(store.(*fs).root, contentDirName, "sha256/foobar"), []byte("foobar"), 0o600)
+=======
+	err = ioutil.WriteFile(filepath.Join(store.(*fs).root, contentDirName, "sha256/foobar"), []byte("foobar"), 0600)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.Check(t, err)
 
 	n := 0

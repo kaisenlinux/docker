@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -197,7 +198,11 @@ func (d *Driver) create(id, parent string, opts *graphdriver.CreateOpts) (retErr
 	}
 
 	// Write link id to link file
+<<<<<<< HEAD
 	if err := os.WriteFile(path.Join(dir, "link"), []byte(lid), 0o644); err != nil {
+=======
+	if err := ioutil.WriteFile(path.Join(dir, "link"), []byte(lid), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		return err
 	}
 
@@ -210,7 +215,11 @@ func (d *Driver) create(id, parent string, opts *graphdriver.CreateOpts) (retErr
 		return err
 	}
 
+<<<<<<< HEAD
 	if err := os.WriteFile(path.Join(d.dir(parent), "committed"), []byte{}, 0o600); err != nil {
+=======
+	if err := ioutil.WriteFile(path.Join(d.dir(parent), "committed"), []byte{}, 0600); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		return err
 	}
 
@@ -219,7 +228,11 @@ func (d *Driver) create(id, parent string, opts *graphdriver.CreateOpts) (retErr
 		return err
 	}
 	if lower != "" {
+<<<<<<< HEAD
 		if err := os.WriteFile(path.Join(dir, lowerFile), []byte(lower), 0o666); err != nil {
+=======
+		if err := ioutil.WriteFile(path.Join(dir, lowerFile), []byte(lower), 0666); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			return err
 		}
 	}
@@ -236,13 +249,13 @@ func (d *Driver) getLower(parent string) (string, error) {
 	}
 
 	// Read Parent link fileA
-	parentLink, err := os.ReadFile(path.Join(parentDir, "link"))
+	parentLink, err := ioutil.ReadFile(path.Join(parentDir, "link"))
 	if err != nil {
 		return "", err
 	}
 	lowers := []string{path.Join(linkDir, string(parentLink))}
 
-	parentLower, err := os.ReadFile(path.Join(parentDir, lowerFile))
+	parentLower, err := ioutil.ReadFile(path.Join(parentDir, lowerFile))
 	if err == nil {
 		parentLowers := strings.Split(string(parentLower), ":")
 		lowers = append(lowers, parentLowers...)
@@ -259,7 +272,7 @@ func (d *Driver) dir(id string) string {
 
 func (d *Driver) getLowerDirs(id string) ([]string, error) {
 	var lowersArray []string
-	lowers, err := os.ReadFile(path.Join(d.dir(id), lowerFile))
+	lowers, err := ioutil.ReadFile(path.Join(d.dir(id), lowerFile))
 	if err == nil {
 		for _, s := range strings.Split(string(lowers), ":") {
 			lp, err := os.Readlink(path.Join(d.home, s))
@@ -282,7 +295,7 @@ func (d *Driver) Remove(id string) error {
 	d.locker.Lock(id)
 	defer d.locker.Unlock(id)
 	dir := d.dir(id)
-	lid, err := os.ReadFile(path.Join(dir, "link"))
+	lid, err := ioutil.ReadFile(path.Join(dir, "link"))
 	if err == nil {
 		if len(lid) == 0 {
 			logger.Errorf("refusing to remove empty link for layer %v", id)
@@ -307,7 +320,7 @@ func (d *Driver) Get(id, mountLabel string) (_ string, retErr error) {
 	}
 
 	diffDir := path.Join(dir, diffDirName)
-	lowers, err := os.ReadFile(path.Join(dir, lowerFile))
+	lowers, err := ioutil.ReadFile(path.Join(dir, lowerFile))
 	if err != nil {
 		// If no lower, just return diff directory
 		if os.IsNotExist(err) {
@@ -385,7 +398,7 @@ func (d *Driver) Put(id string) error {
 	d.locker.Lock(id)
 	defer d.locker.Unlock(id)
 	dir := d.dir(id)
-	_, err := os.ReadFile(path.Join(dir, lowerFile))
+	_, err := ioutil.ReadFile(path.Join(dir, lowerFile))
 	if err != nil {
 		// If no lower, no mount happened and just return directly
 		if os.IsNotExist(err) {

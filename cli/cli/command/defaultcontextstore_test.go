@@ -5,6 +5,8 @@ package command
 
 import (
 	"crypto/rand"
+	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/docker/cli/cli/config/configfile"
@@ -41,16 +43,20 @@ func testDefaultMetadata() store.Metadata {
 	}
 }
 
-func testStore(t *testing.T, meta store.Metadata, tls store.ContextTLSData) store.Store {
-	t.Helper()
-	return &ContextStoreWithDefault{
-		Store: store.New(t.TempDir(), testCfg),
+func testStore(t *testing.T, meta store.Metadata, tls store.ContextTLSData) (store.Store, func()) {
+	testDir, err := ioutil.TempDir("", t.Name())
+	assert.NilError(t, err)
+	s := &ContextStoreWithDefault{
+		Store: store.New(testDir, testCfg),
 		Resolver: func() (*DefaultContext, error) {
 			return &DefaultContext{
 				Meta: meta,
 				TLS:  tls,
 			}, nil
 		},
+	}
+	return s, func() {
+		_ = os.RemoveAll(testDir)
 	}
 }
 
@@ -76,7 +82,7 @@ func TestExportDefaultImport(t *testing.T) {
 	rand.Read(file1)
 	file2 := make([]byte, 3700)
 	rand.Read(file2)
-	s := testStore(t, testDefaultMetadata(), store.ContextTLSData{
+	s, cleanup := testStore(t, testDefaultMetadata(), store.ContextTLSData{
 		Endpoints: map[string]store.EndpointTLSData{
 			"ep2": {
 				Files: map[string][]byte{
@@ -86,6 +92,7 @@ func TestExportDefaultImport(t *testing.T) {
 			},
 		},
 	})
+	defer cleanup()
 	r := store.Export("default", s)
 	defer r.Close()
 	err := store.Import("dest", s, r)
@@ -124,7 +131,8 @@ func TestExportDefaultImport(t *testing.T) {
 
 func TestListDefaultContext(t *testing.T) {
 	meta := testDefaultMetadata()
-	s := testStore(t, meta, store.ContextTLSData{})
+	s, cleanup := testStore(t, meta, store.ContextTLSData{})
+	defer cleanup()
 	result, err := s.List()
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(result))
@@ -132,7 +140,8 @@ func TestListDefaultContext(t *testing.T) {
 }
 
 func TestGetDefaultContextStorageInfo(t *testing.T) {
-	s := testStore(t, testDefaultMetadata(), store.ContextTLSData{})
+	s, cleanup := testStore(t, testDefaultMetadata(), store.ContextTLSData{})
+	defer cleanup()
 	result := s.GetStorageInfo(DefaultContextName)
 	assert.Equal(t, "<IN MEMORY>", result.MetadataPath)
 	assert.Equal(t, "<IN MEMORY>", result.TLSPath)
@@ -140,7 +149,8 @@ func TestGetDefaultContextStorageInfo(t *testing.T) {
 
 func TestGetDefaultContextMetadata(t *testing.T) {
 	meta := testDefaultMetadata()
-	s := testStore(t, meta, store.ContextTLSData{})
+	s, cleanup := testStore(t, meta, store.ContextTLSData{})
+	defer cleanup()
 	result, err := s.GetMetadata(DefaultContextName)
 	assert.NilError(t, err)
 	assert.Equal(t, DefaultContextName, result.Name)
@@ -150,7 +160,8 @@ func TestGetDefaultContextMetadata(t *testing.T) {
 
 func TestErrCreateDefault(t *testing.T) {
 	meta := testDefaultMetadata()
-	s := testStore(t, meta, store.ContextTLSData{})
+	s, cleanup := testStore(t, meta, store.ContextTLSData{})
+	defer cleanup()
 	err := s.CreateOrUpdate(store.Metadata{
 		Endpoints: map[string]any{
 			"ep1": endpoint{Foo: "bar"},
@@ -164,7 +175,8 @@ func TestErrCreateDefault(t *testing.T) {
 
 func TestErrRemoveDefault(t *testing.T) {
 	meta := testDefaultMetadata()
-	s := testStore(t, meta, store.ContextTLSData{})
+	s, cleanup := testStore(t, meta, store.ContextTLSData{})
+	defer cleanup()
 	err := s.Remove("default")
 	assert.Check(t, is.ErrorType(err, errdefs.IsInvalidParameter))
 	assert.Error(t, err, "default context cannot be removed")
@@ -172,7 +184,8 @@ func TestErrRemoveDefault(t *testing.T) {
 
 func TestErrTLSDataError(t *testing.T) {
 	meta := testDefaultMetadata()
-	s := testStore(t, meta, store.ContextTLSData{})
+	s, cleanup := testStore(t, meta, store.ContextTLSData{})
+	defer cleanup()
 	_, err := s.GetTLSData("default", "noop", "noop")
 	assert.Check(t, is.ErrorType(err, errdefs.IsNotFound))
 }

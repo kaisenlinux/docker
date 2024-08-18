@@ -215,8 +215,13 @@ func prettyPrintClientInfo(streams command.Streams, info clientInfo) {
 	}
 }
 
+<<<<<<< HEAD
 //nolint:gocyclo
 func prettyPrintServerInfo(streams command.Streams, info *dockerInfo) []error {
+=======
+// nolint: gocyclo
+func prettyPrintServerInfo(dockerCli command.Cli, info types.Info) []error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	var errs []error
 	output := streams.Out()
 
@@ -386,8 +391,13 @@ func prettyPrintServerInfo(streams command.Streams, info *dockerInfo) []error {
 	return errs
 }
 
+<<<<<<< HEAD
 //nolint:gocyclo
 func printSwarmInfo(output io.Writer, info system.Info) {
+=======
+// nolint: gocyclo
+func printSwarmInfo(dockerCli command.Cli, info types.Info) {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if info.Swarm.LocalNodeState == swarm.LocalNodeStateInactive || info.Swarm.LocalNodeState == swarm.LocalNodeStateLocked {
 		return
 	}

@@ -1,7 +1,11 @@
 package loggerutils
 
 import (
+<<<<<<< HEAD
 	"io"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path/filepath"
 	"testing"
@@ -10,7 +14,14 @@ import (
 )
 
 func TestOpenFileDelete(t *testing.T) {
+<<<<<<< HEAD
 	tmpDir := t.TempDir()
+=======
+	tmpDir, err := ioutil.TempDir("", t.Name())
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpDir)
+
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	f, err := openFile(filepath.Join(tmpDir, "test.txt"), os.O_CREATE|os.O_RDWR, 644)
 	assert.NilError(t, err)
 	defer f.Close()
@@ -19,8 +30,16 @@ func TestOpenFileDelete(t *testing.T) {
 }
 
 func TestOpenFileRename(t *testing.T) {
+<<<<<<< HEAD
 	tmpDir := t.TempDir()
 	f, err := openFile(filepath.Join(tmpDir, "test.txt"), os.O_CREATE|os.O_RDWR, 0o644)
+=======
+	tmpDir, err := ioutil.TempDir("", t.Name())
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpDir)
+
+	f, err := openFile(filepath.Join(tmpDir, "test.txt"), os.O_CREATE|os.O_RDWR, 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 	defer f.Close()
 

@@ -4,7 +4,7 @@ package main
 
 import (
 	"fmt"
-	"io"
+	"io/ioutil"
 	"math/rand"
 	"strings"
 	"testing"
@@ -36,7 +36,7 @@ func (s *DockerAPISuite) TestContainersAPICreateMountsBindNamedPipe(c *testing.T
 	go func() {
 		conn, err := l.Accept()
 		if err == nil {
-			b, err = io.ReadAll(conn)
+			b, err = ioutil.ReadAll(conn)
 			conn.Close()
 		}
 		ch <- err

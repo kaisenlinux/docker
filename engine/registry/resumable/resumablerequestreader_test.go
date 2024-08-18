@@ -3,6 +3,7 @@ package resumable // import "github.com/docker/docker/registry/resumable"
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -133,7 +134,7 @@ func TestResumableRequestReaderWithEOFWith416Response(t *testing.T) {
 		StatusCode:    http.StatusRequestedRangeNotSatisfiable,
 		ContentLength: 0,
 		Close:         true,
-		Body:          io.NopCloser(strings.NewReader("")),
+		Body:          ioutil.NopCloser(strings.NewReader("")),
 	}
 
 	resreq := &requestReader{
@@ -194,7 +195,7 @@ func TestResumableRequestReaderWithZeroTotalSize(t *testing.T) {
 	resreq := NewRequestReader(client, req, retries, 0)
 	defer resreq.Close()
 
-	data, err := io.ReadAll(resreq)
+	data, err := ioutil.ReadAll(resreq)
 	assert.NilError(t, err)
 
 	resstr := strings.TrimSuffix(string(data), "\n")
@@ -220,7 +221,7 @@ func TestResumableRequestReader(t *testing.T) {
 	resreq := NewRequestReader(client, req, retries, imgSize)
 	defer resreq.Close()
 
-	data, err := io.ReadAll(resreq)
+	data, err := ioutil.ReadAll(resreq)
 	assert.NilError(t, err)
 
 	resstr := strings.TrimSuffix(string(data), "\n")
@@ -249,7 +250,7 @@ func TestResumableRequestReaderWithInitialResponse(t *testing.T) {
 	resreq := NewRequestReaderWithInitialResponse(client, req, retries, imgSize, res)
 	defer resreq.Close()
 
-	data, err := io.ReadAll(resreq)
+	data, err := ioutil.ReadAll(resreq)
 	assert.NilError(t, err)
 
 	resstr := strings.TrimSuffix(string(data), "\n")

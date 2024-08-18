@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
 	"strings"
 	"testing"
@@ -33,7 +34,7 @@ func TestNetworkNat(t *testing.T) {
 	assert.NilError(t, err)
 	defer conn.Close()
 
-	data, err := io.ReadAll(conn)
+	data, err := ioutil.ReadAll(conn)
 	assert.NilError(t, err)
 	assert.Check(t, is.Equal(msg, strings.TrimSpace(string(data))))
 }
@@ -50,7 +51,7 @@ func TestNetworkLocalhostTCPNat(t *testing.T) {
 	assert.NilError(t, err)
 	defer conn.Close()
 
-	data, err := io.ReadAll(conn)
+	data, err := ioutil.ReadAll(conn)
 	assert.NilError(t, err)
 	assert.Check(t, is.Equal(msg, strings.TrimSpace(string(data))))
 }

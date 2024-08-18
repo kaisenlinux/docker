@@ -1,6 +1,8 @@
 package image
 
 import (
+	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/docker/cli/cli/trust"
@@ -49,7 +51,11 @@ func TestNonOfficialTrustServer(t *testing.T) {
 }
 
 func TestAddTargetToAllSignableRolesError(t *testing.T) {
-	notaryRepo, err := client.NewFileCachedRepository(t.TempDir(), "gun", "https://localhost", nil, passphrase.ConstantRetriever("password"), trustpinning.TrustPinConfig{})
+	tmpDir, err := ioutil.TempDir("", "notary-test-")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpDir)
+
+	notaryRepo, err := client.NewFileCachedRepository(tmpDir, "gun", "https://localhost", nil, passphrase.ConstantRetriever("password"), trustpinning.TrustPinConfig{})
 	assert.NilError(t, err)
 	target := client.Target{}
 	err = AddTargetToAllSignableRoles(notaryRepo, &target)

@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -941,7 +942,7 @@ func (s *DockerCLIBuildSuite) TestBuildAddBadLinks(c *testing.T) {
 	ctx := fakecontext.New(c, "", fakecontext.WithDockerfile(dockerfile))
 	defer ctx.Close()
 
-	tempDir, err := os.MkdirTemp("", "test-link-absolute-temp-")
+	tempDir, err := ioutil.TempDir("", "test-link-absolute-temp-")
 	if err != nil {
 		c.Fatalf("failed to create temporary directory: %s", tempDir)
 	}
@@ -1010,7 +1011,7 @@ func (s *DockerCLIBuildSuite) TestBuildAddBadLinksVolume(c *testing.T) {
 		targetFile = "foo.txt"
 	)
 
-	tempDir, err := os.MkdirTemp("", "test-link-absolute-volume-temp-")
+	tempDir, err := ioutil.TempDir("", "test-link-absolute-volume-temp-")
 	if err != nil {
 		c.Fatalf("failed to create temporary directory: %s", tempDir)
 	}
@@ -1501,8 +1502,13 @@ func (s *DockerCLIBuildSuite) TestBuildPATH(c *testing.T) {
 func (s *DockerCLIBuildSuite) TestBuildContextCleanup(c *testing.T) {
 	testRequires(c, testEnv.IsLocalDaemon)
 
+<<<<<<< HEAD
 	const name = "testbuildcontextcleanup"
 	entries, err := os.ReadDir(filepath.Join(testEnv.DaemonInfo.DockerRootDir, "tmp"))
+=======
+	name := "testbuildcontextcleanup"
+	entries, err := ioutil.ReadDir(filepath.Join(testEnv.DaemonInfo.DockerRootDir, "tmp"))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		c.Fatalf("failed to list contents of tmp dir: %s", err)
 	}
@@ -1510,7 +1516,7 @@ func (s *DockerCLIBuildSuite) TestBuildContextCleanup(c *testing.T) {
 	buildImageSuccessfully(c, name, build.WithDockerfile(`FROM `+minimalBaseImage()+`
         ENTRYPOINT ["/bin/echo"]`))
 
-	entriesFinal, err := os.ReadDir(filepath.Join(testEnv.DaemonInfo.DockerRootDir, "tmp"))
+	entriesFinal, err := ioutil.ReadDir(filepath.Join(testEnv.DaemonInfo.DockerRootDir, "tmp"))
 	if err != nil {
 		c.Fatalf("failed to list contents of tmp dir: %s", err)
 	}
@@ -1522,8 +1528,13 @@ func (s *DockerCLIBuildSuite) TestBuildContextCleanup(c *testing.T) {
 func (s *DockerCLIBuildSuite) TestBuildContextCleanupFailedBuild(c *testing.T) {
 	testRequires(c, testEnv.IsLocalDaemon)
 
+<<<<<<< HEAD
 	const name = "testbuildcontextcleanup"
 	entries, err := os.ReadDir(filepath.Join(testEnv.DaemonInfo.DockerRootDir, "tmp"))
+=======
+	name := "testbuildcontextcleanup"
+	entries, err := ioutil.ReadDir(filepath.Join(testEnv.DaemonInfo.DockerRootDir, "tmp"))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		c.Fatalf("failed to list contents of tmp dir: %s", err)
 	}
@@ -1533,7 +1544,7 @@ func (s *DockerCLIBuildSuite) TestBuildContextCleanupFailedBuild(c *testing.T) {
 		ExitCode: 1,
 	})
 
-	entriesFinal, err := os.ReadDir(filepath.Join(testEnv.DaemonInfo.DockerRootDir, "tmp"))
+	entriesFinal, err := ioutil.ReadDir(filepath.Join(testEnv.DaemonInfo.DockerRootDir, "tmp"))
 	if err != nil {
 		c.Fatalf("failed to list contents of tmp dir: %s", err)
 	}
@@ -1542,9 +1553,9 @@ func (s *DockerCLIBuildSuite) TestBuildContextCleanupFailedBuild(c *testing.T) {
 	}
 }
 
-// compareDirectoryEntries compares two sets of DirEntry (usually taken from a directory)
+// compareDirectoryEntries compares two sets of FileInfo (usually taken from a directory)
 // and returns an error if different.
-func compareDirectoryEntries(e1 []os.DirEntry, e2 []os.DirEntry) error {
+func compareDirectoryEntries(e1 []os.FileInfo, e2 []os.FileInfo) error {
 	var (
 		e1Entries = make(map[string]struct{})
 		e2Entries = make(map[string]struct{})
@@ -2050,11 +2061,19 @@ func (s *DockerCLIBuildSuite) TestBuildNoContext(c *testing.T) {
 }
 
 // FIXME(vdemeester) migrate to docker/cli e2e
+<<<<<<< HEAD
 func (s *DockerCLIBuildSuite) TestBuildDockerfileStdin(c *testing.T) {
 	const name = "stdindockerfile"
 	tmpDir, err := os.MkdirTemp("", "fake-context")
 	assert.NilError(c, err)
 	err = os.WriteFile(filepath.Join(tmpDir, "foo"), []byte("bar"), 0o600)
+=======
+func (s *DockerSuite) TestBuildDockerfileStdin(c *testing.T) {
+	name := "stdindockerfile"
+	tmpDir, err := ioutil.TempDir("", "fake-context")
+	assert.NilError(c, err)
+	err = ioutil.WriteFile(filepath.Join(tmpDir, "foo"), []byte("bar"), 0600)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	icmd.RunCmd(icmd.Cmd{
@@ -2092,14 +2111,24 @@ func (s *DockerCLIBuildSuite) TestBuildDockerfileStdinDockerignoreIgnored(c *tes
 	s.testBuildDockerfileStdinNoExtraFiles(c, true, true)
 }
 
+<<<<<<< HEAD
 func (s *DockerCLIBuildSuite) testBuildDockerfileStdinNoExtraFiles(c *testing.T, hasDockerignore, ignoreDockerignore bool) {
 	const name = "stdindockerfilenoextra"
 	tmpDir, err := os.MkdirTemp("", "fake-context")
+=======
+func (s *DockerSuite) testBuildDockerfileStdinNoExtraFiles(c *testing.T, hasDockerignore, ignoreDockerignore bool) {
+	name := "stdindockerfilenoextra"
+	tmpDir, err := ioutil.TempDir("", "fake-context")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 	defer os.RemoveAll(tmpDir)
 
 	writeFile := func(filename, content string) {
+<<<<<<< HEAD
 		err = os.WriteFile(filepath.Join(tmpDir, filename), []byte(content), 0o600)
+=======
+		err = ioutil.WriteFile(filepath.Join(tmpDir, filename), []byte(content), 0600)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		assert.NilError(c, err)
 	}
 
@@ -2826,7 +2855,7 @@ ADD test.tar /existing-directory
 RUN cat /existing-directory/test/foo | grep Hi
 ADD test.tar /existing-directory-trailing-slash/
 RUN cat /existing-directory-trailing-slash/test/foo | grep Hi`
-		tmpDir, err := os.MkdirTemp("", "fake-context")
+		tmpDir, err := ioutil.TempDir("", "fake-context")
 		assert.NilError(c, err)
 		testTar, err := os.Create(filepath.Join(tmpDir, "test.tar"))
 		if err != nil {
@@ -2849,7 +2878,11 @@ RUN cat /existing-directory-trailing-slash/test/foo | grep Hi`
 			c.Fatalf("failed to close tar archive: %v", err)
 		}
 
+<<<<<<< HEAD
 		if err := os.WriteFile(filepath.Join(tmpDir, "Dockerfile"), []byte(dockerfile), 0o644); err != nil {
+=======
+		if err := ioutil.WriteFile(filepath.Join(tmpDir, "Dockerfile"), []byte(dockerfile), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			c.Fatalf("failed to open destination dockerfile: %v", err)
 		}
 		return fakecontext.New(c, tmpDir)
@@ -2866,7 +2899,7 @@ func (s *DockerCLIBuildSuite) TestBuildAddBrokenTar(c *testing.T) {
 		dockerfile := `
 FROM busybox
 ADD test.tar /`
-		tmpDir, err := os.MkdirTemp("", "fake-context")
+		tmpDir, err := ioutil.TempDir("", "fake-context")
 		assert.NilError(c, err)
 		testTar, err := os.Create(filepath.Join(tmpDir, "test.tar"))
 		if err != nil {
@@ -2898,7 +2931,11 @@ ADD test.tar /`
 			c.Fatalf("failed to truncate tar archive: %v", err)
 		}
 
+<<<<<<< HEAD
 		if err := os.WriteFile(filepath.Join(tmpDir, "Dockerfile"), []byte(dockerfile), 0o644); err != nil {
+=======
+		if err := ioutil.WriteFile(filepath.Join(tmpDir, "Dockerfile"), []byte(dockerfile), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			c.Fatalf("failed to open destination dockerfile: %v", err)
 		}
 		return fakecontext.New(c, tmpDir)
@@ -2934,7 +2971,7 @@ func (s *DockerCLIBuildSuite) TestBuildAddTarXz(c *testing.T) {
 			FROM busybox
 			ADD test.tar.xz /
 			RUN cat /test/foo | grep Hi`
-		tmpDir, err := os.MkdirTemp("", "fake-context")
+		tmpDir, err := ioutil.TempDir("", "fake-context")
 		assert.NilError(c, err)
 		testTar, err := os.Create(filepath.Join(tmpDir, "test.tar"))
 		if err != nil {
@@ -2961,7 +2998,11 @@ func (s *DockerCLIBuildSuite) TestBuildAddTarXz(c *testing.T) {
 			Command: []string{"xz", "-k", "test.tar"},
 			Dir:     tmpDir,
 		}).Assert(c, icmd.Success)
+<<<<<<< HEAD
 		if err := os.WriteFile(filepath.Join(tmpDir, "Dockerfile"), []byte(dockerfile), 0o644); err != nil {
+=======
+		if err := ioutil.WriteFile(filepath.Join(tmpDir, "Dockerfile"), []byte(dockerfile), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			c.Fatalf("failed to open destination dockerfile: %v", err)
 		}
 		return fakecontext.New(c, tmpDir)
@@ -2981,7 +3022,7 @@ func (s *DockerCLIBuildSuite) TestBuildAddTarXzGz(c *testing.T) {
 			FROM busybox
 			ADD test.tar.xz.gz /
 			RUN ls /test.tar.xz.gz`
-		tmpDir, err := os.MkdirTemp("", "fake-context")
+		tmpDir, err := ioutil.TempDir("", "fake-context")
 		assert.NilError(c, err)
 		testTar, err := os.Create(filepath.Join(tmpDir, "test.tar"))
 		if err != nil {
@@ -3013,7 +3054,11 @@ func (s *DockerCLIBuildSuite) TestBuildAddTarXzGz(c *testing.T) {
 			Command: []string{"gzip", "test.tar.xz"},
 			Dir:     tmpDir,
 		})
+<<<<<<< HEAD
 		if err := os.WriteFile(filepath.Join(tmpDir, "Dockerfile"), []byte(dockerfile), 0o644); err != nil {
+=======
+		if err := ioutil.WriteFile(filepath.Join(tmpDir, "Dockerfile"), []byte(dockerfile), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			c.Fatalf("failed to open destination dockerfile: %v", err)
 		}
 		return fakecontext.New(c, tmpDir)
@@ -3576,10 +3621,16 @@ RUN [ $(ls -l /test | awk '{print $3":"$4}') = 'root:root' ]
 	cli.BuildCmd(c, name, build.WithExternalBuildContext(ctx))
 }
 
+<<<<<<< HEAD
 func (s *DockerCLIBuildSuite) TestBuildSymlinkBreakout(c *testing.T) {
 	skip.If(c, testEnv.UsingSnapshotter(), "FIXME: https://github.com/moby/moby/issues/47107")
 	const name = "testbuildsymlinkbreakout"
 	tmpdir, err := os.MkdirTemp("", name)
+=======
+func (s *DockerSuite) TestBuildSymlinkBreakout(c *testing.T) {
+	name := "testbuildsymlinkbreakout"
+	tmpdir, err := ioutil.TempDir("", name)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	// See https://github.com/moby/moby/pull/37770 for reason for next line.
@@ -3591,7 +3642,7 @@ func (s *DockerCLIBuildSuite) TestBuildSymlinkBreakout(c *testing.T) {
 	if err := os.MkdirAll(ctx, 0o755); err != nil {
 		c.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(ctx, "Dockerfile"), []byte(`
+	if err := ioutil.WriteFile(filepath.Join(ctx, "Dockerfile"), []byte(`
 	from busybox
 	add symlink.tar /
 	add inject /symlink/
@@ -3599,7 +3650,11 @@ func (s *DockerCLIBuildSuite) TestBuildSymlinkBreakout(c *testing.T) {
 		c.Fatal(err)
 	}
 	inject := filepath.Join(ctx, "inject")
+<<<<<<< HEAD
 	if err := os.WriteFile(inject, nil, 0o644); err != nil {
+=======
+	if err := ioutil.WriteFile(inject, nil, 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		c.Fatal(err)
 	}
 	f, err := os.Create(filepath.Join(ctx, "symlink.tar"))
@@ -3951,7 +4006,7 @@ func (s *DockerCLIBuildSuite) TestBuildContainerWithCgroupParent(c *testing.T) {
 	testRequires(c, testEnv.IsLocalDaemon, DaemonIsLinux)
 
 	cgroupParent := "test"
-	data, err := os.ReadFile("/proc/self/cgroup")
+	data, err := ioutil.ReadFile("/proc/self/cgroup")
 	if err != nil {
 		c.Fatalf("failed to read '/proc/self/cgroup - %v", err)
 	}
@@ -4758,7 +4813,11 @@ func (s *DockerCLIBuildSuite) TestBuildCacheBrokenSymlink(c *testing.T) {
 	cli.BuildCmd(c, name, build.WithExternalBuildContext(ctx))
 
 	// add new file to context, should invalidate cache
+<<<<<<< HEAD
 	err = os.WriteFile(filepath.Join(ctx.Dir, "newfile"), []byte("foo"), 0o644)
+=======
+	err = ioutil.WriteFile(filepath.Join(ctx.Dir, "newfile"), []byte("foo"), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	result := cli.BuildCmd(c, name, build.WithExternalBuildContext(ctx))
@@ -4787,7 +4846,11 @@ func (s *DockerCLIBuildSuite) TestBuildFollowSymlinkToFile(c *testing.T) {
 	assert.Assert(c, is.Regexp("^bar$", out))
 
 	// change target file should invalidate cache
+<<<<<<< HEAD
 	err = os.WriteFile(filepath.Join(ctx.Dir, "foo"), []byte("baz"), 0o644)
+=======
+	err = ioutil.WriteFile(filepath.Join(ctx.Dir, "foo"), []byte("baz"), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	result := cli.BuildCmd(c, name, build.WithExternalBuildContext(ctx))
@@ -4817,7 +4880,11 @@ func (s *DockerCLIBuildSuite) TestBuildFollowSymlinkToDir(c *testing.T) {
 	assert.Assert(c, is.Regexp("^barbaz$", out))
 
 	// change target file should invalidate cache
+<<<<<<< HEAD
 	err = os.WriteFile(filepath.Join(ctx.Dir, "foo/def"), []byte("bax"), 0o644)
+=======
+	err = ioutil.WriteFile(filepath.Join(ctx.Dir, "foo/def"), []byte("bax"), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	result := cli.BuildCmd(c, name, build.WithExternalBuildContext(ctx))
@@ -4864,7 +4931,11 @@ func (s *DockerCLIBuildSuite) TestBuildCacheRootSource(c *testing.T) {
 	cli.BuildCmd(c, name, build.WithExternalBuildContext(ctx))
 
 	// change file, should invalidate cache
+<<<<<<< HEAD
 	err := os.WriteFile(filepath.Join(ctx.Dir, "foo"), []byte("baz"), 0o644)
+=======
+	err := ioutil.WriteFile(filepath.Join(ctx.Dir, "foo"), []byte("baz"), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	result := cli.BuildCmd(c, name, build.WithExternalBuildContext(ctx))
@@ -5008,18 +5079,22 @@ func (s *DockerRegistryAuthHtpasswdSuite) TestBuildWithExternalAuth(c *testing.T
 
 	repoName := fmt.Sprintf("%v/dockercli/busybox:authtest", privateRegistryURL)
 
-	tmp, err := os.MkdirTemp("", "integration-cli-")
+	tmp, err := ioutil.TempDir("", "integration-cli-")
 	assert.NilError(c, err)
 
 	externalAuthConfig := `{ "credsStore": "shell-test" }`
 
 	configPath := filepath.Join(tmp, "config.json")
+<<<<<<< HEAD
 	err = os.WriteFile(configPath, []byte(externalAuthConfig), 0o644)
+=======
+	err = ioutil.WriteFile(configPath, []byte(externalAuthConfig), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	cli.DockerCmd(c, "--config", tmp, "login", "-u", s.reg.Username(), "-p", s.reg.Password(), privateRegistryURL)
 
-	b, err := os.ReadFile(configPath)
+	b, err := ioutil.ReadFile(configPath)
 	assert.NilError(c, err)
 	assert.Assert(c, !strings.Contains(string(b), "\"auth\":"))
 	cli.DockerCmd(c, "--config", tmp, "tag", "busybox", repoName)
@@ -5438,13 +5513,53 @@ func (s *DockerCLIBuildSuite) TestBuildCacheFrom(c *testing.T) {
 	assert.Equal(c, strings.Count(result.Combined(), "Using cache"), 0)
 	cli.DockerCmd(c, "rmi", "build2")
 
+<<<<<<< HEAD
+=======
+	// clear parent images
+	tempDir, err := ioutil.TempDir("", "test-build-cache-from-")
+	if err != nil {
+		c.Fatalf("failed to create temporary directory: %s", tempDir)
+	}
+	defer os.RemoveAll(tempDir)
+	tempFile := filepath.Join(tempDir, "img.tar")
+	cli.DockerCmd(c, "save", "-o", tempFile, "build1")
+	cli.DockerCmd(c, "rmi", "build1")
+	cli.DockerCmd(c, "load", "-i", tempFile)
+	parentID := cli.DockerCmd(c, "inspect", "-f", "{{.Parent}}", "build1").Combined()
+	assert.Equal(c, strings.TrimSpace(parentID), "")
+
+	// cache still applies without parents
+	result = cli.BuildCmd(c, "build2", cli.WithFlags("--cache-from=build1"), build.WithExternalBuildContext(ctx))
+	id2 = getIDByName(c, "build2")
+	assert.Equal(c, id1, id2)
+	assert.Equal(c, strings.Count(result.Combined(), "Using cache"), 3)
+	history1 := cli.DockerCmd(c, "history", "-q", "build2").Combined()
+
+	// Retry, no new intermediate images
+	result = cli.BuildCmd(c, "build3", cli.WithFlags("--cache-from=build1"), build.WithExternalBuildContext(ctx))
+	id3 := getIDByName(c, "build3")
+	assert.Equal(c, id1, id3)
+	assert.Equal(c, strings.Count(result.Combined(), "Using cache"), 3)
+	history2 := cli.DockerCmd(c, "history", "-q", "build3").Combined()
+
+	assert.Equal(c, history1, history2)
+	cli.DockerCmd(c, "rmi", "build2")
+	cli.DockerCmd(c, "rmi", "build3")
+	cli.DockerCmd(c, "rmi", "build1")
+	cli.DockerCmd(c, "load", "-i", tempFile)
+
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	// Modify file, everything up to last command and layers are reused
 	dockerfile = `
 		FROM busybox
 		ENV FOO=bar
 		ADD baz /
 		RUN touch newfile`
+<<<<<<< HEAD
 	err := os.WriteFile(filepath.Join(ctx.Dir, "Dockerfile"), []byte(dockerfile), 0o644)
+=======
+	err = ioutil.WriteFile(filepath.Join(ctx.Dir, "Dockerfile"), []byte(dockerfile), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	result = cli.BuildCmd(c, "build2", cli.WithFlags("--cache-from=build1"), build.WithExternalBuildContext(ctx))
@@ -5654,14 +5769,22 @@ func (s *DockerCLIBuildSuite) TestBuildMultiStageCopyFromSyntax(c *testing.T) {
 	assert.Equal(c, strings.Count(result.Combined(), "Using cache"), 7)
 	assert.Equal(c, getIDByName(c, "build1"), getIDByName(c, "build2"))
 
+<<<<<<< HEAD
 	err := os.WriteFile(filepath.Join(ctx.Dir, "Dockerfile"), []byte(fmt.Sprintf(dockerfile, "COPY baz/aa foo")), 0o644)
+=======
+	err := ioutil.WriteFile(filepath.Join(ctx.Dir, "Dockerfile"), []byte(fmt.Sprintf(dockerfile, "COPY baz/aa foo")), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	// changing file in parent block should not affect last block
 	result = cli.BuildCmd(c, "build3", build.WithExternalBuildContext(ctx))
 	assert.Equal(c, strings.Count(result.Combined(), "Using cache"), 5)
 
+<<<<<<< HEAD
 	err = os.WriteFile(filepath.Join(ctx.Dir, "foo"), []byte("pqr"), 0o644)
+=======
+	err = ioutil.WriteFile(filepath.Join(ctx.Dir, "foo"), []byte("pqr"), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	// changing file in parent block should affect both first and last block
@@ -5942,7 +6065,15 @@ func (s *DockerCLIBuildSuite) TestBuildMultiStageResetScratch(c *testing.T) {
 	assert.Equal(c, strings.TrimSpace(res), "")
 }
 
+<<<<<<< HEAD
 func (s *DockerCLIBuildSuite) TestBuildIntermediateTarget(c *testing.T) {
+=======
+func (s *DockerSuite) TestBuildIntermediateTarget(c *testing.T) {
+	//todo: need to be removed after 18.06 release
+	if strings.Contains(testEnv.DaemonInfo.ServerVersion, "18.05.0") {
+		c.Skip(fmt.Sprintf("Bug fixed in 18.06 or higher.Skipping it for %s", testEnv.DaemonInfo.ServerVersion))
+	}
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	dockerfile := `
 		FROM busybox AS build-env
 		CMD ["/dev"]
@@ -6146,8 +6277,13 @@ CMD echo foo
 }
 
 // FIXME(vdemeester) should migrate to docker/cli tests
+<<<<<<< HEAD
 func (s *DockerCLIBuildSuite) TestBuildIidFile(c *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "TestBuildIidFile")
+=======
+func (s *DockerSuite) TestBuildIidFile(c *testing.T) {
+	tmpDir, err := ioutil.TempDir("", "TestBuildIidFile")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -6163,7 +6299,7 @@ FROM `+minimalBaseImage()+`
 ENV BAR BAZ`),
 		cli.WithFlags("--iidfile", tmpIidFile))
 
-	id, err := os.ReadFile(tmpIidFile)
+	id, err := ioutil.ReadFile(tmpIidFile)
 	assert.NilError(c, err)
 	d, err := digest.Parse(string(id))
 	assert.NilError(c, err)
@@ -6171,15 +6307,24 @@ ENV BAR BAZ`),
 }
 
 // FIXME(vdemeester) should migrate to docker/cli tests
+<<<<<<< HEAD
 func (s *DockerCLIBuildSuite) TestBuildIidFileCleanupOnFail(c *testing.T) {
 	tmpDir, err := os.MkdirTemp("", "TestBuildIidFileCleanupOnFail")
+=======
+func (s *DockerSuite) TestBuildIidFileCleanupOnFail(c *testing.T) {
+	tmpDir, err := ioutil.TempDir("", "TestBuildIidFileCleanupOnFail")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		c.Fatal(err)
 	}
 	defer os.RemoveAll(tmpDir)
 	tmpIidFile := filepath.Join(tmpDir, "iid")
 
+<<<<<<< HEAD
 	err = os.WriteFile(tmpIidFile, []byte("Dummy"), 0o666)
+=======
+	err = ioutil.WriteFile(tmpIidFile, []byte("Dummy"), 0666)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	cli.Docker(cli.Args("build", "-t", "testbuildiidfilecleanuponfail"),

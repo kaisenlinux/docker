@@ -22,6 +22,7 @@ package overlayutils
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -80,7 +81,7 @@ func NeedsUserXAttr(d string) (bool, error) {
 		}
 	}()
 
-	td, err := os.MkdirTemp(tdRoot, "")
+	td, err := ioutil.TempDir(tdRoot, "")
 	if err != nil {
 		return false, err
 	}

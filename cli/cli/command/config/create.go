@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 
 	"github.com/docker/cli/cli"
 	"github.com/docker/cli/cli/command"
@@ -61,7 +62,7 @@ func RunConfigCreate(ctx context.Context, dockerCli command.Cli, options CreateO
 		defer file.Close()
 	}
 
-	configData, err := io.ReadAll(in)
+	configData, err := ioutil.ReadAll(in)
 	if err != nil {
 		return errors.Errorf("Error reading content from %q: %v", options.File, err)
 	}

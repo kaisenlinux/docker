@@ -102,10 +102,55 @@ var acceptedStatsFilters = map[string]bool{
 
 // RunStats displays a live stream of resource usage statistics for one or more containers.
 // This shows real-time information on CPU usage, memory usage, and network I/O.
+<<<<<<< HEAD
 //
 //nolint:gocyclo
 func RunStats(ctx context.Context, dockerCLI command.Cli, options *StatsOptions) error {
 	apiClient := dockerCLI.Client()
+=======
+// nolint: gocyclo
+func runStats(dockerCli command.Cli, opts *statsOptions) error {
+	showAll := len(opts.containers) == 0
+	closeChan := make(chan error)
+
+	ctx := context.Background()
+
+	// monitorContainerEvents watches for container creation and removal (only
+	// used when calling `docker stats` without arguments).
+	monitorContainerEvents := func(started chan<- struct{}, c chan events.Message) {
+		f := filters.NewArgs()
+		f.Add("type", "container")
+		options := types.EventsOptions{
+			Filters: f,
+		}
+
+		eventq, errq := dockerCli.Client().Events(ctx, options)
+
+		// Whether we successfully subscribed to eventq or not, we can now
+		// unblock the main goroutine.
+		close(started)
+
+		for {
+			select {
+			case event := <-eventq:
+				c <- event
+			case err := <-errq:
+				closeChan <- err
+				return
+			}
+		}
+	}
+
+	// Get the daemonOSType if not set already
+	if daemonOSType == "" {
+		svctx := context.Background()
+		sv, err := dockerCli.Client().ServerVersion(svctx)
+		if err != nil {
+			return err
+		}
+		daemonOSType = sv.Os
+	}
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	// waitFirst is a WaitGroup to wait first stat data's reach for each container
 	waitFirst := &sync.WaitGroup{}

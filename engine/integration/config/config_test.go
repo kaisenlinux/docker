@@ -4,6 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+<<<<<<< HEAD
+=======
+	"io/ioutil"
+	"path/filepath"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"sort"
 	"testing"
 	"time"
@@ -382,6 +387,29 @@ func TestConfigCreateResolve(t *testing.T) {
 	assert.Assert(t, is.Equal(0, len(entries)))
 }
 
+<<<<<<< HEAD
+=======
+func TestConfigDaemonLibtrustID(t *testing.T) {
+	skip.If(t, testEnv.DaemonInfo.OSType != "linux")
+	defer setupTest(t)()
+
+	d := daemon.New(t)
+	defer d.Stop(t)
+
+	trustKey := filepath.Join(d.RootDir(), "key.json")
+	err := ioutil.WriteFile(trustKey, []byte(`{"crv":"P-256","d":"dm28PH4Z4EbyUN8L0bPonAciAQa1QJmmyYd876mnypY","kid":"WTJ3:YSIP:CE2E:G6KJ:PSBD:YX2Y:WEYD:M64G:NU2V:XPZV:H2CR:VLUB","kty":"EC","x":"Mh5-JINSjaa_EZdXDttri255Z5fbCEOTQIZjAcScFTk","y":"eUyuAjfxevb07hCCpvi4Zi334Dy4GDWQvEToGEX4exQ"}`), 0644)
+	assert.NilError(t, err)
+
+	config := filepath.Join(d.RootDir(), "daemon.json")
+	err = ioutil.WriteFile(config, []byte(`{"deprecated-key-path": "`+trustKey+`"}`), 0644)
+	assert.NilError(t, err)
+
+	d.Start(t, "--config-file", config)
+	info := d.Info(t)
+	assert.Equal(t, info.ID, "WTJ3:YSIP:CE2E:G6KJ:PSBD:YX2Y:WEYD:M64G:NU2V:XPZV:H2CR:VLUB")
+}
+
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 func assertAttachedStream(t *testing.T, attach types.HijackedResponse, expect string) {
 	buf := bytes.NewBuffer(nil)
 	_, err := stdcopy.StdCopy(buf, buf, attach.Reader)

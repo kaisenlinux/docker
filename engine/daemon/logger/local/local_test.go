@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -22,7 +23,7 @@ import (
 func TestWriteLog(t *testing.T) {
 	t.Parallel()
 
-	dir, err := os.MkdirTemp("", t.Name())
+	dir, err := ioutil.TempDir("", t.Name())
 	assert.NilError(t, err)
 	defer os.RemoveAll(dir)
 
@@ -79,6 +80,7 @@ func TestWriteLog(t *testing.T) {
 }
 
 func TestReadLog(t *testing.T) {
+<<<<<<< HEAD
 	r := loggertest.Reader{
 		Factory: func(t *testing.T, info logger.Info) func(*testing.T) logger.Logger {
 			dir := t.TempDir()
@@ -87,6 +89,55 @@ func TestReadLog(t *testing.T) {
 				l, err := New(info)
 				assert.NilError(t, err)
 				return l
+=======
+	t.Parallel()
+
+	dir, err := ioutil.TempDir("", t.Name())
+	assert.NilError(t, err)
+	defer os.RemoveAll(dir)
+
+	logPath := filepath.Join(dir, "test.log")
+	l, err := New(logger.Info{LogPath: logPath})
+	assert.NilError(t, err)
+	defer l.Close()
+
+	m1 := logger.Message{Source: "stdout", Timestamp: time.Now().Add(-1 * 30 * time.Minute), Line: []byte("a message")}
+	m2 := logger.Message{Source: "stdout", Timestamp: time.Now().Add(-1 * 20 * time.Minute), Line: []byte("another message"), PLogMetaData: &backend.PartialLogMetaData{Ordinal: 1, Last: true}}
+	longMessage := []byte("a really long message " + strings.Repeat("a", initialBufSize*2))
+	m3 := logger.Message{Source: "stderr", Timestamp: time.Now().Add(-1 * 10 * time.Minute), Line: longMessage}
+	m4 := logger.Message{Source: "stderr", Timestamp: time.Now().Add(-1 * 10 * time.Minute), Line: []byte("just one more message")}
+
+	// copy the log message because the underlying log writer resets the log message and returns it to a buffer pool
+	err = l.Log(copyLogMessage(&m1))
+	assert.NilError(t, err)
+	err = l.Log(copyLogMessage(&m2))
+	assert.NilError(t, err)
+	err = l.Log(copyLogMessage(&m3))
+	assert.NilError(t, err)
+	err = l.Log(copyLogMessage(&m4))
+	assert.NilError(t, err)
+
+	lr := l.(logger.LogReader)
+
+	testMessage := func(t *testing.T, lw *logger.LogWatcher, m *logger.Message) {
+		t.Helper()
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		select {
+		case <-ctx.Done():
+			assert.Assert(t, ctx.Err())
+		case err := <-lw.Err:
+			assert.NilError(t, err)
+		case msg, open := <-lw.Msg:
+			if !open {
+				select {
+				case err := <-lw.Err:
+					assert.NilError(t, err)
+				default:
+					assert.Assert(t, m == nil)
+					return
+				}
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			}
 		},
 	}
@@ -95,7 +146,7 @@ func TestReadLog(t *testing.T) {
 }
 
 func BenchmarkLogWrite(b *testing.B) {
-	f, err := os.CreateTemp("", b.Name())
+	f, err := ioutil.TempFile("", b.Name())
 	assert.Assert(b, err)
 	defer os.Remove(f.Name())
 	f.Close()

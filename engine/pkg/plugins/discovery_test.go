@@ -1,11 +1,30 @@
 package plugins // import "github.com/docker/docker/pkg/plugins"
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 )
 
+<<<<<<< HEAD
+=======
+func Setup(t *testing.T) (string, func()) {
+	tmpdir, err := ioutil.TempDir("", "docker-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	backup := socketsPath
+	socketsPath = tmpdir
+	specsPaths = []string{tmpdir}
+
+	return tmpdir, func() {
+		socketsPath = backup
+		os.RemoveAll(tmpdir)
+	}
+}
+
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 func TestFileSpecPlugin(t *testing.T) {
 	tmpdir := t.TempDir()
 	r := LocalRegistry{
@@ -31,7 +50,11 @@ func TestFileSpecPlugin(t *testing.T) {
 		if err := os.MkdirAll(filepath.Dir(c.path), 0o755); err != nil {
 			t.Fatal(err)
 		}
+<<<<<<< HEAD
 		if err := os.WriteFile(c.path, []byte(c.addr), 0o644); err != nil {
+=======
+		if err := ioutil.WriteFile(c.path, []byte(c.addr), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			t.Fatal(err)
 		}
 
@@ -76,7 +99,11 @@ func TestFileJSONSpecPlugin(t *testing.T) {
 	}
 }`
 
+<<<<<<< HEAD
 	if err := os.WriteFile(p, []byte(spec), 0o644); err != nil {
+=======
+	if err := ioutil.WriteFile(p, []byte(spec), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 
@@ -119,7 +146,11 @@ func TestFileJSONSpecPluginWithoutTLSConfig(t *testing.T) {
   "Addr": "https://example.com/docker/plugin"
 }`
 
+<<<<<<< HEAD
 	if err := os.WriteFile(p, []byte(spec), 0o644); err != nil {
+=======
+	if err := ioutil.WriteFile(p, []byte(spec), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 

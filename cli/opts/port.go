@@ -26,8 +26,7 @@ type PortOpt struct {
 }
 
 // Set a new port value
-//
-//nolint:gocyclo
+// nolint: gocyclo
 func (p *PortOpt) Set(value string) error {
 	longSyntax, err := regexp.MatchString(`\w+=\w+(,\w+=\w+)*`, value)
 	if err != nil {

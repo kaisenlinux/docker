@@ -2,6 +2,7 @@ package reference // import "github.com/docker/docker/reference"
 
 import (
 	"bytes"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -28,9 +29,17 @@ var (
 )
 
 func TestLoad(t *testing.T) {
+<<<<<<< HEAD
 	jsonFile := filepath.Join(t.TempDir(), "repositories.json")
 	err := os.WriteFile(jsonFile, marshalledSaveLoadTestCases, 0o666)
 	assert.NilError(t, err)
+=======
+	jsonFile, err := ioutil.TempFile("", "tag-store-test")
+	if err != nil {
+		t.Fatalf("error creating temp file: %v", err)
+	}
+	defer os.RemoveAll(jsonFile.Name())
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	store, err := NewReferenceStore(jsonFile)
 	if err != nil {
@@ -53,8 +62,12 @@ func TestLoad(t *testing.T) {
 }
 
 func TestSave(t *testing.T) {
+<<<<<<< HEAD
 	jsonFile := filepath.Join(t.TempDir(), "repositories.json")
 	err := os.WriteFile(jsonFile, []byte(`{}`), 0o666)
+=======
+	jsonFile, err := ioutil.TempFile("", "tag-store-test")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	store, err := NewReferenceStore(jsonFile)
@@ -80,7 +93,11 @@ func TestSave(t *testing.T) {
 		}
 	}
 
+<<<<<<< HEAD
 	jsonBytes, err := os.ReadFile(jsonFile)
+=======
+	jsonBytes, err := ioutil.ReadFile(jsonFile.Name())
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		t.Fatalf("could not read json file: %v", err)
 	}
@@ -91,8 +108,16 @@ func TestSave(t *testing.T) {
 }
 
 func TestAddDeleteGet(t *testing.T) {
+<<<<<<< HEAD
 	jsonFile := filepath.Join(t.TempDir(), "repositories.json")
 	err := os.WriteFile(jsonFile, []byte(`{}`), 0o666)
+=======
+	jsonFile, err := ioutil.TempFile("", "tag-store-test")
+	if err != nil {
+		t.Fatalf("error creating temp file: %v", err)
+	}
+	_, err = jsonFile.Write([]byte(`{}`))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	store, err := NewReferenceStore(jsonFile)
@@ -320,7 +345,15 @@ func TestAddDeleteGet(t *testing.T) {
 }
 
 func TestInvalidTags(t *testing.T) {
+<<<<<<< HEAD
 	store, err := NewReferenceStore(filepath.Join(t.TempDir(), "repositories.json"))
+=======
+	tmpDir, err := ioutil.TempDir("", "tag-store-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpDir)
+
+	store, err := NewReferenceStore(filepath.Join(tmpDir, "repositories.json"))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 	id := digest.Digest("sha256:470022b8af682154f57a2163d030eb369549549cba00edc69e1b99b46bb924d6")
 

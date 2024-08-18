@@ -3,6 +3,7 @@ package container
 import (
 	"context"
 	"io"
+	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
@@ -54,7 +55,7 @@ func TestRunCopyFromContainerToStdout(t *testing.T) {
 	fakeClient := &fakeClient{
 		containerCopyFromFunc: func(container, srcPath string) (io.ReadCloser, types.ContainerPathStat, error) {
 			assert.Check(t, is.Equal("container", container))
-			return io.NopCloser(strings.NewReader(tarContent)), types.ContainerPathStat{}, nil
+			return ioutil.NopCloser(strings.NewReader(tarContent)), types.ContainerPathStat{}, nil
 		},
 	}
 	options := copyOptions{source: "container:/path", destination: "-"}
@@ -84,7 +85,7 @@ func TestRunCopyFromContainerToFilesystem(t *testing.T) {
 	assert.Check(t, is.Equal("", cli.OutBuffer().String()))
 	assert.Check(t, is.Equal("", cli.ErrBuffer().String()))
 
-	content, err := os.ReadFile(destDir.Join("file1"))
+	content, err := ioutil.ReadFile(destDir.Join("file1"))
 	assert.NilError(t, err)
 	assert.Check(t, is.Equal("content\n", string(content)))
 }

@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path"
 	"sort"
@@ -17,7 +18,7 @@ func TestHardLinkOrder(t *testing.T) {
 	msg := []byte("Hey y'all")
 
 	// Create dir
-	src, err := os.MkdirTemp("", "docker-hardlink-test-src-")
+	src, err := ioutil.TempDir("", "docker-hardlink-test-src-")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,7 +32,7 @@ func TestHardLinkOrder(t *testing.T) {
 		}()
 	}
 	// Create dest, with changes that includes hardlinks
-	dest, err := os.MkdirTemp("", "docker-hardlink-test-dest-")
+	dest, err := ioutil.TempDir("", "docker-hardlink-test-dest-")
 	if err != nil {
 		t.Fatal(err)
 	}

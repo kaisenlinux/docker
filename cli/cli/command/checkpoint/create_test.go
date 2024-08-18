@@ -1,7 +1,7 @@
 package checkpoint
 
 import (
-	"io"
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -41,7 +41,7 @@ func TestCheckpointCreateErrors(t *testing.T) {
 		})
 		cmd := newCreateCommand(cli)
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }

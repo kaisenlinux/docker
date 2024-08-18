@@ -1,10 +1,9 @@
 package manifest
 
 import (
-	"io"
+	"io/ioutil"
 	"testing"
 
-	"github.com/docker/cli/cli/manifest/store"
 	"github.com/docker/cli/internal/test"
 	"gotest.tools/v3/assert"
 	is "gotest.tools/v3/assert/cmp"
@@ -34,13 +33,18 @@ func TestManifestAnnotateError(t *testing.T) {
 		cli := test.NewFakeCli(nil)
 		cmd := newAnnotateCommand(cli)
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }
 
 func TestManifestAnnotate(t *testing.T) {
+<<<<<<< HEAD
 	manifestStore := store.NewStore(t.TempDir())
+=======
+	store, cleanup := newTempManifestStore(t)
+	defer cleanup()
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	cli := test.NewFakeCli(nil)
 	cli.SetManifestStore(manifestStore)
@@ -51,7 +55,7 @@ func TestManifestAnnotate(t *testing.T) {
 
 	cmd := newAnnotateCommand(cli)
 	cmd.SetArgs([]string{"example.com/list:v1", "example.com/fake:0.0"})
-	cmd.SetOut(io.Discard)
+	cmd.SetOut(ioutil.Discard)
 	expectedError := "manifest for image example.com/fake:0.0 does not exist"
 	assert.ErrorContains(t, cmd.Execute(), expectedError)
 

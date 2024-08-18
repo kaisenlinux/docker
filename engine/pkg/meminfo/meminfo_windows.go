@@ -26,9 +26,15 @@ type memorystatusex struct {
 	ullAvailExtendedVirtual uint64
 }
 
+<<<<<<< HEAD:engine/pkg/meminfo/meminfo_windows.go
 // readMemInfo retrieves memory statistics of the host system and returns a
 // Memory type.
 func readMemInfo() (*Memory, error) {
+=======
+// ReadMemInfo retrieves memory statistics of the host system and returns a
+//  MemInfo type.
+func ReadMemInfo() (*MemInfo, error) {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version):engine/pkg/system/meminfo_windows.go
 	msi := &memorystatusex{
 		dwLength: 64,
 	}

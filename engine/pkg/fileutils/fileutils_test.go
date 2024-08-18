@@ -1,8 +1,13 @@
 package fileutils // import "github.com/docker/docker/pkg/fileutils"
 
 import (
+<<<<<<< HEAD
 	"context"
 	"errors"
+=======
+	"fmt"
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path"
 	"path/filepath"
@@ -13,8 +18,17 @@ import (
 
 // CopyFile with invalid src
 func TestCopyFileWithInvalidSrc(t *testing.T) {
+<<<<<<< HEAD
 	tempDir := t.TempDir()
 	bytes, err := CopyFile(filepath.Join(tempDir, "/invalid/file/path"), path.Join(t.TempDir(), "dest"))
+=======
+	tempFolder, err := ioutil.TempDir("", "docker-fileutils-test") // #nosec G303
+	defer os.RemoveAll(tempFolder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	bytes, err := CopyFile("/invalid/file/path", path.Join(tempFolder, "dest"))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err == nil {
 		t.Error("Should have fail to copy an invalid src file")
 	}
@@ -28,9 +42,19 @@ func TestCopyFileWithInvalidSrc(t *testing.T) {
 
 // CopyFile with invalid dest
 func TestCopyFileWithInvalidDest(t *testing.T) {
+<<<<<<< HEAD
 	tempFolder := t.TempDir()
 	src := path.Join(tempFolder, "file")
 	err := os.WriteFile(src, []byte("content"), 0o740)
+=======
+	tempFolder, err := ioutil.TempDir("", "docker-fileutils-test")
+	defer os.RemoveAll(tempFolder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	src := path.Join(tempFolder, "file")
+	err = ioutil.WriteFile(src, []byte("content"), 0740)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -48,8 +72,18 @@ func TestCopyFileWithInvalidDest(t *testing.T) {
 
 // CopyFile with same src and dest
 func TestCopyFileWithSameSrcAndDest(t *testing.T) {
+<<<<<<< HEAD
 	file := path.Join(t.TempDir(), "file")
 	err := os.WriteFile(file, []byte("content"), 0o740)
+=======
+	tempFolder, err := ioutil.TempDir("", "docker-fileutils-test")
+	defer os.RemoveAll(tempFolder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	file := path.Join(tempFolder, "file")
+	err = ioutil.WriteFile(file, []byte("content"), 0740)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,14 +98,28 @@ func TestCopyFileWithSameSrcAndDest(t *testing.T) {
 
 // CopyFile with same src and dest but path is different and not clean
 func TestCopyFileWithSameSrcAndDestWithPathNameDifferent(t *testing.T) {
+<<<<<<< HEAD
 	testFolder := path.Join(t.TempDir(), "test")
 	err := os.Mkdir(testFolder, 0o740)
+=======
+	tempFolder, err := ioutil.TempDir("", "docker-fileutils-test")
+	defer os.RemoveAll(tempFolder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	testFolder := path.Join(tempFolder, "test")
+	err = os.MkdirAll(testFolder, 0740)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		t.Fatal(err)
 	}
 	file := path.Join(testFolder, "file")
 	sameFile := testFolder + "/../test/file"
+<<<<<<< HEAD
 	err = os.WriteFile(file, []byte("content"), 0o740)
+=======
+	err = ioutil.WriteFile(file, []byte("content"), 0740)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,6 +133,7 @@ func TestCopyFileWithSameSrcAndDestWithPathNameDifferent(t *testing.T) {
 }
 
 func TestCopyFile(t *testing.T) {
+<<<<<<< HEAD
 	tempFolder := t.TempDir()
 	src := path.Join(tempFolder, "src")
 	dest := path.Join(tempFolder, "dest")
@@ -96,6 +145,17 @@ func TestCopyFile(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+=======
+	tempFolder, err := ioutil.TempDir("", "docker-fileutils-test")
+	defer os.RemoveAll(tempFolder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	src := path.Join(tempFolder, "src")
+	dest := path.Join(tempFolder, "dest")
+	ioutil.WriteFile(src, []byte("content"), 0777)
+	ioutil.WriteFile(dest, []byte("destContent"), 0777)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	bytes, err := CopyFile(src, dest)
 	if err != nil {
 		t.Fatal(err)
@@ -103,7 +163,7 @@ func TestCopyFile(t *testing.T) {
 	if bytes != 7 {
 		t.Fatalf("Should have written %d bytes but wrote %d", 7, bytes)
 	}
-	actual, err := os.ReadFile(dest)
+	actual, err := ioutil.ReadFile(dest)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -211,7 +271,17 @@ func TestReadSymlinkedDirectoryToFile(t *testing.T) {
 }
 
 func TestCreateIfNotExistsDir(t *testing.T) {
+<<<<<<< HEAD
 	folderToCreate := filepath.Join(t.TempDir(), "tocreate")
+=======
+	tempFolder, err := ioutil.TempDir("", "docker-fileutils-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tempFolder)
+
+	folderToCreate := filepath.Join(tempFolder, "tocreate")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	if err := CreateIfNotExists(folderToCreate, true); err != nil {
 		t.Fatal(err)
@@ -227,7 +297,17 @@ func TestCreateIfNotExistsDir(t *testing.T) {
 }
 
 func TestCreateIfNotExistsFile(t *testing.T) {
+<<<<<<< HEAD
 	fileToCreate := filepath.Join(t.TempDir(), "file/to/create")
+=======
+	tempFolder, err := ioutil.TempDir("", "docker-fileutils-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tempFolder)
+
+	fileToCreate := filepath.Join(tempFolder, "file/to/create")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	if err := CreateIfNotExists(fileToCreate, false); err != nil {
 		t.Error(err)

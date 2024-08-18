@@ -1,6 +1,8 @@
 package store
 
 import (
+	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/docker/docker/errdefs"
@@ -8,7 +10,16 @@ import (
 )
 
 func TestTlsCreateUpdateGetRemove(t *testing.T) {
+<<<<<<< HEAD
 	testee := tlsStore{root: t.TempDir()}
+=======
+	testDir, err := ioutil.TempDir("", "TestTlsCreateUpdateGetRemove")
+	assert.NilError(t, err)
+	defer os.RemoveAll(testDir)
+	testee := tlsStore{root: testDir}
+	_, err = testee.getData("test-ctx", "test-ep", "test-data")
+	assert.Equal(t, true, IsErrTLSDataDoesNotExist(err))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	const contextName = "test-ctx"
 
@@ -33,7 +44,10 @@ func TestTlsCreateUpdateGetRemove(t *testing.T) {
 }
 
 func TestTlsListAndBatchRemove(t *testing.T) {
-	testee := tlsStore{root: t.TempDir()}
+	testDir, err := ioutil.TempDir("", "TestTlsListAndBatchRemove")
+	assert.NilError(t, err)
+	defer os.RemoveAll(testDir)
+	testee := tlsStore{root: testDir}
 
 	all := map[string]EndpointFiles{
 		"ep1": {"f1", "f2", "f3"},
@@ -49,7 +63,11 @@ func TestTlsListAndBatchRemove(t *testing.T) {
 	const contextName = "test-ctx"
 	for name, files := range all {
 		for _, file := range files {
+<<<<<<< HEAD
 			err := testee.createOrUpdate(contextName, name, file, []byte("data"))
+=======
+			err = testee.createOrUpdate("test-ctx", name, file, []byte("data"))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			assert.NilError(t, err)
 		}
 	}

@@ -68,9 +68,14 @@ func terminalState(state swarm.TaskState) bool {
 }
 
 // ServiceProgress outputs progress information for convergence of a service.
+<<<<<<< HEAD
 //
 //nolint:gocyclo
 func ServiceProgress(ctx context.Context, apiClient client.APIClient, serviceID string, progressWriter io.WriteCloser) error {
+=======
+// nolint: gocyclo
+func ServiceProgress(ctx context.Context, client client.APIClient, serviceID string, progressWriter io.WriteCloser) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	defer progressWriter.Close()
 
 	progressOut := streamformatter.NewJSONProgressOutput(progressWriter, false)

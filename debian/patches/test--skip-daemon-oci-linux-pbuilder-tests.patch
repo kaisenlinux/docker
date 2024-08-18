@@ -4,11 +4,17 @@ Subject: Skip failing test TestGetSourceMount: "Can't find mount point of /"
 
 Forwarded: not-needed, Debian-specific
 
+<<<<<<< HEAD
 Index: docker.io/engine/daemon/oci_linux_test.go
 ===================================================================
 --- docker.io.orig/engine/daemon/oci_linux_test.go
 +++ docker.io/engine/daemon/oci_linux_test.go
 @@ -204,6 +204,7 @@ func TestSysctlOverrideHost(t *testing.T
+=======
+--- a/engine/daemon/oci_linux_test.go
++++ b/engine/daemon/oci_linux_test.go
+@@ -192,6 +192,7 @@
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
  }
  
  func TestGetSourceMount(t *testing.T) {

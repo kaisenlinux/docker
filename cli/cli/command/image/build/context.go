@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -116,13 +117,13 @@ func DetectArchiveReader(input io.ReadCloser) (rc io.ReadCloser, isArchive bool,
 // temporary directory containing the Dockerfile.
 func WriteTempDockerfile(rc io.ReadCloser) (dockerfileDir string, err error) {
 	// err is a named return value, due to the defer call below.
-	dockerfileDir, err = os.MkdirTemp("", "docker-build-tempdockerfile-")
+	dockerfileDir, err = ioutil.TempDir("", "docker-build-tempdockerfile-")
 	if err != nil {
 		return "", errors.Errorf("unable to create temporary context directory: %v", err)
 	}
 	defer func() {
 		if err != nil {
-			_ = os.RemoveAll(dockerfileDir)
+			os.RemoveAll(dockerfileDir)
 		}
 	}()
 
@@ -238,11 +239,11 @@ func getWithStatusError(url string) (resp *http.Response, err error) {
 	if resp, err = http.Get(url); err != nil {
 		return nil, err
 	}
-	if resp.StatusCode < http.StatusBadRequest {
+	if resp.StatusCode < 400 {
 		return resp, nil
 	}
 	msg := fmt.Sprintf("failed to GET %s with status %s", url, resp.Status)
-	body, err := io.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
 		return nil, errors.Wrapf(err, "%s: error reading body", msg)
@@ -374,7 +375,7 @@ func isUNC(path string) bool {
 // AddDockerfileToBuildContext from a ReadCloser, returns a new archive and
 // the relative path to the dockerfile in the context.
 func AddDockerfileToBuildContext(dockerfileCtx io.ReadCloser, buildCtx io.ReadCloser) (io.ReadCloser, string, error) {
-	file, err := io.ReadAll(dockerfileCtx)
+	file, err := ioutil.ReadAll(dockerfileCtx)
 	dockerfileCtx.Close()
 	if err != nil {
 		return nil, "", err

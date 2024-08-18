@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"sort"
 
 	"github.com/distribution/reference"
@@ -43,9 +44,14 @@ func TrustedPush(ctx context.Context, cli command.Cli, repoInfo *registry.Reposi
 }
 
 // PushTrustedReference pushes a canonical reference to the trust server.
+<<<<<<< HEAD
 //
 //nolint:gocyclo
 func PushTrustedReference(ioStreams command.Streams, repoInfo *registry.RepositoryInfo, ref reference.Named, authConfig registrytypes.AuthConfig, in io.Reader) error {
+=======
+// nolint: gocyclo
+func PushTrustedReference(streams command.Streams, repoInfo *registry.RepositoryInfo, ref reference.Named, authConfig types.AuthConfig, in io.Reader) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	// If it is a trusted push we would like to find the target entry which match the
 	// tag provided in the function and then do an AddTarget later.
 	target := &client.Target{}
@@ -281,7 +287,7 @@ func imagePullPrivileged(ctx context.Context, cli command.Cli, imgRefAndAuth tru
 
 	out := cli.Out()
 	if opts.quiet {
-		out = streams.NewOut(io.Discard)
+		out = streams.NewOut(ioutil.Discard)
 	}
 	return jsonmessage.DisplayJSONMessagesToStream(responseBody, out, nil)
 }

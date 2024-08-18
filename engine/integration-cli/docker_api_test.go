@@ -3,6 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+<<<<<<< HEAD
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"net/http"
 	"runtime"
 	"strconv"
@@ -60,8 +64,13 @@ func (s *DockerAPISuite) TestAPIClientVersionOldNotSupported(c *testing.T) {
 	assert.NilError(c, err)
 	defer body.Close()
 	assert.Equal(c, resp.StatusCode, http.StatusBadRequest)
+<<<<<<< HEAD
 	expected := fmt.Sprintf("client version %s is too old. Minimum supported API version is %s, please upgrade your client to a newer version", version, testEnv.DaemonVersion.MinAPIVersion)
 	b, err := request.ReadBody(body)
+=======
+	expected := fmt.Sprintf("client version %s is too old. Minimum supported API version is %s, please upgrade your client to a newer version", version, api.MinVersion)
+	content, err := ioutil.ReadAll(body)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 	assert.Equal(c, getErrorMessage(c, b), expected)
 }

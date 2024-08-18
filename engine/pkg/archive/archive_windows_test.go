@@ -3,6 +3,7 @@
 package archive // import "github.com/docker/docker/pkg/archive"
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -13,7 +14,7 @@ func TestCopyFileWithInvalidDest(t *testing.T) {
 	// recently changed in CopyWithTar as used to pass. Further investigation
 	// is required.
 	t.Skip("Currently fails")
-	folder, err := os.MkdirTemp("", "docker-archive-test")
+	folder, err := ioutil.TempDir("", "docker-archive-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -25,7 +26,11 @@ func TestCopyFileWithInvalidDest(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+<<<<<<< HEAD
 	os.WriteFile(src, []byte("content"), 0o777)
+=======
+	ioutil.WriteFile(src, []byte("content"), 0777)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	err = defaultCopyWithTar(src, dest)
 	if err == nil {
 		t.Fatalf("archiver.CopyWithTar should throw an error on invalid dest.")

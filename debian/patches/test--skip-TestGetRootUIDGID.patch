@@ -12,11 +12,17 @@ Description: disable test failing is sbuild.
     Test:        TestGetRootUIDGID
 ~~~~
 
+<<<<<<< HEAD
 Index: docker.io/engine/pkg/idtools/idtools_unix_test.go
 ===================================================================
 --- docker.io.orig/engine/pkg/idtools/idtools_unix_test.go
 +++ docker.io/engine/pkg/idtools/idtools_unix_test.go
 @@ -360,6 +360,7 @@ dockremap:231072:65536`
+=======
+--- a/engine/pkg/idtools/idtools_unix_test.go
++++ b/engine/pkg/idtools/idtools_unix_test.go
+@@ -267,6 +267,7 @@
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
  }
  
  func TestGetRootUIDGID(t *testing.T) {

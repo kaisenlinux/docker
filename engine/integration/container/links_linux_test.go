@@ -1,6 +1,11 @@
 package container // import "github.com/docker/docker/integration/container"
 
 import (
+<<<<<<< HEAD
+=======
+	"context"
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"testing"
 
@@ -16,7 +21,7 @@ func TestLinksEtcHostsContentMatch(t *testing.T) {
 	skip.If(t, testEnv.IsRemoteDaemon)
 	skip.If(t, testEnv.IsRootless, "rootless mode has different view of /etc/hosts")
 
-	hosts, err := os.ReadFile("/etc/hosts")
+	hosts, err := ioutil.ReadFile("/etc/hosts")
 	skip.If(t, os.IsNotExist(err))
 
 	ctx := setupTest(t)

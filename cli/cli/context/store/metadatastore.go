@@ -6,6 +6,7 @@ package store
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -40,7 +41,11 @@ func (s *metadataStore) createOrUpdate(meta Metadata) error {
 	if err != nil {
 		return err
 	}
+<<<<<<< HEAD
 	return ioutils.AtomicWriteFile(filepath.Join(contextDir, metaFile), bytes, 0o644)
+=======
+	return ioutil.WriteFile(filepath.Join(contextDir, metaFile), bytes, 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 }
 
 func parseTypedOrMap(payload []byte, getter TypeGetter) (any, error) {
@@ -61,8 +66,14 @@ func parseTypedOrMap(payload []byte, getter TypeGetter) (any, error) {
 	return reflect.ValueOf(typed).Elem().Interface(), nil
 }
 
+<<<<<<< HEAD
 func (s *metadataStore) get(name string) (Metadata, error) {
 	m, err := s.getByID(contextdirOf(name))
+=======
+func (s *metadataStore) get(id contextdir) (Metadata, error) {
+	contextDir := s.contextDir(id)
+	bytes, err := ioutil.ReadFile(filepath.Join(contextDir, metaFile))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		return m, errors.Wrapf(err, "context %q", name)
 	}
@@ -138,7 +149,7 @@ func isContextDir(path string) bool {
 }
 
 func listRecursivelyMetadataDirs(root string) ([]string, error) {
-	fis, err := os.ReadDir(root)
+	fis, err := ioutil.ReadDir(root)
 	if err != nil {
 		return nil, err
 	}

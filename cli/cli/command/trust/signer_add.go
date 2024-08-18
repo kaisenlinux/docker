@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path"
 	"regexp"
@@ -123,7 +124,7 @@ func ingestPublicKeys(pubKeyPaths []string) ([]data.PublicKey, error) {
 		defer pubKeyFile.Close()
 		// limit to
 		l := io.LimitReader(pubKeyFile, 1<<20)
-		pubKeyBytes, err := io.ReadAll(l)
+		pubKeyBytes, err := ioutil.ReadAll(l)
 		if err != nil {
 			return nil, errors.Wrap(err, "unable to read public key from file")
 		}

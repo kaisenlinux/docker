@@ -2,6 +2,7 @@ package remotecontext // import "github.com/docker/docker/builder/remotecontext"
 
 import (
 	"errors"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -19,7 +20,7 @@ const (
 
 const shouldStayFilename = "should_stay"
 
-func extractFilenames(files []os.DirEntry) []string {
+func extractFilenames(files []os.FileInfo) []string {
 	filenames := make([]string, len(files))
 
 	for i, file := range files {
@@ -30,7 +31,12 @@ func extractFilenames(files []os.DirEntry) []string {
 }
 
 func checkDirectory(t *testing.T, dir string, expectedFiles []string) {
+<<<<<<< HEAD
 	files, err := os.ReadDir(dir)
+=======
+	files, err := ioutil.ReadDir(dir)
+
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		t.Fatalf("Could not read directory: %s", err)
 	}

@@ -4,6 +4,7 @@ package overlay2 // import "github.com/docker/docker/daemon/graphdriver/overlay2
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -29,7 +30,7 @@ func doesSupportNativeDiff(d string) error {
 		return errors.New("running in a user namespace")
 	}
 
-	td, err := os.MkdirTemp(d, "opaque-bug-check")
+	td, err := ioutil.TempDir(d, "opaque-bug-check")
 	if err != nil {
 		return err
 	}
@@ -75,7 +76,11 @@ func doesSupportNativeDiff(d string) error {
 	}()
 
 	// Touch file in d to force copy up of opaque directory "d" from "l2" to "l3"
+<<<<<<< HEAD
 	if err := os.WriteFile(filepath.Join(td, mergedDirName, "d", "f"), []byte{}, 0o644); err != nil {
+=======
+	if err := ioutil.WriteFile(filepath.Join(td, mergedDirName, "d", "f"), []byte{}, 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		return errors.Wrap(err, "failed to write to merged directory")
 	}
 

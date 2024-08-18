@@ -1,6 +1,7 @@
 package graphdriver // import "github.com/docker/docker/daemon/graphdriver"
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -9,7 +10,7 @@ import (
 )
 
 func TestIsEmptyDir(t *testing.T) {
-	tmp, err := os.MkdirTemp("", "test-is-empty-dir")
+	tmp, err := ioutil.TempDir("", "test-is-empty-dir")
 	assert.NilError(t, err)
 	defer os.RemoveAll(tmp)
 
@@ -28,7 +29,11 @@ func TestIsEmptyDir(t *testing.T) {
 	d = filepath.Join(tmp, "dir-with-empty-file")
 	err = os.Mkdir(d, 0o755)
 	assert.NilError(t, err)
+<<<<<<< HEAD
 	f, err := os.CreateTemp(d, "file")
+=======
+	_, err = ioutil.TempFile(d, "file")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 	defer f.Close()
 	empty = isEmptyDir(d)

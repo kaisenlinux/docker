@@ -5,7 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"strings"
@@ -55,6 +55,7 @@ func TestSetHostHeader(t *testing.T) {
 			hostURL, err := ParseHostURL(tc.host)
 			assert.Check(t, err)
 
+<<<<<<< HEAD
 			client := &Client{
 				client: newMockClient(func(req *http.Request) (*http.Response, error) {
 					if !strings.HasPrefix(req.URL.Path, testEndpoint) {
@@ -71,6 +72,24 @@ func TestSetHostHeader(t *testing.T) {
 						Body:       io.NopCloser(bytes.NewReader([]byte(""))),
 					}, nil
 				}),
+=======
+		client := &Client{
+			client: newMockClient(func(req *http.Request) (*http.Response, error) {
+				if !strings.HasPrefix(req.URL.Path, testURL) {
+					return nil, fmt.Errorf("Test Case #%d: Expected URL %q, got %q", c, testURL, req.URL)
+				}
+				if req.Host != test.expectedHost {
+					return nil, fmt.Errorf("Test Case #%d: Expected host %q, got %q", c, test.expectedHost, req.Host)
+				}
+				if req.URL.Host != test.expectedURLHost {
+					return nil, fmt.Errorf("Test Case #%d: Expected URL host %q, got %q", c, test.expectedURLHost, req.URL.Host)
+				}
+				return &http.Response{
+					StatusCode: http.StatusOK,
+					Body:       ioutil.NopCloser(bytes.NewReader([]byte(""))),
+				}, nil
+			}),
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 				proto:    hostURL.Scheme,
 				addr:     hostURL.Host,
@@ -98,11 +117,17 @@ func TestInfiniteError(t *testing.T) {
 	infinitR := rand.New(rand.NewSource(42))
 	client := &Client{
 		client: newMockClient(func(req *http.Request) (*http.Response, error) {
+<<<<<<< HEAD
 			resp := &http.Response{
 				StatusCode: http.StatusInternalServerError,
 				Header:     http.Header{},
 				Body:       io.NopCloser(infinitR),
 			}
+=======
+			resp := &http.Response{StatusCode: http.StatusInternalServerError}
+			resp.Header = http.Header{}
+			resp.Body = ioutil.NopCloser(infinitR)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			return resp, nil
 		}),
 	}

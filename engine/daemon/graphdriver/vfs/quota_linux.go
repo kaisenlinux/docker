@@ -7,6 +7,7 @@ import (
 	"github.com/docker/docker/quota"
 )
 
+//nolint:structcheck
 type driverQuota struct {
 	quotaCtl *quota.Control
 	quotaOpt quota.Quota

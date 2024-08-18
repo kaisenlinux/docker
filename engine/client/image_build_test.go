@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"reflect"
 	"strings"
@@ -196,7 +196,7 @@ func TestImageBuild(t *testing.T) {
 				headers.Add("Server", "Docker/v1.23 (MyOS)")
 				return &http.Response{
 					StatusCode: http.StatusOK,
-					Body:       io.NopCloser(bytes.NewReader([]byte("body"))),
+					Body:       ioutil.NopCloser(bytes.NewReader([]byte("body"))),
 					Header:     headers,
 				}, nil
 			}),
@@ -208,7 +208,7 @@ func TestImageBuild(t *testing.T) {
 		if buildResponse.OSType != "MyOS" {
 			t.Fatalf("expected OSType to be 'MyOS', got %s", buildResponse.OSType)
 		}
-		response, err := io.ReadAll(buildResponse.Body)
+		response, err := ioutil.ReadAll(buildResponse.Body)
 		if err != nil {
 			t.Fatal(err)
 		}

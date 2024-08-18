@@ -3,6 +3,7 @@ package registry // import "github.com/docker/docker/testutil/registry"
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -53,7 +54,7 @@ func NewV2(t testing.TB, ops ...func(*Config)) *V2 {
 	for _, op := range ops {
 		op(c)
 	}
-	tmp, err := os.MkdirTemp("", "registry-test-")
+	tmp, err := ioutil.TempDir("", "registry-test-")
 	assert.NilError(t, err)
 	template := `version: 0.1
 loglevel: debug
@@ -78,7 +79,11 @@ http:
 		username = "testuser"
 		password = "testpassword"
 		email = "test@test.org"
+<<<<<<< HEAD
 		err := os.WriteFile(htpasswdPath, []byte(userpasswd), os.FileMode(0o644))
+=======
+		err := ioutil.WriteFile(htpasswdPath, []byte(userpasswd), os.FileMode(0644))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		assert.NilError(t, err)
 		authTemplate = fmt.Sprintf(`auth:
     htpasswd:
@@ -184,7 +189,7 @@ func (r *V2) getBlobFilename(blobDigest digest.Digest) string {
 func (r *V2) ReadBlobContents(t testing.TB, blobDigest digest.Digest) []byte {
 	t.Helper()
 	// Load the target manifest blob.
-	manifestBlob, err := os.ReadFile(r.getBlobFilename(blobDigest))
+	manifestBlob, err := ioutil.ReadFile(r.getBlobFilename(blobDigest))
 	assert.NilError(t, err, "unable to read blob")
 	return manifestBlob
 }
@@ -192,7 +197,11 @@ func (r *V2) ReadBlobContents(t testing.TB, blobDigest digest.Digest) []byte {
 // WriteBlobContents write the file corresponding to the specified digest with the given content
 func (r *V2) WriteBlobContents(t testing.TB, blobDigest digest.Digest, data []byte) {
 	t.Helper()
+<<<<<<< HEAD
 	err := os.WriteFile(r.getBlobFilename(blobDigest), data, os.FileMode(0o644))
+=======
+	err := ioutil.WriteFile(r.getBlobFilename(blobDigest), data, os.FileMode(0644))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err, "unable to write malicious data blob")
 }
 
@@ -200,7 +209,7 @@ func (r *V2) WriteBlobContents(t testing.TB, blobDigest digest.Digest, data []by
 // malicious blob of data for example.
 func (r *V2) TempMoveBlobData(t testing.TB, blobDigest digest.Digest) (undo func()) {
 	t.Helper()
-	tempFile, err := os.CreateTemp("", "registry-temp-blob-")
+	tempFile, err := ioutil.TempFile("", "registry-temp-blob-")
 	assert.NilError(t, err, "unable to get temporary blob file")
 	tempFile.Close()
 

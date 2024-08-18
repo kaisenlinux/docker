@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -70,7 +71,11 @@ func TestSetWindowsCredentialSpecInSpec(t *testing.T) {
 		assert.NilError(t, err)
 		dummyCredFileName := "dummy-cred-spec.json"
 		dummyCredFilePath := filepath.Join(credSpecsDir, dummyCredFileName)
+<<<<<<< HEAD
 		err = os.WriteFile(dummyCredFilePath, []byte(dummyCredFileContents), 0o644)
+=======
+		err = ioutil.WriteFile(dummyCredFilePath, []byte(dummyCredFileContents), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		defer func() {
 			assert.NilError(t, os.Remove(dummyCredFilePath))
 		}()

@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -346,7 +347,7 @@ func newRootFileInfo() *FileInfo {
 func ChangesDirs(newDir, oldDir string) ([]Change, error) {
 	var oldRoot, newRoot *FileInfo
 	if oldDir == "" {
-		emptyDir, err := os.MkdirTemp("", "empty")
+		emptyDir, err := ioutil.TempDir("", "empty")
 		if err != nil {
 			return nil, err
 		}

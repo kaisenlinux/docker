@@ -2,7 +2,7 @@ package cli
 
 import (
 	"errors"
-	"io"
+	"io/ioutil"
 	"testing"
 
 	"github.com/spf13/cobra"
@@ -135,6 +135,20 @@ type testCase struct {
 	expectedError string
 }
 
+<<<<<<< HEAD
+=======
+func runTestCases(t *testing.T, testCases []testCase) {
+	for _, tc := range testCases {
+		cmd := newDummyCommand(tc.validateFunc)
+		cmd.SetArgs(tc.args)
+		cmd.SetOut(ioutil.Discard)
+
+		err := cmd.Execute()
+		assert.ErrorContains(t, err, tc.expectedError)
+	}
+}
+
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 func newDummyCommand(validationFunc cobra.PositionalArgs) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:  "dummy",

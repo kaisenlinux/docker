@@ -440,7 +440,7 @@ type ports struct {
 	expected string
 }
 
-//nolint:lll
+// nolint: lll
 func TestDisplayablePorts(t *testing.T) {
 	cases := []ports{
 		{

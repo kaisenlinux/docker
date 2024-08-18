@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 )
 
 func main() {
@@ -24,9 +23,8 @@ func main() {
 
 	mux := http.NewServeMux()
 	server := http.Server{
-		Addr:              l.Addr().String(),
-		Handler:           http.NewServeMux(),
-		ReadHeaderTimeout: 2 * time.Second, // This server is not for production code; picked an arbitrary timeout to statisfy gosec (G112: Potential Slowloris Attack)
+		Addr:    l.Addr().String(),
+		Handler: http.NewServeMux(),
 	}
 	mux.HandleFunc("/Plugin.Activate", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/vnd.docker.plugins.v1.1+json")

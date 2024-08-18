@@ -4,6 +4,7 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -25,7 +26,11 @@ func main() {
 		panic(err)
 	}
 
+<<<<<<< HEAD
 	if err := os.WriteFile(f, b, 0o644); err != nil {
+=======
+	if err := ioutil.WriteFile(f, b, 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		panic(err)
 	}
 }

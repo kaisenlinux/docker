@@ -2,7 +2,7 @@ package swarm
 
 import (
 	"bytes"
-	"io"
+	"io/ioutil"
 	"os"
 	"testing"
 	"time"
@@ -65,7 +65,7 @@ type invalidCATestCases struct {
 }
 
 func writeFile(data string) (string, error) {
-	tmpfile, err := os.CreateTemp("", "testfile")
+	tmpfile, err := ioutil.TempFile("", "testfile")
 	if err != nil {
 		return "", err
 	}
@@ -73,14 +73,15 @@ func writeFile(data string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return tmpfile.Name(), tmpfile.Close()
+	tmpfile.Close()
+	return tmpfile.Name(), nil
 }
 
 func TestDisplayTrustRootInvalidFlags(t *testing.T) {
 	// we need an actual PEMfile to test
 	tmpfile, err := writeFile(cert)
 	assert.NilError(t, err)
-	t.Cleanup(func() { _ = os.Remove(tmpfile) })
+	defer os.Remove(tmpfile)
 
 	errorTestCases := []invalidCATestCases{
 		{
@@ -144,7 +145,7 @@ func TestDisplayTrustRootInvalidFlags(t *testing.T) {
 				},
 			}))
 		assert.Check(t, cmd.Flags().Parse(testCase.args))
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), testCase.errorMsg)
 	}
 }

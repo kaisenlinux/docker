@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -61,7 +62,7 @@ func (s *DockerCLIRunSuite) TestRunRedirectStdout(c *testing.T) {
 func (s *DockerCLIRunSuite) TestRunWithVolumesIsRecursive(c *testing.T) {
 	// /tmp gets permission denied
 	testRequires(c, NotUserNamespace, testEnv.IsLocalDaemon)
-	tmpDir, err := os.MkdirTemp("", "docker_recursive_mount_test")
+	tmpDir, err := ioutil.TempDir("", "docker_recursive_mount_test")
 	assert.NilError(c, err)
 
 	defer os.RemoveAll(tmpDir)
@@ -72,7 +73,7 @@ func (s *DockerCLIRunSuite) TestRunWithVolumesIsRecursive(c *testing.T) {
 	assert.Assert(c, mount.Mount("tmpfs", tmpfsDir, "tmpfs", "") == nil, "failed to create a tmpfs mount at %s", tmpfsDir)
 	defer mount.Unmount(tmpfsDir)
 
-	f, err := os.CreateTemp(tmpfsDir, "touch-me")
+	f, err := ioutil.TempFile(tmpfsDir, "touch-me")
 	assert.NilError(c, err)
 	defer f.Close()
 
@@ -243,7 +244,13 @@ func (s *DockerCLIRunSuite) TestRunAttachDetachFromConfig(c *testing.T) {
 	keyA := []byte{97}
 
 	// Setup config
+<<<<<<< HEAD
 	tmpDir, err := os.MkdirTemp("", "fake-home")
+=======
+	homeKey := homedir.Key()
+	homeVal := homedir.Get()
+	tmpDir, err := ioutil.TempDir("", "fake-home")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 	defer os.RemoveAll(tmpDir)
 
@@ -261,7 +268,11 @@ func (s *DockerCLIRunSuite) TestRunAttachDetachFromConfig(c *testing.T) {
 		"detachKeys": "ctrl-a,a"
 	}`
 
+<<<<<<< HEAD
 	err = os.WriteFile(tmpCfg, []byte(data), 0o600)
+=======
+	err = ioutil.WriteFile(tmpCfg, []byte(data), 0600)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	// Then do the work
@@ -327,7 +338,13 @@ func (s *DockerCLIRunSuite) TestRunAttachDetachKeysOverrideConfig(c *testing.T) 
 	keyA := []byte{97}
 
 	// Setup config
+<<<<<<< HEAD
 	tmpDir, err := os.MkdirTemp("", "fake-home")
+=======
+	homeKey := homedir.Key()
+	homeVal := homedir.Get()
+	tmpDir, err := ioutil.TempDir("", "fake-home")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 	defer os.RemoveAll(tmpDir)
 
@@ -345,7 +362,11 @@ func (s *DockerCLIRunSuite) TestRunAttachDetachKeysOverrideConfig(c *testing.T) 
 		"detachKeys": "ctrl-e,e"
 	}`
 
+<<<<<<< HEAD
 	err = os.WriteFile(tmpCfg, []byte(data), 0o600)
+=======
+	err = ioutil.WriteFile(tmpCfg, []byte(data), 0600)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	// Then do the work
@@ -779,8 +800,13 @@ func (s *DockerCLIRunSuite) TestRunWithShmSize(c *testing.T) {
 	assert.Equal(c, shmSize, "1073741824")
 }
 
+<<<<<<< HEAD
 func (s *DockerCLIRunSuite) TestRunTmpfsMountsEnsureOrdered(c *testing.T) {
 	tmpFile, err := os.CreateTemp("", "test")
+=======
+func (s *DockerSuite) TestRunTmpfsMountsEnsureOrdered(c *testing.T) {
+	tmpFile, err := ioutil.TempFile("", "test")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 	defer tmpFile.Close()
 	out := cli.DockerCmd(c, "run", "--tmpfs", "/run", "-v", tmpFile.Name()+":/run/test", "busybox", "ls", "/run").Combined()
@@ -900,7 +926,7 @@ func (s *DockerCLIRunSuite) TestRunSeccompProfileDenyUnshare(c *testing.T) {
 		}
 	]
 }`
-	tmpFile, err := os.CreateTemp("", "profile.json")
+	tmpFile, err := ioutil.TempFile("", "profile.json")
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -937,7 +963,7 @@ func (s *DockerCLIRunSuite) TestRunSeccompProfileDenyChmod(c *testing.T) {
 		}
 	]
 }`
-	tmpFile, err := os.CreateTemp("", "profile.json")
+	tmpFile, err := ioutil.TempFile("", "profile.json")
 	assert.NilError(c, err)
 	defer tmpFile.Close()
 
@@ -972,7 +998,7 @@ func (s *DockerCLIRunSuite) TestRunSeccompProfileDenyUnshareUserns(c *testing.T)
 		}
 	]
 }`, uint64(0x10000000))
-	tmpFile, err := os.CreateTemp("", "profile.json")
+	tmpFile, err := ioutil.TempFile("", "profile.json")
 	if err != nil {
 		c.Fatal(err)
 	}
@@ -1349,7 +1375,7 @@ func (s *DockerCLIRunSuite) TestRunDeviceSymlink(c *testing.T) {
 	}
 
 	// Create a temporary directory to create symlink
-	tmpDir, err := os.MkdirTemp("", "docker_device_follow_symlink_tests")
+	tmpDir, err := ioutil.TempDir("", "docker_device_follow_symlink_tests")
 	assert.NilError(c, err)
 
 	defer os.RemoveAll(tmpDir)
@@ -1362,7 +1388,11 @@ func (s *DockerCLIRunSuite) TestRunDeviceSymlink(c *testing.T) {
 	// Create a temporary file "temp" inside tmpDir, write some data to "tmpDir/temp",
 	// then create a symlink "tmpDir/file" to the temporary file "tmpDir/temp".
 	tmpFile := filepath.Join(tmpDir, "temp")
+<<<<<<< HEAD
 	err = os.WriteFile(tmpFile, []byte("temp"), 0o666)
+=======
+	err = ioutil.WriteFile(tmpFile, []byte("temp"), 0666)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 	symFile := filepath.Join(tmpDir, "file")
 	err = os.Symlink(tmpFile, symFile)
@@ -1441,7 +1471,7 @@ func (s *DockerDaemonSuite) TestRunSeccompJSONNewFormat(c *testing.T) {
 		}
 	]
 }`
-	tmpFile, err := os.CreateTemp("", "profile.json")
+	tmpFile, err := ioutil.TempFile("", "profile.json")
 	assert.NilError(c, err)
 	defer tmpFile.Close()
 	_, err = tmpFile.Write([]byte(jsonData))
@@ -1468,7 +1498,7 @@ func (s *DockerDaemonSuite) TestRunSeccompJSONNoNameAndNames(c *testing.T) {
 		}
 	]
 }`
-	tmpFile, err := os.CreateTemp("", "profile.json")
+	tmpFile, err := ioutil.TempFile("", "profile.json")
 	assert.NilError(c, err)
 	defer tmpFile.Close()
 	_, err = tmpFile.Write([]byte(jsonData))
@@ -1506,7 +1536,7 @@ func (s *DockerDaemonSuite) TestRunSeccompJSONNoArchAndArchMap(c *testing.T) {
 		}
 	]
 }`
-	tmpFile, err := os.CreateTemp("", "profile.json")
+	tmpFile, err := ioutil.TempFile("", "profile.json")
 	assert.NilError(c, err)
 	defer tmpFile.Close()
 	_, err = tmpFile.Write([]byte(jsonData))
@@ -1540,7 +1570,7 @@ func (s *DockerDaemonSuite) TestRunWithDaemonDefaultSeccompProfile(c *testing.T)
 		}
 	]
 }`
-	tmpFile, err := os.CreateTemp("", "profile.json")
+	tmpFile, err := ioutil.TempFile("", "profile.json")
 	assert.NilError(c, err)
 	defer tmpFile.Close()
 	_, err = tmpFile.Write([]byte(jsonData))

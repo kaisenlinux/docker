@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -195,7 +196,7 @@ func writeFile(dst, content string, c *testing.T) {
 // Fail the test when error occurs.
 func readFile(src string, c *testing.T) (content string) {
 	c.Helper()
-	data, err := os.ReadFile(src)
+	data, err := ioutil.ReadFile(src)
 	assert.NilError(c, err)
 
 	return string(data)
@@ -221,7 +222,7 @@ func readContainerFile(c *testing.T, containerID, filename string) []byte {
 	assert.NilError(c, err)
 	defer f.Close()
 
-	content, err := io.ReadAll(f)
+	content, err := ioutil.ReadAll(f)
 	assert.NilError(c, err)
 	return content
 }
@@ -291,12 +292,16 @@ func appendBaseEnv(isTLS bool, env ...string) []string {
 
 func createTmpFile(c *testing.T, content string) string {
 	c.Helper()
-	f, err := os.CreateTemp("", "testfile")
+	f, err := ioutil.TempFile("", "testfile")
 	assert.NilError(c, err)
 
 	filename := f.Name()
 
+<<<<<<< HEAD
 	err = os.WriteFile(filename, []byte(content), 0o644)
+=======
+	err = ioutil.WriteFile(filename, []byte(content), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	return filename

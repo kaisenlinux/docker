@@ -26,11 +26,16 @@ type ImageContext struct {
 	Digest bool
 }
 
+<<<<<<< HEAD
 func isDangling(img image.Summary) bool {
 	if len(img.RepoTags) == 0 && len(img.RepoDigests) == 0 {
 		return true
 	}
 	return len(img.RepoTags) == 1 && img.RepoTags[0] == "<none>:<none>" && len(img.RepoDigests) == 1 && img.RepoDigests[0] == "<none>@<none>"
+=======
+func isDangling(image types.ImageSummary) bool {
+	return len(image.RepoTags) == 1 && image.RepoTags[0] == "<none>:<none>" && len(image.RepoDigests) == 1 && image.RepoDigests[0] == "<none>@<none>"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 }
 
 // NewImageFormat returns a format for rendering an ImageContext

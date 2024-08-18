@@ -1,7 +1,7 @@
 package stack
 
 import (
-	"io"
+	"io/ioutil"
 	"testing"
 	"time"
 
@@ -44,7 +44,7 @@ func TestStackPsErrors(t *testing.T) {
 			taskListFunc: tc.taskListFunc,
 		}))
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }
@@ -168,7 +168,7 @@ func TestStackPs(t *testing.T) {
 			for key, value := range tc.flags {
 				assert.Check(t, cmd.Flags().Set(key, value))
 			}
-			cmd.SetOut(io.Discard)
+			cmd.SetOut(ioutil.Discard)
 
 			if tc.expectedErr != "" {
 				assert.Error(t, cmd.Execute(), tc.expectedErr)

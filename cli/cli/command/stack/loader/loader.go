@@ -6,6 +6,7 @@ package loader
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -149,9 +150,9 @@ func loadConfigFile(filename string, stdin io.Reader) (*composetypes.ConfigFile,
 	var err error
 
 	if filename == "-" {
-		bytes, err = io.ReadAll(stdin)
+		bytes, err = ioutil.ReadAll(stdin)
 	} else {
-		bytes, err = os.ReadFile(filename)
+		bytes, err = ioutil.ReadFile(filename)
 	}
 	if err != nil {
 		return nil, err

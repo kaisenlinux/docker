@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"sync"
@@ -46,7 +47,7 @@ func handle(mux *http.ServeMux) {
 		d.logs[req.File] = f
 		d.mu.Unlock()
 
-		go io.Copy(io.Discard, f)
+		go io.Copy(ioutil.Discard, f)
 		respond(err, w)
 	})
 

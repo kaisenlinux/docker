@@ -9,7 +9,11 @@ import (
 	"encoding/base32"
 	"encoding/json"
 	"fmt"
+<<<<<<< HEAD
 	"io"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -135,6 +139,7 @@ func setupRuntimes(cfg *config.Config) (runtimes, error) {
 				return runtimes{}, errors.Errorf("runtime %s: options cannot be used with a path runtime", name)
 			}
 
+<<<<<<< HEAD
 			binaryName := rt.Path
 			needsWrapper := len(rt.Args) > 0
 			if needsWrapper {
@@ -166,6 +171,27 @@ func setupRuntimes(cfg *config.Config) (runtimes, error) {
 				if err != nil {
 					return runtimes{}, errors.Wrapf(err, "runtime %v", name)
 				}
+=======
+		if err = os.Rename(runtimeDir, runtimeDir+"-old"); err != nil {
+			return
+		}
+		if err = os.Rename(tmpDir, runtimeDir); err != nil {
+			err = errors.Wrap(err, "failed to setup runtimes dir, new containers may not start")
+			return
+		}
+		if err = os.RemoveAll(runtimeDir + "-old"); err != nil {
+			logrus.WithError(err).WithField("dir", tmpDir).
+				Warn("failed to remove old runtimes dir")
+		}
+	}()
+
+	for name, rt := range runtimes {
+		if len(rt.Args) > 0 {
+			script := filepath.Join(tmpDir, name)
+			content := fmt.Sprintf("#!/bin/sh\n%s %s $@\n", rt.Path, strings.Join(rt.Args, " "))
+			if err := ioutil.WriteFile(script, []byte(content), 0700); err != nil {
+				return err
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			}
 		}
 		newrt.configured[name] = c

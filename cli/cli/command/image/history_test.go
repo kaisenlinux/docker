@@ -2,7 +2,7 @@ package image
 
 import (
 	"fmt"
-	"io"
+	"io/ioutil"
 	"testing"
 	"time"
 
@@ -36,7 +36,7 @@ func TestNewHistoryCommandErrors(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		cmd := NewHistoryCommand(test.NewFakeCli(&fakeClient{imageHistoryFunc: tc.imageHistoryFunc}))
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		cmd.SetArgs(tc.args)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
@@ -87,6 +87,7 @@ func TestNewHistoryCommandSuccess(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
+<<<<<<< HEAD
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			// Set to UTC timezone as timestamps in output are
@@ -101,5 +102,15 @@ func TestNewHistoryCommandSuccess(t *testing.T) {
 			actual := cli.OutBuffer().String()
 			golden.Assert(t, actual, fmt.Sprintf("history-command-success.%s.golden", tc.name))
 		})
+=======
+		cli := test.NewFakeCli(&fakeClient{imageHistoryFunc: tc.imageHistoryFunc})
+		cmd := NewHistoryCommand(cli)
+		cmd.SetOut(ioutil.Discard)
+		cmd.SetArgs(tc.args)
+		err := cmd.Execute()
+		assert.NilError(t, err)
+		actual := cli.OutBuffer().String()
+		golden.Assert(t, actual, fmt.Sprintf("history-command-success.%s.golden", tc.name))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	}
 }

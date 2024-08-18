@@ -4,6 +4,7 @@ package image // import "github.com/docker/docker/integration/image"
 
 import (
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -74,7 +75,7 @@ func TestRemoveImageGarbageCollector(t *testing.T) {
 			Tags:        []string{imgName},
 		})
 	assert.NilError(t, err)
-	_, err = io.Copy(io.Discard, resp.Body)
+	_, err = io.Copy(ioutil.Discard, resp.Body)
 	resp.Body.Close()
 	assert.NilError(t, err)
 	img, _, err := client.ImageInspectWithRaw(ctx, imgName)
@@ -112,7 +113,7 @@ func TestRemoveImageGarbageCollector(t *testing.T) {
 	assert.Assert(t, os.IsNotExist(err))
 
 	// Make sure that removal pending layers does not exist on layerdb either
-	layerdbItems, _ := os.ReadDir(filepath.Join(d.RootDir(), "/image/overlay2/layerdb/sha256"))
+	layerdbItems, _ := ioutil.ReadDir(filepath.Join(d.RootDir(), "/image/overlay2/layerdb/sha256"))
 	for _, folder := range layerdbItems {
 		assert.Equal(t, false, strings.HasSuffix(folder.Name(), "-removing"))
 	}

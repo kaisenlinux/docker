@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io"
+	"io/ioutil"
 
 	"github.com/docker/docker/api/types/volume"
 )
@@ -28,7 +28,7 @@ func (cli *Client) VolumeInspectWithRaw(ctx context.Context, volumeID string) (v
 		return vol, nil, err
 	}
 
-	body, err := io.ReadAll(resp.body)
+	body, err := ioutil.ReadAll(resp.body)
 	if err != nil {
 		return vol, nil, err
 	}

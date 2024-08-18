@@ -3,6 +3,7 @@ package image
 import (
 	"context"
 	"io"
+	"io/ioutil"
 	"strings"
 	"time"
 
@@ -41,7 +42,7 @@ func (cli *fakeClient) ImageSave(_ context.Context, images []string) (io.ReadClo
 	if cli.imageSaveFunc != nil {
 		return cli.imageSaveFunc(images)
 	}
-	return io.NopCloser(strings.NewReader("")), nil
+	return ioutil.NopCloser(strings.NewReader("")), nil
 }
 
 func (cli *fakeClient) ImageRemove(_ context.Context, img string,
@@ -57,7 +58,7 @@ func (cli *fakeClient) ImagePush(_ context.Context, ref string, options image.Pu
 	if cli.imagePushFunc != nil {
 		return cli.imagePushFunc(ref, options)
 	}
-	return io.NopCloser(strings.NewReader("")), nil
+	return ioutil.NopCloser(strings.NewReader("")), nil
 }
 
 func (cli *fakeClient) Info(_ context.Context) (system.Info, error) {
@@ -71,7 +72,7 @@ func (cli *fakeClient) ImagePull(_ context.Context, ref string, options image.Pu
 	if cli.imagePullFunc != nil {
 		cli.imagePullFunc(ref, options)
 	}
-	return io.NopCloser(strings.NewReader("")), nil
+	return ioutil.NopCloser(strings.NewReader("")), nil
 }
 
 func (cli *fakeClient) ImagesPrune(_ context.Context, pruneFilter filters.Args) (types.ImagesPruneReport, error) {
@@ -92,7 +93,11 @@ func (cli *fakeClient) ImageList(_ context.Context, options image.ListOptions) (
 	if cli.imageListFunc != nil {
 		return cli.imageListFunc(options)
 	}
+<<<<<<< HEAD
 	return []image.Summary{}, nil
+=======
+	return []types.ImageSummary{{}}, nil
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 }
 
 func (cli *fakeClient) ImageInspectWithRaw(_ context.Context, img string) (types.ImageInspect, []byte, error) {
@@ -108,7 +113,7 @@ func (cli *fakeClient) ImageImport(_ context.Context, source types.ImageImportSo
 	if cli.imageImportFunc != nil {
 		return cli.imageImportFunc(source, ref, options)
 	}
-	return io.NopCloser(strings.NewReader("")), nil
+	return ioutil.NopCloser(strings.NewReader("")), nil
 }
 
 func (cli *fakeClient) ImageHistory(_ context.Context, img string) ([]image.HistoryResponseItem, error) {
@@ -122,5 +127,5 @@ func (cli *fakeClient) ImageBuild(ctx context.Context, buildContext io.Reader, o
 	if cli.imageBuildFunc != nil {
 		return cli.imageBuildFunc(ctx, buildContext, options)
 	}
-	return types.ImageBuildResponse{Body: io.NopCloser(strings.NewReader(""))}, nil
+	return types.ImageBuildResponse{Body: ioutil.NopCloser(strings.NewReader(""))}, nil
 }

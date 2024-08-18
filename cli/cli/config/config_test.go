@@ -3,6 +3,7 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,19 +15,35 @@ import (
 	is "gotest.tools/v3/assert/cmp"
 )
 
+<<<<<<< HEAD
 func setupConfigDir(t *testing.T) string {
 	t.Helper()
 	tmpdir := t.TempDir()
+=======
+var homeKey = "HOME"
+
+func init() {
+	if runtime.GOOS == "windows" {
+		homeKey = "USERPROFILE"
+	}
+}
+
+func setupConfigDir(t *testing.T) (string, func()) {
+	tmpdir, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	oldDir := Dir()
 	SetDir(tmpdir)
-	t.Cleanup(func() {
+
+	return tmpdir, func() {
 		SetDir(oldDir)
-	})
-	return tmpdir
+		os.RemoveAll(tmpdir)
+	}
 }
 
 func TestEmptyConfigDir(t *testing.T) {
-	tmpHome := setupConfigDir(t)
+	tmpHome, cleanup := setupConfigDir(t)
+	defer cleanup()
 
 	config, err := Load("")
 	assert.NilError(t, err)
@@ -39,7 +56,9 @@ func TestEmptyConfigDir(t *testing.T) {
 }
 
 func TestMissingFile(t *testing.T) {
-	tmpHome := t.TempDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
 
 	config, err := Load(tmpHome)
 	assert.NilError(t, err)
@@ -49,7 +68,16 @@ func TestMissingFile(t *testing.T) {
 }
 
 func TestSaveFileToDirs(t *testing.T) {
+<<<<<<< HEAD
 	tmpHome := filepath.Join(t.TempDir(), ".docker")
+=======
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
+
+	tmpHome += "/.docker"
+
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	config, err := Load(tmpHome)
 	assert.NilError(t, err)
 
@@ -58,10 +86,16 @@ func TestSaveFileToDirs(t *testing.T) {
 }
 
 func TestEmptyFile(t *testing.T) {
-	tmpHome := t.TempDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
 
 	fn := filepath.Join(tmpHome, ConfigFileName)
+<<<<<<< HEAD
 	err := os.WriteFile(fn, []byte(""), 0o600)
+=======
+	err = ioutil.WriteFile(fn, []byte(""), 0600)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	_, err = Load(tmpHome)
@@ -69,10 +103,16 @@ func TestEmptyFile(t *testing.T) {
 }
 
 func TestEmptyJSON(t *testing.T) {
-	tmpHome := t.TempDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
 
 	fn := filepath.Join(tmpHome, ConfigFileName)
+<<<<<<< HEAD
 	err := os.WriteFile(fn, []byte("{}"), 0o600)
+=======
+	err = ioutil.WriteFile(fn, []byte("{}"), 0600)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	config, err := Load(tmpHome)
@@ -82,12 +122,163 @@ func TestEmptyJSON(t *testing.T) {
 	saveConfigAndValidateNewFormat(t, config, tmpHome)
 }
 
+<<<<<<< HEAD
+=======
+func TestOldInvalidsAuth(t *testing.T) {
+	invalids := map[string]string{
+		`username = test`: "The Auth config file is empty",
+		`username
+password`: "Invalid Auth config file",
+		`username = test
+email`: "Invalid auth configuration file",
+	}
+
+	resetHomeDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
+	defer env.Patch(t, homeKey, tmpHome)()
+
+	for content, expectedError := range invalids {
+		fn := filepath.Join(tmpHome, oldConfigfile)
+		err := ioutil.WriteFile(fn, []byte(content), 0600)
+		assert.NilError(t, err)
+
+		_, err = Load(tmpHome)
+		assert.ErrorContains(t, err, expectedError)
+	}
+}
+
+func TestOldValidAuth(t *testing.T) {
+	resetHomeDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
+	defer env.Patch(t, homeKey, tmpHome)()
+
+	fn := filepath.Join(tmpHome, oldConfigfile)
+	js := `username = am9lam9lOmhlbGxv
+	email = user@example.com`
+	err = ioutil.WriteFile(fn, []byte(js), 0600)
+	assert.NilError(t, err)
+
+	config, err := Load(tmpHome)
+	assert.NilError(t, err)
+
+	// defaultIndexserver is https://index.docker.io/v1/
+	ac := config.AuthConfigs["https://index.docker.io/v1/"]
+	assert.Equal(t, ac.Username, "joejoe")
+	assert.Equal(t, ac.Password, "hello")
+
+	// Now save it and make sure it shows up in new form
+	configStr := saveConfigAndValidateNewFormat(t, config, tmpHome)
+
+	expConfStr := `{
+	"auths": {
+		"https://index.docker.io/v1/": {
+			"auth": "am9lam9lOmhlbGxv"
+		}
+	}
+}`
+
+	assert.Check(t, is.Equal(expConfStr, configStr))
+}
+
+func TestOldJSONInvalid(t *testing.T) {
+	resetHomeDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
+	defer env.Patch(t, homeKey, tmpHome)()
+
+	fn := filepath.Join(tmpHome, oldConfigfile)
+	js := `{"https://index.docker.io/v1/":{"auth":"test","email":"user@example.com"}}`
+	if err := ioutil.WriteFile(fn, []byte(js), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	config, err := Load(tmpHome)
+	// Use Contains instead of == since the file name will change each time
+	if err == nil || !strings.Contains(err.Error(), "Invalid auth configuration file") {
+		t.Fatalf("Expected an error got : %v, %v", config, err)
+	}
+}
+
+func TestOldJSON(t *testing.T) {
+	resetHomeDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
+	defer env.Patch(t, homeKey, tmpHome)()
+
+	fn := filepath.Join(tmpHome, oldConfigfile)
+	js := `{"https://index.docker.io/v1/":{"auth":"am9lam9lOmhlbGxv","email":"user@example.com"}}`
+	if err := ioutil.WriteFile(fn, []byte(js), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	config, err := Load(tmpHome)
+	assert.NilError(t, err)
+
+	ac := config.AuthConfigs["https://index.docker.io/v1/"]
+	assert.Equal(t, ac.Username, "joejoe")
+	assert.Equal(t, ac.Password, "hello")
+
+	// Now save it and make sure it shows up in new form
+	configStr := saveConfigAndValidateNewFormat(t, config, tmpHome)
+
+	expConfStr := `{
+	"auths": {
+		"https://index.docker.io/v1/": {
+			"auth": "am9lam9lOmhlbGxv",
+			"email": "user@example.com"
+		}
+	}
+}`
+
+	if configStr != expConfStr {
+		t.Fatalf("Should have save in new form: \n'%s'\n not \n'%s'\n", configStr, expConfStr)
+	}
+}
+
+func TestOldJSONFallbackDeprecationWarning(t *testing.T) {
+	js := `{"https://index.docker.io/v1/":{"auth":"am9lam9lOmhlbGxv","email":"user@example.com"}}`
+	tmpHome := fs.NewDir(t, t.Name(), fs.WithFile(oldConfigfile, js))
+	defer tmpHome.Remove()
+	defer env.PatchAll(t, map[string]string{homeKey: tmpHome.Path(), "DOCKER_CONFIG": ""})()
+
+	// reset the homeDir, configDir, and its sync.Once, to force them being resolved again
+	resetHomeDir()
+	resetConfigDir()
+
+	buffer := new(bytes.Buffer)
+	configFile := LoadDefaultConfigFile(buffer)
+	expected := configfile.New(tmpHome.Join(configFileDir, ConfigFileName))
+	expected.AuthConfigs = map[string]types.AuthConfig{
+		"https://index.docker.io/v1/": {
+			Username:      "joejoe",
+			Password:      "hello",
+			Email:         "user@example.com",
+			ServerAddress: "https://index.docker.io/v1/",
+		},
+	}
+	assert.Assert(t, strings.Contains(buffer.String(), "WARNING: Support for the legacy ~/.dockercfg configuration file and file-format is deprecated and will be removed in an upcoming release"))
+	assert.Check(t, is.DeepEqual(expected, configFile))
+}
+
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 func TestNewJSON(t *testing.T) {
-	tmpHome := t.TempDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
 
 	fn := filepath.Join(tmpHome, ConfigFileName)
 	js := ` { "auths": { "https://index.docker.io/v1/": { "auth": "am9lam9lOmhlbGxv" } } }`
+<<<<<<< HEAD
 	if err := os.WriteFile(fn, []byte(js), 0o600); err != nil {
+=======
+	if err := ioutil.WriteFile(fn, []byte(js), 0600); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 
@@ -115,11 +306,17 @@ func TestNewJSON(t *testing.T) {
 }
 
 func TestNewJSONNoEmail(t *testing.T) {
-	tmpHome := t.TempDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
 
 	fn := filepath.Join(tmpHome, ConfigFileName)
 	js := ` { "auths": { "https://index.docker.io/v1/": { "auth": "am9lam9lOmhlbGxv" } } }`
+<<<<<<< HEAD
 	if err := os.WriteFile(fn, []byte(js), 0o600); err != nil {
+=======
+	if err := ioutil.WriteFile(fn, []byte(js), 0600); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 
@@ -147,14 +344,20 @@ func TestNewJSONNoEmail(t *testing.T) {
 }
 
 func TestJSONWithPsFormat(t *testing.T) {
-	tmpHome := t.TempDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
 
 	fn := filepath.Join(tmpHome, ConfigFileName)
 	js := `{
 		"auths": { "https://index.docker.io/v1/": { "auth": "am9lam9lOmhlbGxv", "email": "user@example.com" } },
 		"psFormat": "table {{.ID}}\\t{{.Label \"com.docker.label.cpu\"}}"
 }`
+<<<<<<< HEAD
 	if err := os.WriteFile(fn, []byte(js), 0o600); err != nil {
+=======
+	if err := ioutil.WriteFile(fn, []byte(js), 0600); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 
@@ -174,14 +377,20 @@ func TestJSONWithPsFormat(t *testing.T) {
 }
 
 func TestJSONWithCredentialStore(t *testing.T) {
-	tmpHome := t.TempDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
 
 	fn := filepath.Join(tmpHome, ConfigFileName)
 	js := `{
 		"auths": { "https://index.docker.io/v1/": { "auth": "am9lam9lOmhlbGxv", "email": "user@example.com" } },
 		"credsStore": "crazy-secure-storage"
 }`
+<<<<<<< HEAD
 	if err := os.WriteFile(fn, []byte(js), 0o600); err != nil {
+=======
+	if err := ioutil.WriteFile(fn, []byte(js), 0600); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 
@@ -201,14 +410,20 @@ func TestJSONWithCredentialStore(t *testing.T) {
 }
 
 func TestJSONWithCredentialHelpers(t *testing.T) {
-	tmpHome := t.TempDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
 
 	fn := filepath.Join(tmpHome, ConfigFileName)
 	js := `{
 		"auths": { "https://index.docker.io/v1/": { "auth": "am9lam9lOmhlbGxv", "email": "user@example.com" } },
 		"credHelpers": { "images.io": "images-io", "containers.com": "crazy-secure-storage" }
 }`
+<<<<<<< HEAD
 	if err := os.WriteFile(fn, []byte(js), 0o600); err != nil {
+=======
+	if err := ioutil.WriteFile(fn, []byte(js), 0600); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 
@@ -238,14 +453,16 @@ func saveConfigAndValidateNewFormat(t *testing.T, config *configfile.ConfigFile,
 	t.Helper()
 	assert.NilError(t, config.Save())
 
-	buf, err := os.ReadFile(filepath.Join(configDir, ConfigFileName))
+	buf, err := ioutil.ReadFile(filepath.Join(configDir, ConfigFileName))
 	assert.NilError(t, err)
 	assert.Check(t, is.Contains(string(buf), `"auths":`))
 	return string(buf)
 }
 
 func TestConfigDir(t *testing.T) {
-	tmpHome := t.TempDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
 
 	if Dir() == tmpHome {
 		t.Fatalf("Expected ConfigDir to be different than %s by default, but was the same", tmpHome)
@@ -293,14 +510,16 @@ func TestJSONSaveWithNoFile(t *testing.T) {
 	err = config.Save()
 	assert.ErrorContains(t, err, "with empty filename")
 
-	tmpHome := t.TempDir()
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
 
 	fn := filepath.Join(tmpHome, ConfigFileName)
 	f, _ := os.OpenFile(fn, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o600)
 	defer f.Close()
 
 	assert.NilError(t, config.SaveToWriter(f))
-	buf, err := os.ReadFile(filepath.Join(tmpHome, ConfigFileName))
+	buf, err := ioutil.ReadFile(filepath.Join(tmpHome, ConfigFileName))
 	assert.NilError(t, err)
 	expConfStr := `{
 	"auths": {
@@ -315,13 +534,54 @@ func TestJSONSaveWithNoFile(t *testing.T) {
 	}
 }
 
+<<<<<<< HEAD
+=======
+func TestLegacyJSONSaveWithNoFile(t *testing.T) {
+	js := `{"https://index.docker.io/v1/":{"auth":"am9lam9lOmhlbGxv","email":"user@example.com"}}`
+	config, err := LegacyLoadFromReader(strings.NewReader(js))
+	assert.NilError(t, err)
+	err = config.Save()
+	assert.ErrorContains(t, err, "with empty filename")
+
+	tmpHome, err := ioutil.TempDir("", "config-test")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpHome)
+
+	fn := filepath.Join(tmpHome, ConfigFileName)
+	f, _ := os.OpenFile(fn, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	defer f.Close()
+
+	assert.NilError(t, config.SaveToWriter(f))
+	buf, err := ioutil.ReadFile(filepath.Join(tmpHome, ConfigFileName))
+	assert.NilError(t, err)
+
+	expConfStr := `{
+	"auths": {
+		"https://index.docker.io/v1/": {
+			"auth": "am9lam9lOmhlbGxv",
+			"email": "user@example.com"
+		}
+	}
+}`
+
+	if string(buf) != expConfStr {
+		t.Fatalf("Should have save in new form: \n%s\n not \n%s", string(buf), expConfStr)
+	}
+}
+
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 func TestLoadDefaultConfigFile(t *testing.T) {
-	dir := setupConfigDir(t)
+	dir, cleanup := setupConfigDir(t)
+	defer cleanup()
 	buffer := new(bytes.Buffer)
 
 	filename := filepath.Join(dir, ConfigFileName)
 	content := []byte(`{"PsFormat": "format"}`)
+<<<<<<< HEAD
 	err := os.WriteFile(filename, content, 0o644)
+=======
+	err := ioutil.WriteFile(filename, content, 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, err)
 
 	configFile := LoadDefaultConfigFile(buffer)

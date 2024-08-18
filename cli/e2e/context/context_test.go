@@ -1,6 +1,7 @@
 package context
 
 import (
+	"io/ioutil"
 	"os"
 	"testing"
 
@@ -21,7 +22,10 @@ func TestContextList(t *testing.T) {
 }
 
 func TestContextImportNoTLS(t *testing.T) {
-	d := t.TempDir()
+	d, _ := ioutil.TempDir("", "")
+	defer func() {
+		os.RemoveAll(d)
+	}()
 	cmd := icmd.Command("docker", "context", "import", "remote", "./testdata/test-dockerconfig.tar")
 	cmd.Env = append(cmd.Env, config.EnvOverrideConfigDir+"="+d)
 	icmd.RunCmd(cmd).Assert(t, icmd.Success)
@@ -33,7 +37,10 @@ func TestContextImportNoTLS(t *testing.T) {
 }
 
 func TestContextImportTLS(t *testing.T) {
-	d := t.TempDir()
+	d, _ := ioutil.TempDir("", "")
+	defer func() {
+		os.RemoveAll(d)
+	}()
 	cmd := icmd.Command("docker", "context", "import", "test", "./testdata/test-dockerconfig-tls.tar")
 	cmd.Env = append(cmd.Env, config.EnvOverrideConfigDir+"="+d)
 	icmd.RunCmd(cmd).Assert(t, icmd.Success)
@@ -43,7 +50,7 @@ func TestContextImportTLS(t *testing.T) {
 	result := icmd.RunCmd(cmd).Assert(t, icmd.Success)
 	golden.Assert(t, result.Stdout(), "context-ls-tls.golden")
 
-	b, err := os.ReadFile(d + "/contexts/tls/9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08/kubernetes/key.pem")
+	b, err := ioutil.ReadFile(d + "/contexts/tls/9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08/kubernetes/key.pem")
 	assert.NilError(t, err)
 	assert.Equal(t, string(b), `-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEArQk77K5sgrQYY6HiQ1y7AC+67HrRB36oEvR+Fq60RsFcc3cZ

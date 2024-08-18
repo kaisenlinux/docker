@@ -3,7 +3,7 @@ package client // import "github.com/docker/docker/client"
 import (
 	"context"
 	"errors"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -28,7 +28,7 @@ func TestPingFail(t *testing.T) {
 				resp.Header.Set("Docker-Experimental", "true")
 				resp.Header.Set("Swarm", "inactive")
 			}
-			resp.Body = io.NopCloser(strings.NewReader("some error with the server"))
+			resp.Body = ioutil.NopCloser(strings.NewReader("some error with the server"))
 			return resp, nil
 		}),
 	}
@@ -53,7 +53,16 @@ func TestPingFail(t *testing.T) {
 func TestPingWithError(t *testing.T) {
 	client := &Client{
 		client: newMockClient(func(req *http.Request) (*http.Response, error) {
+<<<<<<< HEAD
 			return nil, errors.New("some connection error")
+=======
+			resp := &http.Response{StatusCode: http.StatusInternalServerError}
+			resp.Header = http.Header{}
+			resp.Header.Set("API-Version", "awesome")
+			resp.Header.Set("Docker-Experimental", "true")
+			resp.Body = ioutil.NopCloser(strings.NewReader("some error with the server"))
+			return resp, errors.New("some error")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		}),
 	}
 
@@ -74,8 +83,12 @@ func TestPingSuccess(t *testing.T) {
 			resp.Header = http.Header{}
 			resp.Header.Set("API-Version", "awesome")
 			resp.Header.Set("Docker-Experimental", "true")
+<<<<<<< HEAD
 			resp.Header.Set("Swarm", "active/manager")
 			resp.Body = io.NopCloser(strings.NewReader("OK"))
+=======
+			resp.Body = ioutil.NopCloser(strings.NewReader("OK"))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			return resp, nil
 		}),
 	}

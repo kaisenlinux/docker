@@ -1,6 +1,8 @@
 package trust
 
 import (
+	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/theupdateframework/notary/client"
@@ -10,7 +12,11 @@ import (
 )
 
 func TestGetOrGenerateNotaryKeyAndInitRepo(t *testing.T) {
-	notaryRepo, err := client.NewFileCachedRepository(t.TempDir(), "gun", "https://localhost", nil, passphrase.ConstantRetriever(passwd), trustpinning.TrustPinConfig{})
+	tmpDir, err := ioutil.TempDir("", "notary-test-")
+	assert.NilError(t, err)
+	defer os.RemoveAll(tmpDir)
+
+	notaryRepo, err := client.NewFileCachedRepository(tmpDir, "gun", "https://localhost", nil, passphrase.ConstantRetriever(passwd), trustpinning.TrustPinConfig{})
 	assert.NilError(t, err)
 
 	err = getOrGenerateRootKeyAndInitRepo(notaryRepo)

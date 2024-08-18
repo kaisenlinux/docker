@@ -3,8 +3,12 @@ package client // import "github.com/docker/docker/client"
 import (
 	"bytes"
 	"context"
+<<<<<<< HEAD
 	"errors"
 	"io"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"net/http"
 	"net/url"
 	"runtime"
@@ -372,7 +376,7 @@ func TestNegotiateAPIVersionAutomatic(t *testing.T) {
 	httpClient := newMockClient(func(req *http.Request) (*http.Response, error) {
 		resp := &http.Response{StatusCode: http.StatusOK, Header: http.Header{}}
 		resp.Header.Set("API-Version", pingVersion)
-		resp.Body = io.NopCloser(strings.NewReader("OK"))
+		resp.Body = ioutil.NopCloser(strings.NewReader("OK"))
 		return resp, nil
 	})
 

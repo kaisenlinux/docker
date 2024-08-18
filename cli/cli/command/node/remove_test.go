@@ -1,7 +1,7 @@
 package node
 
 import (
-	"io"
+	"io/ioutil"
 	"testing"
 
 	"github.com/docker/cli/internal/test"
@@ -32,7 +32,7 @@ func TestNodeRemoveErrors(t *testing.T) {
 				nodeRemoveFunc: tc.nodeRemoveFunc,
 			}))
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }

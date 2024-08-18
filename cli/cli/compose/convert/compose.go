@@ -1,7 +1,7 @@
 package convert
 
 import (
-	"os"
+	"io/ioutil"
 	"strings"
 
 	composetypes "github.com/docker/cli/cli/compose/types"
@@ -178,7 +178,7 @@ func driverObjectConfig(namespace Namespace, name string, obj composetypes.FileO
 }
 
 func fileObjectConfig(namespace Namespace, name string, obj composetypes.FileObjectConfig) (swarmFileObject, error) {
-	data, err := os.ReadFile(obj.File)
+	data, err := ioutil.ReadFile(obj.File)
 	if err != nil {
 		return swarmFileObject{}, err
 	}

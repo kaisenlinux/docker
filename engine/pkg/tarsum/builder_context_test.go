@@ -2,6 +2,7 @@ package tarsum // import "github.com/docker/docker/pkg/tarsum"
 
 import (
 	"io"
+	"io/ioutil"
 	"os"
 	"testing"
 )
@@ -21,7 +22,7 @@ func TestTarSumRemoveNonExistent(t *testing.T) {
 	}
 
 	// Read and discard bytes so that it populates sums
-	_, err = io.Copy(io.Discard, ts)
+	_, err = io.Copy(ioutil.Discard, ts)
 	if err != nil {
 		t.Errorf("failed to read from %s: %s", filename, err)
 	}
@@ -51,7 +52,7 @@ func TestTarSumRemove(t *testing.T) {
 	}
 
 	// Read and discard bytes so that it populates sums
-	_, err = io.Copy(io.Discard, ts)
+	_, err = io.Copy(ioutil.Discard, ts)
 	if err != nil {
 		t.Errorf("failed to read from %s: %s", filename, err)
 	}

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -75,7 +75,7 @@ func resizeTransport(expectedURL string) func(req *http.Request) (*http.Response
 		}
 		return &http.Response{
 			StatusCode: http.StatusOK,
-			Body:       io.NopCloser(bytes.NewReader([]byte(""))),
+			Body:       ioutil.NopCloser(bytes.NewReader([]byte(""))),
 		}, nil
 	}
 }

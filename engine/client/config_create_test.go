@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -54,7 +54,7 @@ func TestConfigCreate(t *testing.T) {
 			}
 			return &http.Response{
 				StatusCode: http.StatusCreated,
-				Body:       io.NopCloser(bytes.NewReader(b)),
+				Body:       ioutil.NopCloser(bytes.NewReader(b)),
 			}, nil
 		}),
 	}

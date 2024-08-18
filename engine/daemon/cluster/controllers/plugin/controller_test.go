@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -323,7 +324,11 @@ func TestRemove(t *testing.T) {
 
 func newTestController(b Backend, disabled bool) *Controller {
 	return &Controller{
+<<<<<<< HEAD
 		logger:  &log.Entry{Logger: &logrus.Logger{Out: io.Discard}},
+=======
+		logger:  &logrus.Entry{Logger: &logrus.Logger{Out: ioutil.Discard}},
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		backend: b,
 		spec: runtime.PluginSpec{
 			Name:     pluginTestName,

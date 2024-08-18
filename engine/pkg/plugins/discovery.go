@@ -3,7 +3,7 @@ package plugins // import "github.com/docker/docker/pkg/plugins"
 import (
 	"encoding/json"
 	"fmt"
-	"io/fs"
+	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -36,26 +36,35 @@ func NewLocalRegistry() LocalRegistry {
 // Scan scans all the plugin paths and returns all the names it found
 func (l *LocalRegistry) Scan() ([]string, error) {
 	var names []string
+<<<<<<< HEAD
 	dirEntries, err := os.ReadDir(l.socketsPath)
+=======
+	dirEntries, err := ioutil.ReadDir(socketsPath)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil && !os.IsNotExist(err) {
 		return nil, errors.Wrap(err, "error reading dir entries")
 	}
 
+<<<<<<< HEAD
 	for _, entry := range dirEntries {
 		if entry.IsDir() {
 			fi, err := os.Stat(filepath.Join(l.socketsPath, entry.Name(), entry.Name()+".sock"))
+=======
+	for _, fi := range dirEntries {
+		if fi.IsDir() {
+			fi, err = os.Stat(filepath.Join(socketsPath, fi.Name(), fi.Name()+".sock"))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			if err != nil {
 				continue
 			}
-
-			entry = fs.FileInfoToDirEntry(fi)
 		}
 
-		if entry.Type()&os.ModeSocket != 0 {
-			names = append(names, strings.TrimSuffix(filepath.Base(entry.Name()), filepath.Ext(entry.Name())))
+		if fi.Mode()&os.ModeSocket != 0 {
+			names = append(names, strings.TrimSuffix(filepath.Base(fi.Name()), filepath.Ext(fi.Name())))
 		}
 	}
 
+<<<<<<< HEAD
 	for _, p := range l.specsPaths {
 		dirEntries, err = os.ReadDir(p)
 		if err != nil {
@@ -71,6 +80,17 @@ func (l *LocalRegistry) Scan() ([]string, error) {
 		for _, entry := range dirEntries {
 			if entry.IsDir() {
 				infos, err := os.ReadDir(filepath.Join(p, entry.Name()))
+=======
+	for _, p := range specsPaths {
+		dirEntries, err := ioutil.ReadDir(p)
+		if err != nil && !os.IsNotExist(err) {
+			return nil, errors.Wrap(err, "error reading dir entries")
+		}
+
+		for _, fi := range dirEntries {
+			if fi.IsDir() {
+				infos, err := ioutil.ReadDir(filepath.Join(p, fi.Name()))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 				if err != nil {
 					continue
 				}
@@ -140,7 +160,7 @@ func SpecsPaths() []string {
 }
 
 func readPluginInfo(name, path string) (*Plugin, error) {
-	content, err := os.ReadFile(path)
+	content, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

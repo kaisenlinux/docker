@@ -10,7 +10,8 @@ import (
 )
 
 func TestUpdateDescriptionOnly(t *testing.T) {
-	cli := makeFakeCli(t)
+	cli, cleanup := makeFakeCli(t)
+	defer cleanup()
 	err := RunCreate(cli, &CreateOptions{
 		Name:   "test",
 		Docker: map[string]string{},
@@ -33,8 +34,14 @@ func TestUpdateDescriptionOnly(t *testing.T) {
 }
 
 func TestUpdateDockerOnly(t *testing.T) {
+<<<<<<< HEAD
 	cli := makeFakeCli(t)
 	createTestContext(t, cli, "test", nil)
+=======
+	cli, cleanup := makeFakeCli(t)
+	defer cleanup()
+	createTestContextWithKubeAndSwarm(t, cli, "test", "swarm")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, RunUpdate(cli, &UpdateOptions{
 		Name: "test",
 		Docker: map[string]string{
@@ -50,8 +57,39 @@ func TestUpdateDockerOnly(t *testing.T) {
 	assert.Equal(t, c.Endpoints[docker.DockerEndpoint].(docker.EndpointMeta).Host, "tcp://some-host")
 }
 
+<<<<<<< HEAD
+=======
+func TestUpdateStackOrchestratorStrategy(t *testing.T) {
+	cli, cleanup := makeFakeCli(t)
+	defer cleanup()
+	err := RunCreate(cli, &CreateOptions{
+		Name:                     "test",
+		DefaultStackOrchestrator: "swarm",
+		Docker:                   map[string]string{},
+	})
+	assert.NilError(t, err)
+	err = RunUpdate(cli, &UpdateOptions{
+		Name:                     "test",
+		DefaultStackOrchestrator: "kubernetes",
+	})
+	assert.ErrorContains(t, err, `cannot specify orchestrator "kubernetes" without configuring a Kubernetes endpoint`)
+}
+
+func TestUpdateStackOrchestratorStrategyRemoveKubeEndpoint(t *testing.T) {
+	cli, cleanup := makeFakeCli(t)
+	defer cleanup()
+	createTestContextWithKubeAndSwarm(t, cli, "test", "kubernetes")
+	err := RunUpdate(cli, &UpdateOptions{
+		Name:       "test",
+		Kubernetes: map[string]string{},
+	})
+	assert.ErrorContains(t, err, `cannot specify orchestrator "kubernetes" without configuring a Kubernetes endpoint`)
+}
+
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 func TestUpdateInvalidDockerHost(t *testing.T) {
-	cli := makeFakeCli(t)
+	cli, cleanup := makeFakeCli(t)
+	defer cleanup()
 	err := RunCreate(cli, &CreateOptions{
 		Name:   "test",
 		Docker: map[string]string{},

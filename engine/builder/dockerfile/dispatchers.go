@@ -35,7 +35,12 @@ import (
 //
 // Sets the environment variable foo to bar, also makes interpolation
 // in the dockerfile available from the next statement on via ${foo}.
+<<<<<<< HEAD
 func dispatchEnv(ctx context.Context, d dispatchRequest, c *instructions.EnvCommand) error {
+=======
+//
+func dispatchEnv(d dispatchRequest, c *instructions.EnvCommand) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	runConfig := d.state.runConfig
 	commitMessage := bytes.NewBufferString("ENV")
 	for _, e := range c.Env {
@@ -70,7 +75,12 @@ func dispatchMaintainer(ctx context.Context, d dispatchRequest, c *instructions.
 // LABEL some json data describing the image
 //
 // Sets the Label variable foo to bar,
+<<<<<<< HEAD
 func dispatchLabel(ctx context.Context, d dispatchRequest, c *instructions.LabelCommand) error {
+=======
+//
+func dispatchLabel(d dispatchRequest, c *instructions.LabelCommand) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if d.state.runConfig.Labels == nil {
 		d.state.runConfig.Labels = make(map[string]string)
 	}
@@ -86,7 +96,12 @@ func dispatchLabel(ctx context.Context, d dispatchRequest, c *instructions.Label
 //
 // Add the file 'foo' to '/path'. Tarball and Remote URL (http, https) handling
 // exist here. If you do not wish to have this automatic handling, use COPY.
+<<<<<<< HEAD
 func dispatchAdd(ctx context.Context, d dispatchRequest, c *instructions.AddCommand) error {
+=======
+//
+func dispatchAdd(d dispatchRequest, c *instructions.AddCommand) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if c.Chmod != "" {
 		return errors.New("the --chmod option requires BuildKit. Refer to https://docs.docker.com/go/buildkit/ to learn how to build images with BuildKit enabled")
 	}
@@ -107,7 +122,12 @@ func dispatchAdd(ctx context.Context, d dispatchRequest, c *instructions.AddComm
 // COPY foo /path
 //
 // Same as 'ADD' but without the tar and remote url handling.
+<<<<<<< HEAD
 func dispatchCopy(ctx context.Context, d dispatchRequest, c *instructions.CopyCommand) error {
+=======
+//
+func dispatchCopy(d dispatchRequest, c *instructions.CopyCommand) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if c.Chmod != "" {
 		return errors.New("the --chmod option requires BuildKit. Refer to https://docs.docker.com/go/buildkit/ to learn how to build images with BuildKit enabled")
 	}
@@ -151,11 +171,17 @@ func (d *dispatchRequest) getImageMount(ctx context.Context, imageRefOrID string
 }
 
 // FROM [--platform=platform] imagename[:tag | @digest] [AS build-stage-name]
+<<<<<<< HEAD
 func initializeStage(ctx context.Context, d dispatchRequest, cmd *instructions.Stage) error {
 	err := d.builder.imageProber.Reset(ctx)
 	if err != nil {
 		return err
 	}
+=======
+//
+func initializeStage(d dispatchRequest, cmd *instructions.Stage) error {
+	d.builder.imageProber.Reset()
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	var platform *ocispec.Platform
 	if v := cmd.Platform; v != "" {
@@ -287,7 +313,12 @@ func dispatchOnbuild(ctx context.Context, d dispatchRequest, c *instructions.Onb
 // WORKDIR /tmp
 //
 // Set the working directory for future RUN/CMD/etc statements.
+<<<<<<< HEAD
 func dispatchWorkdir(ctx context.Context, d dispatchRequest, c *instructions.WorkdirCommand) error {
+=======
+//
+func dispatchWorkdir(d dispatchRequest, c *instructions.WorkdirCommand) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	runConfig := d.state.runConfig
 	var err error
 	runConfig.WorkingDir, err = normalizeWorkdir(d.state.operatingSystem, runConfig.WorkingDir, c.Path)
@@ -329,9 +360,16 @@ func dispatchWorkdir(ctx context.Context, d dispatchRequest, c *instructions.Wor
 // RUN echo hi          # sh -c echo hi       (Linux and LCOW)
 // RUN echo hi          # cmd /S /C echo hi   (Windows)
 // RUN [ "echo", "hi" ] # echo hi
+<<<<<<< HEAD
 func dispatchRun(ctx context.Context, d dispatchRequest, c *instructions.RunCommand) error {
 	if err := image.CheckOS(d.state.operatingSystem); err != nil {
 		return err
+=======
+//
+func dispatchRun(d dispatchRequest, c *instructions.RunCommand) error {
+	if !system.IsOSSupported(d.state.operatingSystem) {
+		return system.ErrNotSupportedOperatingSystem
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	}
 
 	if len(c.FlagsUsed) > 0 {
@@ -430,7 +468,12 @@ func prependEnvOnCmd(buildArgs *BuildArgs, buildArgVars []string, cmd strslice.S
 //
 // Set the default command to run in the container (which may be empty).
 // Argument handling is the same as RUN.
+<<<<<<< HEAD
 func dispatchCmd(ctx context.Context, d dispatchRequest, c *instructions.CmdCommand) error {
+=======
+//
+func dispatchCmd(d dispatchRequest, c *instructions.CmdCommand) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	runConfig := d.state.runConfig
 	cmd, argsEscaped := resolveCmdLine(c.ShellDependantCmdLine, runConfig, d.state.operatingSystem, c.Name(), c.String())
 
@@ -460,7 +503,12 @@ func dispatchCmd(ctx context.Context, d dispatchRequest, c *instructions.CmdComm
 //
 // Set the default healthcheck command to run in the container (which may be empty).
 // Argument handling is the same as RUN.
+<<<<<<< HEAD
 func dispatchHealthcheck(ctx context.Context, d dispatchRequest, c *instructions.HealthCheckCommand) error {
+=======
+//
+func dispatchHealthcheck(d dispatchRequest, c *instructions.HealthCheckCommand) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	runConfig := d.state.runConfig
 	if runConfig.Healthcheck != nil {
 		oldCmd := runConfig.Healthcheck.Test
@@ -479,7 +527,12 @@ func dispatchHealthcheck(ctx context.Context, d dispatchRequest, c *instructions
 //
 // Handles command processing similar to CMD and RUN, only req.runConfig.Entrypoint
 // is initialized at newBuilder time instead of through argument parsing.
+<<<<<<< HEAD
 func dispatchEntrypoint(ctx context.Context, d dispatchRequest, c *instructions.EntrypointCommand) error {
+=======
+//
+func dispatchEntrypoint(d dispatchRequest, c *instructions.EntrypointCommand) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	runConfig := d.state.runConfig
 	cmd, argsEscaped := resolveCmdLine(c.ShellDependantCmdLine, runConfig, d.state.operatingSystem, c.Name(), c.String())
 
@@ -508,7 +561,12 @@ func dispatchEntrypoint(ctx context.Context, d dispatchRequest, c *instructions.
 //
 // Expose ports for links and port mappings. This all ends up in
 // req.runConfig.ExposedPorts for runconfig.
+<<<<<<< HEAD
 func dispatchExpose(ctx context.Context, d dispatchRequest, c *instructions.ExposeCommand, envs []string) error {
+=======
+//
+func dispatchExpose(d dispatchRequest, c *instructions.ExposeCommand, envs []string) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	// custom multi word expansion
 	// expose $FOO with FOO="80 443" is expanded as EXPOSE [80,443]. This is the only command supporting word to words expansion
 	// so the word processing has been de-generalized
@@ -541,7 +599,12 @@ func dispatchExpose(ctx context.Context, d dispatchRequest, c *instructions.Expo
 //
 // Set the user to 'foo' for future commands and when running the
 // ENTRYPOINT/CMD at container run time.
+<<<<<<< HEAD
 func dispatchUser(ctx context.Context, d dispatchRequest, c *instructions.UserCommand) error {
+=======
+//
+func dispatchUser(d dispatchRequest, c *instructions.UserCommand) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	d.state.runConfig.User = c.User
 	return d.builder.commit(ctx, d.state, fmt.Sprintf("USER %v", c.User))
 }
@@ -549,7 +612,12 @@ func dispatchUser(ctx context.Context, d dispatchRequest, c *instructions.UserCo
 // VOLUME /foo
 //
 // Expose the volume /foo for use. Will also accept the JSON array form.
+<<<<<<< HEAD
 func dispatchVolume(ctx context.Context, d dispatchRequest, c *instructions.VolumeCommand) error {
+=======
+//
+func dispatchVolume(d dispatchRequest, c *instructions.VolumeCommand) error {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if d.state.runConfig.Volumes == nil {
 		d.state.runConfig.Volumes = map[string]struct{}{}
 	}

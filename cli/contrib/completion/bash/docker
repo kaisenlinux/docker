@@ -1137,6 +1137,7 @@ __docker_complete_user_group() {
 	fi
 }
 
+<<<<<<< HEAD
 __docker_plugins_path() {
 	local docker_plugins_path=$(docker info --format '{{range .ClientInfo.Plugins}}{{.Path}}:{{end}}')
 	echo "${docker_plugins_path//:/ }"
@@ -1177,6 +1178,8 @@ __docker_complete_plugin() {
 	fi
 }
 
+=======
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 _docker_docker() {
 	# global options that may appear after the docker command
 	local boolean_options="
@@ -5431,6 +5434,23 @@ _docker_wait() {
 	_docker_container_wait
 }
 
+COMPOSE_PLUGIN_PATH=$(docker info --format '{{range .ClientInfo.Plugins}}{{if eq .Name "compose"}}{{.Path}}{{end}}{{end}}')
+
+_docker_compose() {
+	local completionCommand="__completeNoDesc"
+	local resultArray=($COMPOSE_PLUGIN_PATH $completionCommand compose)
+	for value in "${words[@]:2}"; do
+		if [ -z "$value" ]; then
+			resultArray+=( "''" )
+		else
+			resultArray+=( "$value" )
+		fi
+	done
+	local result=$(eval "${resultArray[*]}" 2> /dev/null | grep -v '^:[0-9]*$')
+
+	COMPREPLY=( $(compgen -W "${result}" -- "$current") )
+}
+
 _docker() {
 	local previous_extglob_setting=$(shopt -p extglob)
 	shopt -s extglob
@@ -5500,8 +5520,8 @@ _docker() {
 		wait
 	)
 
-	# Create completion functions for all registered plugins
 	local known_plugin_commands=()
+<<<<<<< HEAD
 	local plugin_name=""
 	for plugin_path in $(__docker_plugins_path); do
 		plugin_name=$(basename "$plugin_path" | sed 's/ *$//')
@@ -5510,6 +5530,12 @@ _docker() {
 		eval "_docker_${plugin_name}() { __docker_complete_plugin \"${plugin_path}\"; }"
 		known_plugin_commands+=(${plugin_name})
 	done
+=======
+
+	if [ -f "$COMPOSE_PLUGIN_PATH" ] ; then
+		known_plugin_commands+=("compose")
+	fi
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	local experimental_server_commands=(
 		checkpoint

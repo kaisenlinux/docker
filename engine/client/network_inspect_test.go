@@ -4,8 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+<<<<<<< HEAD
 	"errors"
 	"io"
+=======
+	"fmt"
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"net/http"
 	"strings"
 	"testing"
@@ -43,6 +48,16 @@ func TestNetworkInspect(t *testing.T) {
 				content []byte
 				err     error
 			)
+<<<<<<< HEAD
+=======
+			if strings.Contains(req.URL.RawQuery, "scope=global") {
+				return &http.Response{
+					StatusCode: http.StatusNotFound,
+					Body:       ioutil.NopCloser(bytes.NewReader(content)),
+				}, nil
+			}
+
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			if strings.Contains(req.URL.RawQuery, "verbose=true") {
 				s := map[string]network.ServiceInfo{
 					"web": {},
@@ -62,7 +77,7 @@ func TestNetworkInspect(t *testing.T) {
 			return &http.Response{
 				Header:     http.Header{"Content-Type": []string{"application/json"}},
 				StatusCode: http.StatusOK,
-				Body:       io.NopCloser(bytes.NewReader(content)),
+				Body:       ioutil.NopCloser(bytes.NewReader(content)),
 			}, nil
 		}),
 	}

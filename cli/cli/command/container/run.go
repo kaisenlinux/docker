@@ -117,9 +117,16 @@ func runRun(ctx context.Context, dockerCli command.Cli, flags *pflag.FlagSet, ro
 	return runContainer(ctx, dockerCli, ropts, copts, containerCfg)
 }
 
+<<<<<<< HEAD
 //nolint:gocyclo
 func runContainer(ctx context.Context, dockerCli command.Cli, runOpts *runOptions, copts *containerOptions, containerCfg *containerConfig) error {
 	config := containerCfg.Config
+=======
+// nolint: gocyclo
+func runContainer(dockerCli command.Cli, opts *runOptions, copts *containerOptions, containerConfig *containerConfig) error {
+	config := containerConfig.Config
+	hostConfig := containerConfig.HostConfig
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	stdout, stderr := dockerCli.Out(), dockerCli.Err()
 	apiClient := dockerCli.Client()
 

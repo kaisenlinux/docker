@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -32,7 +33,7 @@ func (s *DockerDaemonSuite) TestDaemonUserNamespaceRootSetting(c *testing.T) {
 	assert.Check(c, err)
 	assert.Assert(c, is.Equal(strings.TrimSpace(out), "0:0"))
 
-	tmpDir, err := os.MkdirTemp("", "userns")
+	tmpDir, err := ioutil.TempDir("", "userns")
 	assert.NilError(c, err)
 
 	defer os.RemoveAll(tmpDir)

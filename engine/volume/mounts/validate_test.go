@@ -2,6 +2,11 @@ package mounts // import "github.com/docker/docker/volume/mounts"
 
 import (
 	"errors"
+<<<<<<< HEAD
+=======
+	"io/ioutil"
+	"os"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"runtime"
 	"testing"
 
@@ -11,8 +16,16 @@ import (
 )
 
 func TestValidateMount(t *testing.T) {
+<<<<<<< HEAD
 	testDir := t.TempDir()
 	parser := NewParser()
+=======
+	testDir, err := ioutil.TempDir("", "test-validate-mount")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(testDir)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	tests := []struct {
 		input    mount.Mount

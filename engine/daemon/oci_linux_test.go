@@ -1,7 +1,11 @@
 package daemon // import "github.com/docker/docker/daemon"
 
 import (
+<<<<<<< HEAD
 	"context"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path/filepath"
 	"testing"
@@ -21,8 +25,13 @@ import (
 )
 
 func setupFakeDaemon(t *testing.T, c *container.Container) *Daemon {
+<<<<<<< HEAD
 	t.Helper()
 	root := t.TempDir()
+=======
+	root, err := ioutil.TempDir("", "oci_linux_test-root")
+	assert.NilError(t, err)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	rootfs := filepath.Join(root, "rootfs")
 	err := os.MkdirAll(rootfs, 0o755)

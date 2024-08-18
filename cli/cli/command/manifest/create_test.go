@@ -2,11 +2,14 @@ package manifest
 
 import (
 	"context"
-	"io"
+	"io/ioutil"
 	"testing"
 
+<<<<<<< HEAD
 	"github.com/distribution/reference"
 	"github.com/docker/cli/cli/manifest/store"
+=======
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	manifesttypes "github.com/docker/cli/cli/manifest/types"
 	"github.com/docker/cli/internal/test"
 	"github.com/pkg/errors"
@@ -34,14 +37,19 @@ func TestManifestCreateErrors(t *testing.T) {
 		cli := test.NewFakeCli(nil)
 		cmd := newCreateListCommand(cli)
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }
 
 // create a manifest list, then overwrite it, and inspect to see if the old one is still there
 func TestManifestCreateAmend(t *testing.T) {
+<<<<<<< HEAD
 	manifestStore := store.NewStore(t.TempDir())
+=======
+	store, cleanup := newTempManifestStore(t)
+	defer cleanup()
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	cli := test.NewFakeCli(nil)
 	cli.SetManifestStore(manifestStore)
@@ -58,7 +66,7 @@ func TestManifestCreateAmend(t *testing.T) {
 	cmd := newCreateListCommand(cli)
 	cmd.SetArgs([]string{"example.com/list:v1", "example.com/alpine:3.1"})
 	cmd.Flags().Set("amend", "true")
-	cmd.SetOut(io.Discard)
+	cmd.SetOut(ioutil.Discard)
 	err = cmd.Execute()
 	assert.NilError(t, err)
 
@@ -75,7 +83,12 @@ func TestManifestCreateAmend(t *testing.T) {
 
 // attempt to overwrite a saved manifest and get refused
 func TestManifestCreateRefuseAmend(t *testing.T) {
+<<<<<<< HEAD
 	manifestStore := store.NewStore(t.TempDir())
+=======
+	store, cleanup := newTempManifestStore(t)
+	defer cleanup()
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	cli := test.NewFakeCli(nil)
 	cli.SetManifestStore(manifestStore)
@@ -86,14 +99,19 @@ func TestManifestCreateRefuseAmend(t *testing.T) {
 
 	cmd := newCreateListCommand(cli)
 	cmd.SetArgs([]string{"example.com/list:v1", "example.com/alpine:3.0"})
-	cmd.SetOut(io.Discard)
+	cmd.SetOut(ioutil.Discard)
 	err = cmd.Execute()
 	assert.Error(t, err, "refusing to amend an existing manifest list with no --amend flag")
 }
 
 // attempt to make a manifest list without valid images
 func TestManifestCreateNoManifest(t *testing.T) {
+<<<<<<< HEAD
 	manifestStore := store.NewStore(t.TempDir())
+=======
+	store, cleanup := newTempManifestStore(t)
+	defer cleanup()
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 
 	cli := test.NewFakeCli(nil)
 	cli.SetManifestStore(manifestStore)
@@ -108,7 +126,7 @@ func TestManifestCreateNoManifest(t *testing.T) {
 
 	cmd := newCreateListCommand(cli)
 	cmd.SetArgs([]string{"example.com/list:v1", "example.com/alpine:3.0"})
-	cmd.SetOut(io.Discard)
+	cmd.SetOut(ioutil.Discard)
 	err := cmd.Execute()
 	assert.Error(t, err, "No such image: example.com/alpine:3.0")
 }

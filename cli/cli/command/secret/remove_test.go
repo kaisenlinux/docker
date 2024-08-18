@@ -1,8 +1,12 @@
 package secret
 
 import (
+<<<<<<< HEAD
 	"context"
 	"io"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"strings"
 	"testing"
 
@@ -37,7 +41,7 @@ func TestSecretRemoveErrors(t *testing.T) {
 			}),
 		)
 		cmd.SetArgs(tc.args)
-		cmd.SetOut(io.Discard)
+		cmd.SetOut(ioutil.Discard)
 		assert.ErrorContains(t, cmd.Execute(), tc.expectedError)
 	}
 }
@@ -73,7 +77,7 @@ func TestSecretRemoveContinueAfterError(t *testing.T) {
 	})
 
 	cmd := newSecretRemoveCommand(cli)
-	cmd.SetOut(io.Discard)
+	cmd.SetOut(ioutil.Discard)
 	cmd.SetArgs(names)
 	assert.Error(t, cmd.Execute(), "error removing secret: foo")
 	assert.Check(t, is.DeepEqual(names, removedSecrets))

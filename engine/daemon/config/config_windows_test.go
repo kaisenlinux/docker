@@ -1,6 +1,10 @@
 package config // import "github.com/docker/docker/daemon/config"
 
 import (
+<<<<<<< HEAD
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"testing"
 
 	"github.com/docker/docker/opts"
@@ -10,7 +14,18 @@ import (
 )
 
 func TestDaemonConfigurationMerge(t *testing.T) {
+<<<<<<< HEAD
 	configFile := makeConfigFile(t, `
+=======
+	f, err := ioutil.TempFile("", "docker-config-")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	configFile := f.Name()
+
+	f.Write([]byte(`
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		{
 			"debug": true
 		}`)

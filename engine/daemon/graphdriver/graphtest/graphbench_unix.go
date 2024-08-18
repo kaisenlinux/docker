@@ -4,8 +4,12 @@ package graphtest // import "github.com/docker/docker/daemon/graphdriver/graphte
 
 import (
 	"io"
+<<<<<<< HEAD
 	"os"
 	"path/filepath"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"testing"
 
 	"github.com/docker/docker/pkg/stringid"
@@ -76,7 +80,7 @@ func DriverBenchDiffBase(b *testing.B, drivername string, driveroptions ...strin
 		if err != nil {
 			b.Fatal(err)
 		}
-		_, err = io.Copy(io.Discard, arch)
+		_, err = io.Copy(ioutil.Discard, arch)
 		if err != nil {
 			b.Fatalf("Error copying archive: %s", err)
 		}
@@ -112,7 +116,7 @@ func DriverBenchDiffN(b *testing.B, bottom, top int, drivername string, driverop
 		if err != nil {
 			b.Fatal(err)
 		}
-		_, err = io.Copy(io.Discard, arch)
+		_, err = io.Copy(ioutil.Discard, arch)
 		if err != nil {
 			b.Fatalf("Error copying archive: %s", err)
 		}
@@ -211,7 +215,7 @@ func DriverBenchDeepLayerDiff(b *testing.B, layerCount int, drivername string, d
 		if err != nil {
 			b.Fatal(err)
 		}
-		_, err = io.Copy(io.Discard, arch)
+		_, err = io.Copy(ioutil.Discard, arch)
 		if err != nil {
 			b.Fatalf("Error copying archive: %s", err)
 		}

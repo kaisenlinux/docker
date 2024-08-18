@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -27,7 +28,7 @@ func (s *DockerCLIEventSuite) TestEventsRedirectStdout(c *testing.T) {
 	since := daemonUnixTime(c)
 	cli.DockerCmd(c, "run", "busybox", "true")
 
-	file, err := os.CreateTemp("", "")
+	file, err := ioutil.TempFile("", "")
 	assert.NilError(c, err, "could not create temp file")
 	defer os.Remove(file.Name())
 
@@ -394,14 +395,22 @@ func (s *DockerDaemonSuite) TestDaemonEvents(c *testing.T) {
 	defer os.Remove(configFilePath)
 
 	daemonConfig := `{"labels":["foo=bar"]}`
+<<<<<<< HEAD
 	err := os.WriteFile(configFilePath, []byte(daemonConfig), 0o644)
+=======
+	err := ioutil.WriteFile(configFilePath, []byte(daemonConfig), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 	s.d.Start(c, "--config-file="+configFilePath)
 
 	info := s.d.Info(c)
 
 	daemonConfig = `{"max-concurrent-downloads":1,"labels":["bar=foo"], "shutdown-timeout": 10}`
+<<<<<<< HEAD
 	err = os.WriteFile(configFilePath, []byte(daemonConfig), 0o644)
+=======
+	err = ioutil.WriteFile(configFilePath, []byte(daemonConfig), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	assert.NilError(c, s.d.Signal(unix.SIGHUP))
@@ -441,7 +450,11 @@ func (s *DockerDaemonSuite) TestDaemonEventsWithFilters(c *testing.T) {
 	defer os.Remove(configFilePath)
 
 	daemonConfig := `{"labels":["foo=bar"]}`
+<<<<<<< HEAD
 	err := os.WriteFile(configFilePath, []byte(daemonConfig), 0o644)
+=======
+	err := ioutil.WriteFile(configFilePath, []byte(daemonConfig), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 	s.d.Start(c, "--config-file="+configFilePath)
 

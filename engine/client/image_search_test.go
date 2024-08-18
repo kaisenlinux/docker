@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
@@ -73,7 +73,7 @@ func TestImageSearchWithPrivilegedFuncNoError(t *testing.T) {
 			if auth == "NotValid" {
 				return &http.Response{
 					StatusCode: http.StatusUnauthorized,
-					Body:       io.NopCloser(bytes.NewReader([]byte("Invalid credentials"))),
+					Body:       ioutil.NopCloser(bytes.NewReader([]byte("Invalid credentials"))),
 				}, nil
 			}
 			if auth != "IAmValid" {
@@ -94,7 +94,7 @@ func TestImageSearchWithPrivilegedFuncNoError(t *testing.T) {
 			}
 			return &http.Response{
 				StatusCode: http.StatusOK,
-				Body:       io.NopCloser(bytes.NewReader(content)),
+				Body:       ioutil.NopCloser(bytes.NewReader(content)),
 			}, nil
 		}),
 	}
@@ -141,7 +141,7 @@ func TestImageSearchWithoutErrors(t *testing.T) {
 			}
 			return &http.Response{
 				StatusCode: http.StatusOK,
-				Body:       io.NopCloser(bytes.NewReader(content)),
+				Body:       ioutil.NopCloser(bytes.NewReader(content)),
 			}, nil
 		}),
 	}

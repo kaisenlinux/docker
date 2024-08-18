@@ -1,7 +1,11 @@
 package manager
 
 import (
+<<<<<<< HEAD
 	"context"
+=======
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -66,12 +70,12 @@ func getPluginDirs(cfg *configfile.ConfigFile) ([]string, error) {
 }
 
 func addPluginCandidatesFromDir(res map[string][]string, d string) error {
-	dentries, err := os.ReadDir(d)
+	dentries, err := ioutil.ReadDir(d)
 	if err != nil {
 		return err
 	}
 	for _, dentry := range dentries {
-		switch dentry.Type() & os.ModeType {
+		switch dentry.Mode() & os.ModeType {
 		case 0, os.ModeSymlink:
 			// Regular file or symlink, keep going
 		default:

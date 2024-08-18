@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -107,11 +108,15 @@ func (s *DockerCLIVolumeSuite) TestVolumeLsFormatDefaultFormat(c *testing.T) {
 	const config = `{
 		"volumesFormat": "{{ .Name }} default"
 }`
-	d, err := os.MkdirTemp("", "integration-cli-")
+	d, err := ioutil.TempDir("", "integration-cli-")
 	assert.NilError(c, err)
 	defer os.RemoveAll(d)
 
+<<<<<<< HEAD
 	err = os.WriteFile(filepath.Join(d, "config.json"), []byte(config), 0o644)
+=======
+	err = ioutil.WriteFile(filepath.Join(d, "config.json"), []byte(config), 0644)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(c, err)
 
 	out := cli.DockerCmd(c, "--config", d, "volume", "ls").Stdout()

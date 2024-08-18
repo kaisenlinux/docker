@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -37,15 +38,30 @@ func CopyWithTar(src, dst string) error {
 
 func TestChrootTarUntar(t *testing.T) {
 	skip.If(t, os.Getuid() != 0, "skipping test that requires root")
+<<<<<<< HEAD
 	tmpdir := t.TempDir()
+=======
+	tmpdir, err := ioutil.TempDir("", "docker-TestChrootTarUntar")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	src := filepath.Join(tmpdir, "src")
 	if err := os.Mkdir(src, 0o700); err != nil {
 		t.Fatal(err)
 	}
+<<<<<<< HEAD
 	if err := os.WriteFile(filepath.Join(src, "toto"), []byte("hello toto"), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(filepath.Join(src, "lolo"), []byte("hello lolo"), 0o644); err != nil {
+=======
+	if err := ioutil.WriteFile(filepath.Join(src, "toto"), []byte("hello toto"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := ioutil.WriteFile(filepath.Join(src, "lolo"), []byte("hello lolo"), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 	stream, err := archive.Tar(src, archive.Uncompressed)
@@ -65,12 +81,24 @@ func TestChrootTarUntar(t *testing.T) {
 // local images)
 func TestChrootUntarWithHugeExcludesList(t *testing.T) {
 	skip.If(t, os.Getuid() != 0, "skipping test that requires root")
+<<<<<<< HEAD
 	tmpdir := t.TempDir()
+=======
+	tmpdir, err := ioutil.TempDir("", "docker-TestChrootUntarHugeExcludes")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	src := filepath.Join(tmpdir, "src")
 	if err := os.Mkdir(src, 0o700); err != nil {
 		t.Fatal(err)
 	}
+<<<<<<< HEAD
 	if err := os.WriteFile(filepath.Join(src, "toto"), []byte("hello toto"), 0o644); err != nil {
+=======
+	if err := ioutil.WriteFile(filepath.Join(src, "toto"), []byte("hello toto"), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 	stream, err := archive.Tar(src, archive.Uncompressed)
@@ -96,7 +124,16 @@ func TestChrootUntarWithHugeExcludesList(t *testing.T) {
 }
 
 func TestChrootUntarEmptyArchive(t *testing.T) {
+<<<<<<< HEAD
 	if err := Untar(nil, t.TempDir(), nil); err == nil {
+=======
+	tmpdir, err := ioutil.TempDir("", "docker-TestChrootUntarEmptyArchive")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+	if err := Untar(nil, tmpdir, nil); err == nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal("expected error on empty archive")
 	}
 }
@@ -105,7 +142,11 @@ func prepareSourceDirectory(numberOfFiles int, targetPath string, makeSymLinks b
 	fileData := []byte("fooo")
 	for n := 0; n < numberOfFiles; n++ {
 		fileName := fmt.Sprintf("file-%d", n)
+<<<<<<< HEAD
 		if err := os.WriteFile(filepath.Join(targetPath, fileName), fileData, 0o700); err != nil {
+=======
+		if err := ioutil.WriteFile(filepath.Join(targetPath, fileName), fileData, 0700); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 			return 0, err
 		}
 		if makeSymLinks {
@@ -119,7 +160,7 @@ func prepareSourceDirectory(numberOfFiles int, targetPath string, makeSymLinks b
 }
 
 func getHash(filename string) (uint32, error) {
-	stream, err := os.ReadFile(filename)
+	stream, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return 0, err
 	}
@@ -157,7 +198,15 @@ func compareFiles(src string, dest string) error {
 func TestChrootTarUntarWithSymlink(t *testing.T) {
 	skip.If(t, runtime.GOOS == "windows", "FIXME: figure out why this is failing")
 	skip.If(t, os.Getuid() != 0, "skipping test that requires root")
+<<<<<<< HEAD
 	tmpdir := t.TempDir()
+=======
+	tmpdir, err := ioutil.TempDir("", "docker-TestChrootTarUntarWithSymlink")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	src := filepath.Join(tmpdir, "src")
 	if err := os.Mkdir(src, 0o700); err != nil {
 		t.Fatal(err)
@@ -177,7 +226,15 @@ func TestChrootTarUntarWithSymlink(t *testing.T) {
 func TestChrootCopyWithTar(t *testing.T) {
 	skip.If(t, runtime.GOOS == "windows", "FIXME: figure out why this is failing")
 	skip.If(t, os.Getuid() != 0, "skipping test that requires root")
+<<<<<<< HEAD
 	tmpdir := t.TempDir()
+=======
+	tmpdir, err := ioutil.TempDir("", "docker-TestChrootCopyWithTar")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	src := filepath.Join(tmpdir, "src")
 	if err := os.Mkdir(src, 0o700); err != nil {
 		t.Fatal(err)
@@ -220,7 +277,15 @@ func TestChrootCopyWithTar(t *testing.T) {
 
 func TestChrootCopyFileWithTar(t *testing.T) {
 	skip.If(t, os.Getuid() != 0, "skipping test that requires root")
+<<<<<<< HEAD
 	tmpdir := t.TempDir()
+=======
+	tmpdir, err := ioutil.TempDir("", "docker-TestChrootCopyFileWithTar")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	src := filepath.Join(tmpdir, "src")
 	if err := os.Mkdir(src, 0o700); err != nil {
 		t.Fatal(err)
@@ -261,7 +326,15 @@ func TestChrootCopyFileWithTar(t *testing.T) {
 func TestChrootUntarPath(t *testing.T) {
 	skip.If(t, runtime.GOOS == "windows", "FIXME: figure out why this is failing")
 	skip.If(t, os.Getuid() != 0, "skipping test that requires root")
+<<<<<<< HEAD
 	tmpdir := t.TempDir()
+=======
+	tmpdir, err := ioutil.TempDir("", "docker-TestChrootUntarPath")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	src := filepath.Join(tmpdir, "src")
 	if err := os.Mkdir(src, 0o700); err != nil {
 		t.Fatal(err)
@@ -283,7 +356,11 @@ func TestChrootUntarPath(t *testing.T) {
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(stream)
 	tarfile := filepath.Join(tmpdir, "src.tar")
+<<<<<<< HEAD
 	if err := os.WriteFile(tarfile, buf.Bytes(), 0o644); err != nil {
+=======
+	if err := ioutil.WriteFile(tarfile, buf.Bytes(), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 	if err := UntarPath(tarfile, dest); err != nil {
@@ -319,7 +396,15 @@ func (s *slowEmptyTarReader) Read(p []byte) (int, error) {
 
 func TestChrootUntarEmptyArchiveFromSlowReader(t *testing.T) {
 	skip.If(t, os.Getuid() != 0, "skipping test that requires root")
+<<<<<<< HEAD
 	tmpdir := t.TempDir()
+=======
+	tmpdir, err := ioutil.TempDir("", "docker-TestChrootUntarEmptyArchiveFromSlowReader")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	dest := filepath.Join(tmpdir, "dest")
 	if err := os.Mkdir(dest, 0o700); err != nil {
 		t.Fatal(err)
@@ -332,7 +417,15 @@ func TestChrootUntarEmptyArchiveFromSlowReader(t *testing.T) {
 
 func TestChrootApplyEmptyArchiveFromSlowReader(t *testing.T) {
 	skip.If(t, os.Getuid() != 0, "skipping test that requires root")
+<<<<<<< HEAD
 	tmpdir := t.TempDir()
+=======
+	tmpdir, err := ioutil.TempDir("", "docker-TestChrootApplyEmptyArchiveFromSlowReader")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	dest := filepath.Join(tmpdir, "dest")
 	if err := os.Mkdir(dest, 0o700); err != nil {
 		t.Fatal(err)
@@ -345,12 +438,24 @@ func TestChrootApplyEmptyArchiveFromSlowReader(t *testing.T) {
 
 func TestChrootApplyDotDotFile(t *testing.T) {
 	skip.If(t, os.Getuid() != 0, "skipping test that requires root")
+<<<<<<< HEAD
 	tmpdir := t.TempDir()
+=======
+	tmpdir, err := ioutil.TempDir("", "docker-TestChrootApplyDotDotFile")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(tmpdir)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	src := filepath.Join(tmpdir, "src")
 	if err := os.Mkdir(src, 0o700); err != nil {
 		t.Fatal(err)
 	}
+<<<<<<< HEAD
 	if err := os.WriteFile(filepath.Join(src, "..gitme"), []byte(""), 0o644); err != nil {
+=======
+	if err := ioutil.WriteFile(filepath.Join(src, "..gitme"), []byte(""), 0644); err != nil {
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		t.Fatal(err)
 	}
 	stream, err := archive.Tar(src, archive.Uncompressed)

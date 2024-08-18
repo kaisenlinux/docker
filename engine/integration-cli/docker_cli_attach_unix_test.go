@@ -4,7 +4,7 @@ package main
 
 import (
 	"bufio"
-	"io"
+	"io/ioutil"
 	"os/exec"
 	"strings"
 	"testing"
@@ -50,7 +50,11 @@ func (s *DockerCLIAttachSuite) TestAttachClosedOnContainerStop(c *testing.T) {
 	select {
 	case err := <-errChan:
 		tty.Close()
+<<<<<<< HEAD
 		out, _ := io.ReadAll(pt)
+=======
+		out, _ := ioutil.ReadAll(pty)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		assert.Assert(c, err == nil, "out: %v", string(out))
 	case <-time.After(attachWait):
 		c.Fatal("timed out without attach returning")

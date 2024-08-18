@@ -4,7 +4,12 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+<<<<<<< HEAD
 	"io"
+=======
+	"fmt"
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"net/http"
 	"os"
 	"os/exec"
@@ -270,8 +275,12 @@ func (d *Daemon) LogFileName() string {
 
 // ReadLogFile returns the content of the daemon log file
 func (d *Daemon) ReadLogFile() ([]byte, error) {
+<<<<<<< HEAD
 	_ = d.logFile.Sync()
 	return os.ReadFile(d.logFile.Name())
+=======
+	return ioutil.ReadFile(d.logFile.Name())
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 }
 
 // NewClientT creates new client based on daemon's socket path
@@ -511,34 +520,41 @@ func (d *Daemon) StartWithLogFile(out *os.File, providedArgs ...string) error {
 	}
 
 	d.args = append(d.args, providedArgs...)
+<<<<<<< HEAD
 	cmd := exec.Command(dockerdBinary, d.args...)
 	cmd.Env = append(os.Environ(), "DOCKER_SERVICE_PREFER_OFFLINE_IMAGE=1")
 	cmd.Env = append(cmd.Env, d.extraEnv...)
 	cmd.Env = append(cmd.Env, "OTEL_SERVICE_NAME=dockerd-"+d.id)
 	cmd.Stdout = out
 	cmd.Stderr = out
+=======
+	d.cmd = exec.Command(dockerdBinary, d.args...)
+	d.cmd.Env = append(os.Environ(), "DOCKER_SERVICE_PREFER_OFFLINE_IMAGE=1")
+	d.cmd.Stdout = out
+	d.cmd.Stderr = out
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	d.logFile = out
 	if d.rootlessUser != nil {
 		// sudo requires this for propagating signals
-		setsid(cmd)
+		setsid(d.cmd)
 	}
 
-	if err := cmd.Start(); err != nil {
+	if err := d.cmd.Start(); err != nil {
 		return errors.Wrapf(err, "[%s] could not start daemon container", d.id)
 	}
 
 	wait := make(chan error, 1)
-	d.cmd = cmd
-	d.Wait = wait
 
 	go func() {
-		ret := cmd.Wait()
+		ret := d.cmd.Wait()
 		d.log.Logf("[%s] exiting daemon", d.id)
 		// If we send before logging, we might accidentally log _after_ the test is done.
 		// As of Go 1.12, this incurs a panic instead of silently being dropped.
 		wait <- ret
 		close(wait)
 	}()
+
+	d.Wait = wait
 
 	clientConfig, err := d.getClientConfig()
 	if err != nil {

@@ -6,6 +6,11 @@ package local // import "github.com/docker/docker/volume/local"
 import (
 	"context"
 	"encoding/json"
+<<<<<<< HEAD
+=======
+	"fmt"
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"os"
 	"path/filepath"
 	"reflect"
@@ -56,11 +61,15 @@ func New(scope string, rootIdentity idtools.Identity) (*Root, error) {
 		rootIdentity: rootIdentity,
 	}
 
+<<<<<<< HEAD
 	if err := idtools.MkdirAllAndChown(r.path, 0o701, idtools.CurrentIdentity()); err != nil {
 		return nil, err
 	}
 
 	dirs, err := os.ReadDir(r.path)
+=======
+	dirs, err := ioutil.ReadDir(rootDirectory)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if err != nil {
 		return nil, err
 	}
@@ -82,9 +91,27 @@ func New(scope string, rootIdentity idtools.Identity) (*Root, error) {
 			path:       filepath.Join(r.path, name, volumeDataPathName),
 			quotaCtl:   r.quotaCtl,
 		}
+<<<<<<< HEAD
 
 		if err := v.loadOpts(); err != nil {
 			return nil, err
+=======
+		r.volumes[name] = v
+		optsFilePath := filepath.Join(rootDirectory, name, "opts.json")
+		if b, err := ioutil.ReadFile(optsFilePath); err == nil {
+			opts := optsConfig{}
+			if err := json.Unmarshal(b, &opts); err != nil {
+				return nil, errors.Wrapf(err, "error while unmarshaling volume options for volume: %s", name)
+			}
+			// Make sure this isn't an empty optsConfig.
+			// This could be empty due to buggy behavior in older versions of Docker.
+			if !reflect.DeepEqual(opts, optsConfig{}) {
+				v.opts = &opts
+			}
+			// unmount anything that may still be mounted (for example, from an
+			// unclean shutdown). This is a no-op on windows
+			unmount(v.path)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		}
 
 		if err := v.restoreIfMounted(); err != nil {
@@ -172,8 +199,30 @@ func (r *Root) Create(name string, opts map[string]string) (volume.Volume, error
 		}
 	}()
 
+<<<<<<< HEAD
 	if err = v.setOpts(opts); err != nil {
 		return nil, err
+=======
+	v = &localVolume{
+		driverName: r.Name(),
+		name:       name,
+		path:       path,
+		quotaCtl:   r.quotaCtl,
+	}
+
+	if len(opts) != 0 {
+		if err = setOpts(v, opts); err != nil {
+			return nil, err
+		}
+		var b []byte
+		b, err = json.Marshal(v.opts)
+		if err != nil {
+			return nil, err
+		}
+		if err = ioutil.WriteFile(filepath.Join(filepath.Dir(path), "opts.json"), b, 0600); err != nil {
+			return nil, errdefs.System(errors.Wrap(err, "error while persisting volume options"))
+		}
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	}
 
 	r.volumes[name] = v

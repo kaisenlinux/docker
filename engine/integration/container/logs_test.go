@@ -1,9 +1,14 @@
 package container // import "github.com/docker/docker/integration/container"
 
 import (
+<<<<<<< HEAD
 	"bytes"
 	"io"
 	"strings"
+=======
+	"context"
+	"io/ioutil"
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	"testing"
 	"time"
 
@@ -35,7 +40,7 @@ func TestLogsFollowTailEmpty(t *testing.T) {
 	}
 	assert.Check(t, err)
 
-	_, err = stdcopy.StdCopy(io.Discard, io.Discard, logs)
+	_, err = stdcopy.StdCopy(ioutil.Discard, ioutil.Discard, logs)
 	assert.Check(t, err)
 }
 

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -145,7 +146,11 @@ func (cli *Client) doRequest(req *http.Request) (serverResponse, error) {
 		}
 
 		if cli.scheme == "https" && strings.Contains(err.Error(), "bad certificate") {
+<<<<<<< HEAD
 			return serverResp, errConnectionFailed{errors.Wrap(err, "the server probably has client authentication (--tlsverify) enabled; check your TLS client certification settings")}
+=======
+			return serverResp, errors.Wrap(err, "The server probably has client authentication (--tlsverify) enabled. Please check your TLS client certification settings")
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		}
 
 		// Don't decorate context sentinel errors; users may be comparing to
@@ -157,7 +162,11 @@ func (cli *Client) doRequest(req *http.Request) (serverResponse, error) {
 		if uErr, ok := err.(*url.Error); ok {
 			if nErr, ok := uErr.Err.(*net.OpError); ok {
 				if os.IsPermission(nErr.Err) {
+<<<<<<< HEAD
 					return serverResp, errConnectionFailed{errors.Wrapf(err, "permission denied while trying to connect to the Docker daemon socket at %v", cli.host)}
+=======
+					return serverResp, errors.Wrapf(err, "Got permission denied while trying to connect to the Docker daemon socket at %v", cli.host)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 				}
 			}
 		}
@@ -185,10 +194,10 @@ func (cli *Client) doRequest(req *http.Request) (serverResponse, error) {
 		if strings.Contains(err.Error(), `open //./pipe/docker_engine`) {
 			// Checks if client is running with elevated privileges
 			if f, elevatedErr := os.Open("\\\\.\\PHYSICALDRIVE0"); elevatedErr == nil {
-				err = errors.Wrap(err, "in the default daemon configuration on Windows, the docker client must be run with elevated privileges to connect")
+				err = errors.Wrap(err, "In the default daemon configuration on Windows, the docker client must be run with elevated privileges to connect.")
 			} else {
 				f.Close()
-				err = errors.Wrap(err, "this error may indicate that the docker daemon is not running")
+				err = errors.Wrap(err, "This error may indicate that the docker daemon is not running.")
 			}
 		}
 
@@ -216,7 +225,7 @@ func (cli *Client) checkResponseErr(serverResp serverResponse) error {
 			R: serverResp.body,
 			N: int64(bodyMax),
 		}
-		body, err = io.ReadAll(bodyR)
+		body, err = ioutil.ReadAll(bodyR)
 		if err != nil {
 			return err
 		}
@@ -278,7 +287,7 @@ func encodeData(data interface{}) (*bytes.Buffer, error) {
 func ensureReaderClosed(response serverResponse) {
 	if response.body != nil {
 		// Drain up to 512 bytes and close the body to let the Transport reuse the connection
-		io.CopyN(io.Discard, response.body, 512)
+		io.CopyN(ioutil.Discard, response.body, 512)
 		response.body.Close()
 	}
 }

@@ -4,6 +4,7 @@ package copy // import "github.com/docker/docker/daemon/graphdriver/copy"
 
 import (
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -30,12 +31,12 @@ func TestCopyWithoutRange(t *testing.T) {
 }
 
 func TestCopyDir(t *testing.T) {
-	srcDir, err := os.MkdirTemp("", "srcDir")
+	srcDir, err := ioutil.TempDir("", "srcDir")
 	assert.NilError(t, err)
 	defer os.RemoveAll(srcDir)
 	populateSrcDir(t, srcDir, 3)
 
-	dstDir, err := os.MkdirTemp("", "testdst")
+	dstDir, err := ioutil.TempDir("", "testdst")
 	assert.NilError(t, err)
 	defer os.RemoveAll(dstDir)
 
@@ -101,13 +102,17 @@ func populateSrcDir(t *testing.T, srcDir string, remainingDepth int) {
 	for i := 0; i < 10; i++ {
 		fileName := filepath.Join(srcDir, fmt.Sprintf("srcfile-%d", i))
 		// Owner read bit set
+<<<<<<< HEAD
 		assert.NilError(t, os.WriteFile(fileName, []byte{}, randomMode(0o400)))
+=======
+		assert.NilError(t, ioutil.WriteFile(fileName, []byte{}, randomMode(0400)))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 		assert.NilError(t, system.Chtimes(fileName, aTime, mTime))
 	}
 }
 
 func doCopyTest(t *testing.T, copyWithFileRange, copyWithFileClone *bool) {
-	dir, err := os.MkdirTemp("", "docker-copy-check")
+	dir, err := ioutil.TempDir("", "docker-copy-check")
 	assert.NilError(t, err)
 	defer os.RemoveAll(dir)
 	srcFilename := filepath.Join(dir, "srcFilename")
@@ -117,12 +122,16 @@ func doCopyTest(t *testing.T, copyWithFileRange, copyWithFileClone *bool) {
 	buf := make([]byte, 1024)
 	_, err = r.Read(buf)
 	assert.NilError(t, err)
+<<<<<<< HEAD
 	assert.NilError(t, os.WriteFile(srcFilename, buf, 0o777))
+=======
+	assert.NilError(t, ioutil.WriteFile(srcFilename, buf, 0777))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	fileinfo, err := os.Stat(srcFilename)
 	assert.NilError(t, err)
 
 	assert.NilError(t, copyRegular(srcFilename, dstFilename, fileinfo, copyWithFileRange, copyWithFileClone))
-	readBuf, err := os.ReadFile(dstFilename)
+	readBuf, err := ioutil.ReadFile(dstFilename)
 	assert.NilError(t, err)
 	assert.Check(t, is.DeepEqual(buf, readBuf))
 }
@@ -130,11 +139,11 @@ func doCopyTest(t *testing.T, copyWithFileRange, copyWithFileClone *bool) {
 func TestCopyHardlink(t *testing.T) {
 	var srcFile1FileInfo, srcFile2FileInfo, dstFile1FileInfo, dstFile2FileInfo unix.Stat_t
 
-	srcDir, err := os.MkdirTemp("", "srcDir")
+	srcDir, err := ioutil.TempDir("", "srcDir")
 	assert.NilError(t, err)
 	defer os.RemoveAll(srcDir)
 
-	dstDir, err := os.MkdirTemp("", "dstDir")
+	dstDir, err := ioutil.TempDir("", "dstDir")
 	assert.NilError(t, err)
 	defer os.RemoveAll(dstDir)
 
@@ -142,7 +151,11 @@ func TestCopyHardlink(t *testing.T) {
 	srcFile2 := filepath.Join(srcDir, "file2")
 	dstFile1 := filepath.Join(dstDir, "file1")
 	dstFile2 := filepath.Join(dstDir, "file2")
+<<<<<<< HEAD
 	assert.NilError(t, os.WriteFile(srcFile1, []byte{}, 0o777))
+=======
+	assert.NilError(t, ioutil.WriteFile(srcFile1, []byte{}, 0777))
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	assert.NilError(t, os.Link(srcFile1, srcFile2))
 
 	assert.Check(t, DirCopy(srcDir, dstDir, Content, false))

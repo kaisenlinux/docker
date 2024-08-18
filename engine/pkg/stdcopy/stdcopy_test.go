@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"errors"
 	"io"
+	"io/ioutil"
 	"strings"
 	"testing"
 )
 
 func TestNewStdWriter(t *testing.T) {
-	writer := NewStdWriter(io.Discard, Stdout)
+	writer := NewStdWriter(ioutil.Discard, Stdout)
 	if writer == nil {
 		t.Fatalf("NewStdWriter with an invalid StdType should not return nil.")
 	}
@@ -27,7 +28,7 @@ func TestWriteWithUninitializedStdWriter(t *testing.T) {
 }
 
 func TestWriteWithNilBytes(t *testing.T) {
-	writer := NewStdWriter(io.Discard, Stdout)
+	writer := NewStdWriter(ioutil.Discard, Stdout)
 	n, err := writer.Write(nil)
 	if err != nil {
 		t.Fatalf("Shouldn't have fail when given no data")
@@ -38,7 +39,7 @@ func TestWriteWithNilBytes(t *testing.T) {
 }
 
 func TestWrite(t *testing.T) {
-	writer := NewStdWriter(io.Discard, Stdout)
+	writer := NewStdWriter(ioutil.Discard, Stdout)
 	data := []byte("Test StdWrite.Write")
 	n, err := writer.Write(data)
 	if err != nil {
@@ -104,7 +105,7 @@ func TestStdCopyWriteAndRead(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	written, err := StdCopy(io.Discard, io.Discard, buffer)
+	written, err := StdCopy(ioutil.Discard, ioutil.Discard, buffer)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -133,9 +134,14 @@ func (f *customReader) Read(buf []byte) (int, error) {
 func TestStdCopyReturnsErrorReadingHeader(t *testing.T) {
 	expectedError := errors.New("error")
 	reader := &customReader{
+<<<<<<< HEAD
 		err: expectedError,
 	}
 	written, err := StdCopy(io.Discard, io.Discard, reader)
+=======
+		err: expectedError}
+	written, err := StdCopy(ioutil.Discard, ioutil.Discard, reader)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if written != 0 {
 		t.Fatalf("Expected 0 bytes read, got %d", written)
 	}
@@ -156,9 +162,14 @@ func TestStdCopyReturnsErrorReadingFrame(t *testing.T) {
 		correctCalls: 1,
 		n:            stdWriterPrefixLen + 1,
 		err:          expectedError,
+<<<<<<< HEAD
 		src:          buffer,
 	}
 	written, err := StdCopy(io.Discard, io.Discard, reader)
+=======
+		src:          buffer}
+	written, err := StdCopy(ioutil.Discard, ioutil.Discard, reader)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if written != 0 {
 		t.Fatalf("Expected 0 bytes read, got %d", written)
 	}
@@ -178,9 +189,14 @@ func TestStdCopyDetectsCorruptedFrame(t *testing.T) {
 		correctCalls: 1,
 		n:            stdWriterPrefixLen + 1,
 		err:          io.EOF,
+<<<<<<< HEAD
 		src:          buffer,
 	}
 	written, err := StdCopy(io.Discard, io.Discard, reader)
+=======
+		src:          buffer}
+	written, err := StdCopy(ioutil.Discard, ioutil.Discard, reader)
+>>>>>>> parent of ea55db5 (Import the 20.10.24 version)
 	if written != startingBufLen {
 		t.Fatalf("Expected %d bytes read, got %d", startingBufLen, written)
 	}
@@ -190,8 +206,8 @@ func TestStdCopyDetectsCorruptedFrame(t *testing.T) {
 }
 
 func TestStdCopyWithInvalidInputHeader(t *testing.T) {
-	dstOut := NewStdWriter(io.Discard, Stdout)
-	dstErr := NewStdWriter(io.Discard, Stderr)
+	dstOut := NewStdWriter(ioutil.Discard, Stdout)
+	dstErr := NewStdWriter(ioutil.Discard, Stderr)
 	src := strings.NewReader("Invalid input")
 	_, err := StdCopy(dstOut, dstErr, src)
 	if err == nil {
@@ -222,7 +238,7 @@ func TestStdCopyReturnsWriteErrors(t *testing.T) {
 
 	dstOut := &errWriter{err: expectedError}
 
-	written, err := StdCopy(dstOut, io.Discard, buffer)
+	written, err := StdCopy(dstOut, ioutil.Discard, buffer)
 	if written != 0 {
 		t.Fatalf("StdCopy should have written 0, but has written %d", written)
 	}
@@ -240,7 +256,7 @@ func TestStdCopyDetectsNotFullyWrittenFrames(t *testing.T) {
 	}
 	dstOut := &errWriter{n: startingBufLen - 10}
 
-	written, err := StdCopy(dstOut, io.Discard, buffer)
+	written, err := StdCopy(dstOut, ioutil.Discard, buffer)
 	if written != 0 {
 		t.Fatalf("StdCopy should have return 0 written bytes, but returned %d", written)
 	}
@@ -269,7 +285,7 @@ func TestStdCopyReturnsErrorFromSystem(t *testing.T) {
 
 	// now copy and demux. we should expect an error containing the string we
 	// wrote out
-	_, err = StdCopy(io.Discard, io.Discard, buffer)
+	_, err = StdCopy(ioutil.Discard, ioutil.Discard, buffer)
 	if err == nil {
 		t.Fatal("expected error, got none")
 	}
@@ -279,7 +295,7 @@ func TestStdCopyReturnsErrorFromSystem(t *testing.T) {
 }
 
 func BenchmarkWrite(b *testing.B) {
-	w := NewStdWriter(io.Discard, Stdout)
+	w := NewStdWriter(ioutil.Discard, Stdout)
 	data := []byte("Test line for testing stdwriter performance\n")
 	data = bytes.Repeat(data, 100)
 	b.SetBytes(int64(len(data)))
